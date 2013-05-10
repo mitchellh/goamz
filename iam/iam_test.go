@@ -1,9 +1,9 @@
 package iam_test
 
 import (
-	"launchpad.net/goamz/aws"
-	"launchpad.net/goamz/iam"
-	"launchpad.net/goamz/testutil"
+	"github.com/mitchellh/goamz/aws"
+	"github.com/mitchellh/goamz/iam"
+	"github.com/mitchellh/goamz/testutil"
 	. "launchpad.net/gocheck"
 	"strings"
 	"testing"
@@ -146,8 +146,8 @@ func (s *S) TestListGroups(c *C) {
 		{
 			Path: "/division_abc/subdivision_xyz/product_1234/",
 			Name: "Managers",
-			Id: "AGPIODR4TAW7CSEXAMPLE",
-			Arn: "arn:aws:iam::123456789012:group/division_abc/subdivision_xyz/product_1234/Managers",
+			Id:   "AGPIODR4TAW7CSEXAMPLE",
+			Arn:  "arn:aws:iam::123456789012:group/division_abc/subdivision_xyz/product_1234/Managers",
 		},
 	}
 	c.Assert(resp.Groups, DeepEquals, expected)
