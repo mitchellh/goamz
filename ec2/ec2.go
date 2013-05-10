@@ -413,6 +413,23 @@ func (ec2 *EC2) Instances(instIds []string, filter *Filter) (resp *InstancesResp
 // ----------------------------------------------------------------------------
 // Image and snapshot management functions and types.
 
+// The CreateImage request parameters.
+//
+// See http://goo.gl/cxU41 for more details.
+type CreateImage struct {
+	InstanceId string
+	Name string
+	// TODO: A lot more fields
+}
+
+// Response to a CreateImage request.
+//
+// See http://goo.gl/cxU41 for more details.
+type CreateImageResp struct {
+	RequestId string `xml:"requestId"`
+	ImageId string `xml:"imageId"`
+}
+
 // Response to a DescribeImages request.
 //
 // See http://goo.gl/hLnyg for more details.
@@ -460,6 +477,24 @@ type Image struct {
 	VirtualizationType string               `xml:"virtualizationType"`
 	Hypervisor         string               `xml:"hypervisor"`
 	BlockDevices       []BlockDeviceMapping `xml:"blockDeviceMapping>item"`
+}
+
+// Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
+// that is either running or stopped.
+//
+// See http://goo.gl/cxU41 for more details.
+func (ec2 *EC2) CreateImage(options *CreateImage) (resp *CreateImageResp, err error) {
+	params := makeParams("CreateImage")
+	params["InstanceId"] = options.InstanceId
+	params["Name"] = options.Name
+
+	resp = &CreateImageResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
 }
 
 // Images returns details about available images.

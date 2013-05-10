@@ -9,9 +9,9 @@ var ErrorDump = `
 
 // http://goo.gl/Mcm3b
 var RunInstancesExample = `
-<RunInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/"> 
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
-  <reservationId>r-47a5402e</reservationId> 
+<RunInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+  <reservationId>r-47a5402e</reservationId>
   <ownerId>999988887777</ownerId>
   <groupSet>
       <item>
@@ -99,7 +99,7 @@ var RunInstancesExample = `
 // http://goo.gl/3BKHj
 var TerminateInstancesExample = `
 <TerminateInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
   <instancesSet>
     <item>
       <instanceId>i-3ea74257</instanceId>
@@ -247,8 +247,8 @@ var DescribeInstancesExample1 = `
 
 // http://goo.gl/mLbmw
 var DescribeInstancesExample2 = `
-<DescribeInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/"> 
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+<DescribeInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
   <reservationSet>
     <item>
       <reservationId>r-bc7e30d7</reservationId>
@@ -318,6 +318,14 @@ var DescribeInstancesExample2 = `
 </DescribeInstancesResponse>
 `
 
+// http://goo.gl/cxU41
+var CreateImageExample = `
+<CreateImageResponse xmlns="http://ec2.amazonaws.com/doc/2013-02-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+   <imageId>ami-4fa54026</imageId>
+</CreateImageResponse>
+`
+
 // http://goo.gl/V0U25
 var DescribeImagesExample = `
 <DescribeImagesResponse xmlns="http://ec2.amazonaws.com/doc/2012-08-15/">
@@ -378,7 +386,7 @@ var CreateSnapshotExample = `
 // http://goo.gl/vwU1y
 var DeleteSnapshotExample = `
 <DeleteSnapshotResponse xmlns="http://ec2.amazonaws.com/doc/2012-10-01/">
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
   <return>true</return>
 </DeleteSnapshotResponse>
 `
@@ -386,7 +394,7 @@ var DeleteSnapshotExample = `
 // http://goo.gl/nkovs
 var DescribeSnapshotsExample = `
 <DescribeSnapshotsResponse xmlns="http://ec2.amazonaws.com/doc/2012-10-01/">
-   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
    <snapshotSet>
       <item>
          <snapshotId>snap-1a2b3c4d</snapshotId>
@@ -420,7 +428,7 @@ var CreateSecurityGroupExample = `
 // http://goo.gl/k12Uy
 var DescribeSecurityGroupsExample = `
 <DescribeSecurityGroupsResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
   <securityGroupInfo>
     <item>
       <ownerId>999988887777</ownerId>
@@ -522,7 +530,7 @@ var AuthorizeSecurityGroupIngressExample = `
 // http://goo.gl/Mz7xr
 var RevokeSecurityGroupIngressExample = `
 <RevokeSecurityGroupIngressResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
   <return>true</return>
 </RevokeSecurityGroupIngressResponse>
 `
@@ -538,7 +546,7 @@ var CreateTagsExample = `
 // http://goo.gl/awKeF
 var StartInstancesExample = `
 <StartInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>   
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
   <instancesSet>
     <item>
       <instanceId>i-10a64379</instanceId>
@@ -558,7 +566,7 @@ var StartInstancesExample = `
 // http://goo.gl/436dJ
 var StopInstancesExample = `
 <StopInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
   <instancesSet>
     <item>
       <instanceId>i-10a64379</instanceId>
@@ -578,7 +586,7 @@ var StopInstancesExample = `
 // http://goo.gl/baoUf
 var RebootInstancesExample = `
 <RebootInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
-  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
   <return>true</return>
 </RebootInstancesResponse>
 `

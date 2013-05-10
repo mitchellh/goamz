@@ -254,6 +254,26 @@ func (s *S) TestDescribeInstancesExample2(c *C) {
 	c.Assert(r0t1.Value, Equals, "Production")
 }
 
+func (s *S) TestCreateImageExample(c *C) {
+	testServer.Response(200, nil, CreateImageExample)
+
+	options := &ec2.CreateImage{
+		InstanceId: "i-123456",
+		Name: "foo",
+	}
+
+	resp, err := s.ec2.CreateImage(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateImage"})
+	c.Assert(req.Form["InstanceId"], DeepEquals, []string{options.InstanceId})
+	c.Assert(req.Form["Name"], DeepEquals, []string{options.Name})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.ImageId, Equals, "ami-4fa54026")
+}
+
 func (s *S) TestDescribeImagesExample(c *C) {
 	testServer.Response(200, nil, DescribeImagesExample)
 
