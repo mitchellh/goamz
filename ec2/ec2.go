@@ -419,7 +419,7 @@ func (ec2 *EC2) Instances(instIds []string, filter *Filter) (resp *InstancesResp
 // See http://goo.gl/cxU41 for more details.
 type CreateImage struct {
 	InstanceId string
-	Name string
+	Name       string
 	// TODO: A lot more fields
 }
 
@@ -428,7 +428,7 @@ type CreateImage struct {
 // See http://goo.gl/cxU41 for more details.
 type CreateImageResp struct {
 	RequestId string `xml:"requestId"`
-	ImageId string `xml:"imageId"`
+	ImageId   string `xml:"imageId"`
 }
 
 // Response to a DescribeImages request.
@@ -617,10 +617,10 @@ func (ec2 *EC2) Snapshots(ids []string, filter *Filter) (resp *SnapshotsResp, er
 // KeyPair management functions and types.
 
 type CreateKeyPairResp struct {
-	RequestId string `xml:"requestId"`
-	KeyName   string `xml:"keyName"`
+	RequestId      string `xml:"requestId"`
+	KeyName        string `xml:"keyName"`
 	KeyFingerprint string `xml:"keyFingerprint"`
-	KeyMaterial string `xml:"keyMaterial"`
+	KeyMaterial    string `xml:"keyMaterial"`
 }
 
 func (ec2 *EC2) CreateKeyPair(keyName string) (resp *CreateKeyPairResp, err error) {

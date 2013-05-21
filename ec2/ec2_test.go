@@ -259,7 +259,7 @@ func (s *S) TestCreateImageExample(c *C) {
 
 	options := &ec2.CreateImage{
 		InstanceId: "i-123456",
-		Name: "foo",
+		Name:       "foo",
 	}
 
 	resp, err := s.ec2.CreateImage(options)
