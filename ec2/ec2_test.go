@@ -396,6 +396,21 @@ func (s *S) TestDescribeSnapshotsExample(c *C) {
 	c.Assert(s0.Tags[0].Value, Equals, "demo_db_14_backup")
 }
 
+func (s *S) TestCreateKeyPairExample(c *C) {
+	testServer.Response(200, nil, CreateKeyPairExample)
+
+	resp, err := s.ec2.CreateKeyPair("foo")
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateKeyPair"})
+	c.Assert(req.Form["KeyName"], DeepEquals, []string{"foo"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.KeyName, Equals, "foo")
+	c.Assert(resp.KeyFingerprint, Equals, "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00")
+}
+
 func (s *S) TestCreateSecurityGroupExample(c *C) {
 	testServer.Response(200, nil, CreateSecurityGroupExample)
 

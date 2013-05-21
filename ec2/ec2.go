@@ -22,6 +22,7 @@ import (
 	"net/url"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -608,6 +609,28 @@ func (ec2 *EC2) Snapshots(ids []string, filter *Filter) (resp *SnapshotsResp, er
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
+	}
+	return
+}
+
+// ----------------------------------------------------------------------------
+// KeyPair management functions and types.
+
+type CreateKeyPairResp struct {
+	RequestId string `xml:"requestId"`
+	KeyName   string `xml:"keyName"`
+	KeyFingerprint string `xml:"keyFingerprint"`
+	KeyMaterial string `xml:"keyMaterial"`
+}
+
+func (ec2 *EC2) CreateKeyPair(keyName string) (resp *CreateKeyPairResp, err error) {
+	params := makeParams("CreateKeyPair")
+	params["KeyName"] = keyName
+
+	resp = &CreateKeyPairResp{}
+	err = ec2.query(params, resp)
+	if err == nil {
+		resp.KeyFingerprint = strings.TrimSpace(resp.KeyFingerprint)
 	}
 	return
 }
