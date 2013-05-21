@@ -411,6 +411,19 @@ func (s *S) TestCreateKeyPairExample(c *C) {
 	c.Assert(resp.KeyFingerprint, Equals, "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00")
 }
 
+func (s *S) TestDeleteKeyPairExample(c *C) {
+	testServer.Response(200, nil, DeleteKeyPairExample)
+
+	resp, err := s.ec2.DeleteKeyPair("foo")
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteKeyPair"})
+	c.Assert(req.Form["KeyName"], DeepEquals, []string{"foo"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
 func (s *S) TestCreateSecurityGroupExample(c *C) {
 	testServer.Response(200, nil, CreateSecurityGroupExample)
 

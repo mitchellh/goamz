@@ -623,6 +623,9 @@ type CreateKeyPairResp struct {
 	KeyMaterial    string `xml:"keyMaterial"`
 }
 
+// CreateKeyPair creates a new key pair and returns the private key contents.
+//
+// See http://goo.gl/0S6hV
 func (ec2 *EC2) CreateKeyPair(keyName string) (resp *CreateKeyPairResp, err error) {
 	params := makeParams("CreateKeyPair")
 	params["KeyName"] = keyName
@@ -632,6 +635,18 @@ func (ec2 *EC2) CreateKeyPair(keyName string) (resp *CreateKeyPairResp, err erro
 	if err == nil {
 		resp.KeyFingerprint = strings.TrimSpace(resp.KeyFingerprint)
 	}
+	return
+}
+
+// DeleteKeyPair deletes a key pair.
+//
+// See http://goo.gl/0bqok
+func (ec2 *EC2) DeleteKeyPair(name string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteKeyPair")
+	params["KeyName"] = name
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
 	return
 }
 

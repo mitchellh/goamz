@@ -443,6 +443,13 @@ NYiytVbZPQUQ5Yaxu2jXnimvw3rrszlaEXAMPLE=
 </CreateKeyPairResponse>
 `
 
+var DeleteKeyPairExample = `
+<DeleteKeyPairResponse xmlns="http://ec2.amazonaws.com/doc/2013-02-01/">
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+  <return>true</return>
+</DeleteKeyPairResponse>
+`
+
 // http://goo.gl/Eo7Yl
 var CreateSecurityGroupExample = `
 <CreateSecurityGroupResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
