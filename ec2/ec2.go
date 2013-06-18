@@ -439,6 +439,14 @@ type ImagesResp struct {
 	Images    []Image `xml:"imagesSet>item"`
 }
 
+// Response to a DegisterImage request.
+//
+// See http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DeregisterImage.html
+type DeregisterImageResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
 // BlockDeviceMapping represents the association of a block device with an image.
 //
 // See http://goo.gl/wnDBf for more details.
@@ -519,6 +527,22 @@ func (ec2 *EC2) Images(ids []string, filter *Filter) (resp *ImagesResp, err erro
 	if err != nil {
 		return nil, err
 	}
+	return
+}
+
+// Degisters an image. Note that this does not delete the backing stores of the AMI.
+//
+// See http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DeregisterImage.html
+func (ec2 *EC2) DeregisterImage(imageId string) (resp *DeregisterImageResp, err error) {
+	params := makeParams("DeregisterImage")
+	params["ImageId"] = imageId
+
+	resp = &DeregisterImageResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
 	return
 }
 
