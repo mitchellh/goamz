@@ -210,6 +210,7 @@ type RunInstances struct {
 	DisableAPITermination bool
 	ShutdownBehavior      string
 	PrivateIPAddress      string
+	BlockDeviceMappings   []BlockDeviceMapping
 }
 
 // Response to a RunInstances request.
@@ -276,6 +277,28 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 			j++
 		}
 	}
+
+	for i, bdm := range options.BlockDeviceMappings {
+		if bdm.DeviceName != "" {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".DeviceName"] = bdm.DeviceName
+		}
+		if bdm.VirtualName != "" {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".VirtualName"] = bdm.VirtualName
+		}
+		if bdm.SnapshotId != "" {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".Ebs.SnapshotId"] = bdm.SnapshotId
+		}
+		if bdm.VolumeType != "" {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".Ebs.VolumeType"] = bdm.VolumeType
+		}
+		if bdm.VolumeSize != 0 {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".Ebs.VolumeSize"] = strconv.FormatInt(bdm.VolumeSize, 10)
+		}
+		if bdm.DeleteOnTermination {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".Ebs.DeleteOnTermination"] = "true"
+		}
+	}
+
 	token, err := clientToken()
 	if err != nil {
 		return nil, err

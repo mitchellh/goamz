@@ -92,6 +92,9 @@ func (s *S) TestRunInstancesExample(c *C) {
 		DisableAPITermination: true,
 		ShutdownBehavior:      "terminate",
 		PrivateIPAddress:      "10.0.0.25",
+		BlockDeviceMappings: []ec2.BlockDeviceMapping{
+			{DeviceName: "/dev/sdb", VirtualName: "ephemeral0"},
+			{DeviceName: "/dev/sdc", VirtualName: "ephemeral1"}},
 	}
 	resp, err := s.ec2.RunInstances(&options)
 
@@ -116,6 +119,10 @@ func (s *S) TestRunInstancesExample(c *C) {
 	c.Assert(req.Form["DisableApiTermination"], DeepEquals, []string{"true"})
 	c.Assert(req.Form["InstanceInitiatedShutdownBehavior"], DeepEquals, []string{"terminate"})
 	c.Assert(req.Form["PrivateIpAddress"], DeepEquals, []string{"10.0.0.25"})
+	c.Assert(req.Form["BlockDeviceMapping.1.DeviceName"], DeepEquals, []string{"/dev/sdb"})
+	c.Assert(req.Form["BlockDeviceMapping.1.VirtualName"], DeepEquals, []string{"ephemeral0"})
+	c.Assert(req.Form["BlockDeviceMapping.2.DeviceName"], DeepEquals, []string{"/dev/sdc"})
+	c.Assert(req.Form["BlockDeviceMapping.2.VirtualName"], DeepEquals, []string{"ephemeral1"})
 
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
