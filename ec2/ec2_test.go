@@ -267,6 +267,9 @@ func (s *S) TestCreateImageExample(c *C) {
 	options := &ec2.CreateImage{
 		InstanceId: "i-123456",
 		Name:       "foo",
+		BlockDeviceMappings: []ec2.BlockDeviceMapping{
+			{DeviceName: "/dev/sdb", VirtualName: "ephemeral0"},
+			{DeviceName: "/dev/sdc", VirtualName: "ephemeral1"}},
 	}
 
 	resp, err := s.ec2.CreateImage(options)
@@ -275,6 +278,10 @@ func (s *S) TestCreateImageExample(c *C) {
 	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateImage"})
 	c.Assert(req.Form["InstanceId"], DeepEquals, []string{options.InstanceId})
 	c.Assert(req.Form["Name"], DeepEquals, []string{options.Name})
+	c.Assert(req.Form["BlockDeviceMapping.1.DeviceName"], DeepEquals, []string{"/dev/sdb"})
+	c.Assert(req.Form["BlockDeviceMapping.1.VirtualName"], DeepEquals, []string{"ephemeral0"})
+	c.Assert(req.Form["BlockDeviceMapping.2.DeviceName"], DeepEquals, []string{"/dev/sdc"})
+	c.Assert(req.Form["BlockDeviceMapping.2.VirtualName"], DeepEquals, []string{"ephemeral1"})
 
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")

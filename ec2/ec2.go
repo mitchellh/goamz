@@ -441,9 +441,10 @@ func (ec2 *EC2) Instances(instIds []string, filter *Filter) (resp *InstancesResp
 //
 // See http://goo.gl/cxU41 for more details.
 type CreateImage struct {
-	InstanceId string
-	Name       string
-	// TODO: A lot more fields
+	InstanceId          string
+	Name                string
+	BlockDeviceMappings []BlockDeviceMapping
+	// TODO: Description, NoReboot
 }
 
 // Response to a CreateImage request.
@@ -519,6 +520,26 @@ func (ec2 *EC2) CreateImage(options *CreateImage) (resp *CreateImageResp, err er
 	params := makeParams("CreateImage")
 	params["InstanceId"] = options.InstanceId
 	params["Name"] = options.Name
+	for i, bdm := range options.BlockDeviceMappings {
+		if bdm.DeviceName != "" {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".DeviceName"] = bdm.DeviceName
+		}
+		if bdm.VirtualName != "" {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".VirtualName"] = bdm.VirtualName
+		}
+		if bdm.SnapshotId != "" {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".Ebs.SnapshotId"] = bdm.SnapshotId
+		}
+		if bdm.VolumeType != "" {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".Ebs.VolumeType"] = bdm.VolumeType
+		}
+		if bdm.VolumeSize != 0 {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".Ebs.VolumeSize"] = strconv.FormatInt(bdm.VolumeSize, 10)
+		}
+		if bdm.DeleteOnTermination {
+			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".Ebs.DeleteOnTermination"] = "true"
+		}
+	}
 
 	resp = &CreateImageResp{}
 	err = ec2.query(params, resp)
