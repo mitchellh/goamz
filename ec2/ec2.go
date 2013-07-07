@@ -443,8 +443,9 @@ func (ec2 *EC2) Instances(instIds []string, filter *Filter) (resp *InstancesResp
 type CreateImage struct {
 	InstanceId          string
 	Name                string
+	Description         string
+	NoReboot            bool
 	BlockDeviceMappings []BlockDeviceMapping
-	// TODO: Description, NoReboot
 }
 
 // Response to a CreateImage request.
@@ -520,6 +521,12 @@ func (ec2 *EC2) CreateImage(options *CreateImage) (resp *CreateImageResp, err er
 	params := makeParams("CreateImage")
 	params["InstanceId"] = options.InstanceId
 	params["Name"] = options.Name
+	if options.Description != "" {
+		params["Description"] = options.Description
+	}
+	if options.NoReboot {
+		params["NoReboot"] = "true"
+	}
 	for i, bdm := range options.BlockDeviceMappings {
 		if bdm.DeviceName != "" {
 			params["BlockDeviceMapping."+strconv.Itoa(i+1)+".DeviceName"] = bdm.DeviceName
