@@ -120,7 +120,7 @@ type xmlErrors struct {
 var timeNow = time.Now
 
 func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
-	params["Version"] = "2011-12-15"
+	params["Version"] = "2013-02-01"
 	params["Timestamp"] = timeNow().In(time.UTC).Format(time.RFC3339)
 	endpoint, err := url.Parse(ec2.Region.EC2Endpoint)
 	if err != nil {
@@ -187,6 +187,32 @@ func addParamsList(params map[string]string, label string, ids []string) {
 	}
 }
 
+func addBlockDeviceParams(params map[string]string, blockdevices []BlockDeviceMapping) {
+	for i, k := range blockdevices {
+		// Fixup index since Amazon counts these from 1
+		prefix := "BlockDeviceMapping." + strconv.Itoa(i+1) + "."
+
+		if k.DeviceName != "" {
+			params[prefix+"DeviceName"] = k.DeviceName
+		}
+		if k.VirtualName != "" {
+			params[prefix+"VirtualName"] = k.VirtualName
+		}
+		if k.SnapshotId != "" {
+			params[prefix+"Ebs.SnapshotId"] = k.SnapshotId
+		}
+		if k.VolumeType != "" {
+			params[prefix+"Ebs.VolumeType"] = k.VolumeType
+		}
+		if k.VolumeSize != 0 {
+			params[prefix+"Ebs.VolumeSize"] = strconv.FormatInt(k.VolumeSize, 10)
+		}
+		if k.DeleteOnTermination {
+			params[prefix+"Ebs.DeleteOnTermination"] = "true"
+		}
+	}
+}
+
 // ----------------------------------------------------------------------------
 // Instance management functions and types.
 
@@ -210,6 +236,7 @@ type RunInstances struct {
 	DisableAPITermination bool
 	ShutdownBehavior      string
 	PrivateIPAddress      string
+	BlockDevices          []BlockDeviceMapping
 }
 
 // Response to a RunInstances request.
@@ -317,6 +344,7 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	if options.PrivateIPAddress != "" {
 		params["PrivateIpAddress"] = options.PrivateIPAddress
 	}
+	addBlockDeviceParams(params, options.BlockDevices)
 
 	resp = &RunInstancesResp{}
 	err = ec2.query(params, resp)
@@ -418,9 +446,11 @@ func (ec2 *EC2) Instances(instIds []string, filter *Filter) (resp *InstancesResp
 //
 // See http://goo.gl/cxU41 for more details.
 type CreateImage struct {
-	InstanceId string
-	Name       string
-	// TODO: A lot more fields
+	InstanceId   string
+	Name         string
+	Description  string
+	NoReboot     bool
+	BlockDevices []BlockDeviceMapping
 }
 
 // Response to a CreateImage request.
@@ -496,6 +526,13 @@ func (ec2 *EC2) CreateImage(options *CreateImage) (resp *CreateImageResp, err er
 	params := makeParams("CreateImage")
 	params["InstanceId"] = options.InstanceId
 	params["Name"] = options.Name
+	if options.Description != "" {
+		params["Description"] = options.Description
+	}
+	if options.NoReboot {
+		params["NoReboot"] = "true"
+	}
+	addBlockDeviceParams(params, options.BlockDevices)
 
 	resp = &CreateImageResp{}
 	err = ec2.query(params, resp)
