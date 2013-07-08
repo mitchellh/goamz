@@ -204,6 +204,9 @@ func addBlockDeviceParams(params map[string]string, blockdevices []BlockDeviceMa
 		if k.VolumeType != "" {
 			params[prefix+"Ebs.VolumeType"] = k.VolumeType
 		}
+		if k.IOPS != 0 {
+			params[prefix+"Ebs.Iops"] = strconv.FormatInt(k.IOPS, 10)
+		}
 		if k.VolumeSize != 0 {
 			params[prefix+"Ebs.VolumeSize"] = strconv.FormatInt(k.VolumeSize, 10)
 		}
