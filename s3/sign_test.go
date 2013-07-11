@@ -8,7 +8,7 @@ import (
 
 // S3 ReST authentication docs: http://goo.gl/G1LrK
 
-var testAuth = aws.Auth{"0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o"}
+var testAuth = aws.Auth{"0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o", ""}
 
 func (s *S) TestSignExampleObjectGet(c *C) {
 	method := "GET"
