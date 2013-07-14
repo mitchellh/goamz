@@ -22,7 +22,7 @@ var testServer = testutil.NewHTTPServer()
 
 func (s *S) SetUpSuite(c *C) {
 	testServer.Start()
-	auth := aws.Auth{"abc", "123"}
+	auth := aws.Auth{"abc", "123", ""}
 	s.sdb = sdb.New(auth, aws.Region{SDBEndpoint: testServer.URL})
 }
 

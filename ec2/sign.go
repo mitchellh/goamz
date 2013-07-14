@@ -18,6 +18,9 @@ func sign(auth aws.Auth, method, path string, params map[string]string, host str
 	params["AWSAccessKeyId"] = auth.AccessKey
 	params["SignatureVersion"] = "2"
 	params["SignatureMethod"] = "HmacSHA256"
+	if auth.Token != "" {
+		params["SecurityToken"] = auth.Token
+	}
 
 	// AWS specifies that the parameters in a signed request must
 	// be provided in the natural order of the keys. This is distinct
