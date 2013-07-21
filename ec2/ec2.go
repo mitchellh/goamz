@@ -271,6 +271,9 @@ type Instance struct {
 	PlacementGroupName string        `xml:"placement>groupName"`
 	State              InstanceState `xml:"instanceState"`
 	Tags               []Tag         `xml:"tagSet>item"`
+	VpcId              string        `xml:"vpcId"`
+	SubnetId           string        `xml:"subnetId"`
+	PrivateIpAddress   string        `xml:"privateIpAddress"`
 }
 
 // RunInstances starts new instances in EC2.
@@ -734,17 +737,20 @@ type CreateSecurityGroupResp struct {
 // name and description.
 //
 // See http://goo.gl/Eo7Yl for more details.
-func (ec2 *EC2) CreateSecurityGroup(name, description string) (resp *CreateSecurityGroupResp, err error) {
+func (ec2 *EC2) CreateSecurityGroup(group SecurityGroup) (resp *CreateSecurityGroupResp, err error) {
 	params := makeParams("CreateSecurityGroup")
-	params["GroupName"] = name
-	params["GroupDescription"] = description
+	params["GroupName"] = group.Name
+	params["GroupDescription"] = group.Description
+	if group.VpcId != "" {
+		params["VpcId"] = group.VpcId
+	}
 
 	resp = &CreateSecurityGroupResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
 	}
-	resp.Name = name
+	resp.Name = group.Name
 	return resp, nil
 }
 
@@ -790,8 +796,10 @@ type UserSecurityGroup struct {
 // If SecurityGroup is used as a parameter, then one of Id or Name
 // may be empty. If both are set, then Id is used.
 type SecurityGroup struct {
-	Id   string `xml:"groupId"`
-	Name string `xml:"groupName"`
+	Id          string `xml:"groupId"`
+	Name        string `xml:"groupName"`
+	Description string `xml:"groupDescription"`
+	VpcId       string `xml:"vpcId"`
 }
 
 // SecurityGroupNames is a convenience function that
