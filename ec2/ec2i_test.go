@@ -107,13 +107,13 @@ func (s *ClientTests) TestSecurityGroups(c *C) {
 	s.ec2.DeleteSecurityGroup(ec2.SecurityGroup{Name: name})
 	defer s.ec2.DeleteSecurityGroup(ec2.SecurityGroup{Name: name})
 
-	resp1, err := s.ec2.CreateSecurityGroup(name, descr)
+	resp1, err := s.ec2.CreateSecurityGroup(ec2.SecurityGroup{Name: name, Description: descr})
 	c.Assert(err, IsNil)
 	c.Assert(resp1.RequestId, Matches, ".+")
 	c.Assert(resp1.Name, Equals, name)
 	c.Assert(resp1.Id, Matches, ".+")
 
-	resp1, err = s.ec2.CreateSecurityGroup(name, descr)
+	resp1, err = s.ec2.CreateSecurityGroup(ec2.SecurityGroup{Name: name, Description: descr})
 	ec2err, _ := err.(*ec2.Error)
 	c.Assert(resp1, IsNil)
 	c.Assert(ec2err, NotNil)

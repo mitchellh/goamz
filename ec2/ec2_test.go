@@ -448,7 +448,7 @@ func (s *S) TestDeleteKeyPairExample(c *C) {
 func (s *S) TestCreateSecurityGroupExample(c *C) {
 	testServer.Response(200, nil, CreateSecurityGroupExample)
 
-	resp, err := s.ec2.CreateSecurityGroup("websrv", "Web Servers")
+	resp, err := s.ec2.CreateSecurityGroup(ec2.SecurityGroup{Name: "websrv", Description: "Web Servers"})
 
 	req := testServer.WaitRequest()
 	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateSecurityGroup"})
