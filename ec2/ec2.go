@@ -274,6 +274,7 @@ type Instance struct {
 	VpcId              string        `xml:"vpcId"`
 	SubnetId           string        `xml:"subnetId"`
 	PrivateIpAddress   string        `xml:"privateIpAddress"`
+	Architecture       string        `xml:"architecture"`
 }
 
 // RunInstances starts new instances in EC2.
