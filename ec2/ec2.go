@@ -476,6 +476,20 @@ type ImagesResp struct {
 	Images    []Image `xml:"imagesSet>item"`
 }
 
+// The RegisterImage request parameters.
+type RegisterImage struct {
+	ImageLocation string
+	Name          string
+	Description   string
+	BlockDevices  []BlockDeviceMapping
+}
+
+// Response to a RegisterImage request.
+type RegisterImageResp struct {
+	RequestId string `xml:"requestId"`
+	ImageId   string `xml:"imageId"`
+}
+
 // Response to a DegisterImage request.
 //
 // See http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DeregisterImage.html
@@ -571,6 +585,31 @@ func (ec2 *EC2) Images(ids []string, filter *Filter) (resp *ImagesResp, err erro
 	if err != nil {
 		return nil, err
 	}
+	return
+}
+
+// Registers a new AMI with EC2.
+//
+// See: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-RegisterImage.html
+func (ec2 *EC2) RegisterImage(options *RegisterImage) (resp *RegisterImageResp, err error) {
+	params := makeParams("RegisterImage")
+	params["Name"] = options.Name
+	if options.ImageLocation != "" {
+		params["ImageLocation"] = options.ImageLocation
+	}
+
+	if options.Description != "" {
+		params["Description"] = options.Description
+	}
+
+	addBlockDeviceParams(params, options.BlockDevices)
+
+	resp = &RegisterImageResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
 	return
 }
 
