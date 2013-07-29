@@ -174,7 +174,7 @@ type credentials struct {
 	Expiration      string
 }
 
-func getMetaData(path string) (contents []byte, err error) {
+func GetMetaData(path string) (contents []byte, err error) {
 	url := "http://169.254.169.254/latest/meta-data/" + path
 
 	resp, err := http.Get(url)
@@ -199,13 +199,13 @@ func getInstanceCredentials() (cred credentials, err error) {
 	credentialPath := "iam/security-credentials/"
 
 	// Get the instance role
-	role, err := getMetaData(credentialPath)
+	role, err := GetMetaData(credentialPath)
 	if err != nil {
 		return
 	}
 
 	// Get the instance role credentials
-	credentialJSON, err := getMetaData(credentialPath + string(role))
+	credentialJSON, err := GetMetaData(credentialPath + string(role))
 	if err != nil {
 		return
 	}
