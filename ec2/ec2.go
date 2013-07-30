@@ -460,6 +460,16 @@ type CreateVolume struct {
 	IOPS       int64
 }
 
+// Response to an AttachVolume request
+type AttachVolumeResp struct {
+	RequestId  string `xml:"requestId"`
+	VolumeId   string `xml:"volumeId"`
+	InstanceId string `xml:"instanceId"`
+	Device     string `xml:"device"`
+	Status     string `xml:"status"`
+	AttachTime string `xml:"attachTime"`
+}
+
 // Response to a CreateVolume request
 type CreateVolumeResp struct {
 	RequestId  string `xml:"requestId"`
@@ -471,6 +481,22 @@ type CreateVolumeResp struct {
 	CreateTime string `xml:"createTime"`
 	VolumeType string `xml:"volumeType"`
 	IOPS       int64  `xml:"iops"`
+}
+
+// Attach a volume.
+func (ec2 *EC2) AttachVolume(volumeId string, instanceId string, device string) (resp *AttachVolumeResp, err error) {
+	params := makeParams("AttachVolume")
+	params["VolumeId"] = volumeId
+	params["InstanceId"] = instanceId
+	params["Device"] = device
+
+	resp = &AttachVolumeResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
 }
 
 // Create a new volume.
