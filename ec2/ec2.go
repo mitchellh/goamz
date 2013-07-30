@@ -447,6 +447,62 @@ func (ec2 *EC2) Instances(instIds []string, filter *Filter) (resp *InstancesResp
 }
 
 // ----------------------------------------------------------------------------
+// Volume management
+
+// The CreateVolume request parameters
+//
+// See http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateVolume.html
+type CreateVolume struct {
+	AvailZone  string
+	Size       int64
+	SnapshotId string
+	VolumeType string
+	IOPS       int64
+}
+
+// Response to a CreateVolume request
+type CreateVolumeResp struct {
+	RequestId  string `xml:"requestId"`
+	VolumeId   string `xml:"volumeId"`
+	Size       int64  `xml:"size"`
+	SnapshotId string `xml:"snapshotId"`
+	AvailZone  string `xml:"availabilityZone"`
+	Status     string `xml:"status"`
+	CreateTime string `xml:"createTime"`
+	VolumeType string `xml:"volumeType"`
+	IOPS       int64  `xml:"iops"`
+}
+
+// Create a new volume.
+func (ec2 *EC2) CreateVolume(options *CreateVolume) (resp *CreateVolumeResp, err error) {
+	params := makeParams("CreateVolume")
+	params["AvailabilityZone"] = options.AvailZone
+	if options.Size > 0 {
+		params["Size"] = strconv.FormatInt(options.Size, 10)
+	}
+
+	if options.SnapshotId != "" {
+		params["SnapshotId"] = options.SnapshotId
+	}
+
+	if options.VolumeType != "" {
+		params["VolumeType"] = options.VolumeType
+	}
+
+	if options.IOPS > 0 {
+		params["Iops"] = strconv.FormatInt(options.IOPS, 10)
+	}
+
+	resp = &CreateVolumeResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Image and snapshot management functions and types.
 
 // The CreateImage request parameters.
