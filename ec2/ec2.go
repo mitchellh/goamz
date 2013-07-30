@@ -502,6 +502,19 @@ func (ec2 *EC2) CreateVolume(options *CreateVolume) (resp *CreateVolumeResp, err
 	return
 }
 
+// Delete an EBS volume.
+func (ec2 *EC2) DeleteVolume(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteVolume")
+	params["VolumeId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Image and snapshot management functions and types.
 
