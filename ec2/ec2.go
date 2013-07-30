@@ -483,6 +483,31 @@ type CreateVolumeResp struct {
 	IOPS       int64  `xml:"iops"`
 }
 
+// Volume is a single volume.
+type Volume struct {
+	VolumeId    string             `xml:"volumeId"`
+	Size        string             `xml:"size"`
+	SnapshotId  string             `xml:"snapshotId"`
+	AvailZone   string             `xml:"availabilityZone"`
+	Status      string             `xml:"status"`
+	Attachments []VolumeAttachment `xml:"attachmentSet>item"`
+	VolumeType  string             `xml:"volumeType"`
+	IOPS        int64              `xml:"iops"`
+}
+
+type VolumeAttachment struct {
+	VolumeId   string `xml:"volumeId"`
+	InstanceId string `xml:"instanceId"`
+	Device     string `xml:"device"`
+	Status     string `xml:"status"`
+}
+
+// Response to a DescribeVolumes request
+type VolumesResp struct {
+	RequestId string   `xml:"requestId"`
+	Volumes   []Volume `xml:"volumeSet>item"`
+}
+
 // Attach a volume.
 func (ec2 *EC2) AttachVolume(volumeId string, instanceId string, device string) (resp *AttachVolumeResp, err error) {
 	params := makeParams("AttachVolume")
@@ -534,6 +559,19 @@ func (ec2 *EC2) DeleteVolume(id string) (resp *SimpleResp, err error) {
 	params["VolumeId"] = id
 
 	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Finds or lists all volumes.
+func (ec2 *EC2) Volumes(volIds []string, filter *Filter) (resp *VolumesResp, err error) {
+	params := makeParams("DescribeVolumes")
+	addParamsList(params, "VolumeId", volIds)
+	filter.addParams(params)
+	resp = &VolumesResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
