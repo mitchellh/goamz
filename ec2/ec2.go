@@ -566,6 +566,19 @@ func (ec2 *EC2) DeleteVolume(id string) (resp *SimpleResp, err error) {
 	return
 }
 
+// Detaches an EBS volume.
+func (ec2 *EC2) DetachVolume(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DetachVolume")
+	params["VolumeId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
 // Finds or lists all volumes.
 func (ec2 *EC2) Volumes(volIds []string, filter *Filter) (resp *VolumesResp, err error) {
 	params := makeParams("DescribeVolumes")
