@@ -229,6 +229,7 @@ type RunInstances struct {
 	KeyName               string
 	InstanceType          string
 	SecurityGroups        []SecurityGroup
+	IamInstanceProfile    string
 	KernelId              string
 	RamdiskId             string
 	UserData              []byte
@@ -273,6 +274,7 @@ type Instance struct {
 	Tags               []Tag         `xml:"tagSet>item"`
 	VpcId              string        `xml:"vpcId"`
 	SubnetId           string        `xml:"subnetId"`
+	IamInstanceProfile string        `xml:"iamInstanceProfile"`
 	PrivateIpAddress   string        `xml:"privateIpAddress"`
 	Architecture       string        `xml:"architecture"`
 }
@@ -341,6 +343,9 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	}
 	if options.SubnetId != "" {
 		params["SubnetId"] = options.SubnetId
+	}
+	if options.IamInstanceProfile != "" {
+		params["IamInstanceProfile.Name"] = options.IamInstanceProfile
 	}
 	if options.DisableAPITermination {
 		params["DisableApiTermination"] = "true"
