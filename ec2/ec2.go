@@ -629,10 +629,14 @@ type ImagesResp struct {
 
 // The RegisterImage request parameters.
 type RegisterImage struct {
-	ImageLocation string
-	Name          string
-	Description   string
-	BlockDevices  []BlockDeviceMapping
+	ImageLocation  string
+	Name           string
+	Description    string
+	Architecture   string
+	KernelId       string
+	RamdiskId      string
+	RootDeviceName string
+	BlockDevices   []BlockDeviceMapping
 }
 
 // Response to a RegisterImage request.
@@ -751,6 +755,22 @@ func (ec2 *EC2) RegisterImage(options *RegisterImage) (resp *RegisterImageResp, 
 
 	if options.Description != "" {
 		params["Description"] = options.Description
+	}
+
+	if options.Architecture != "" {
+		params["Architecture"] = options.Architecture
+	}
+
+	if options.KernelId != "" {
+		params["KernelId"] = options.KernelId
+	}
+
+	if options.RamdiskId != "" {
+		params["RamdiskId"] = options.RamdiskId
+	}
+
+	if options.RootDeviceName != "" {
+		params["RootDeviceName"] = options.RootDeviceName
 	}
 
 	addBlockDeviceParams(params, options.BlockDevices)
