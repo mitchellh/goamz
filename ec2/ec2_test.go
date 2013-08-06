@@ -417,6 +417,23 @@ func (s *S) TestDescribeSnapshotsExample(c *C) {
 	c.Assert(s0.Tags[0].Value, Equals, "demo_db_14_backup")
 }
 
+func (s *S) TestModifyImageAttributeExample(c *C) {
+	testServer.Response(200, nil, ModifyImageAttributeExample)
+
+	options := ec2.ModifyImageAttribute{
+		Attribute:   ec2.DescriptionAttribute,
+		Description: "Test Description",
+	}
+
+	resp, err := s.ec2.ModifyImageAttribute("ami-4fa54026", &options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ModifyImageAttribute"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
 func (s *S) TestCreateKeyPairExample(c *C) {
 	testServer.Response(200, nil, CreateKeyPairExample)
 
