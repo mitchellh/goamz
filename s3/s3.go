@@ -67,8 +67,8 @@ func (s3 *S3) Bucket(name string) *Bucket {
 	return &Bucket{s3, name}
 }
 
-var createBucketConfiguration = `<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"> 
-  <LocationConstraint>%s</LocationConstraint> 
+var createBucketConfiguration = `<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+  <LocationConstraint>%s</LocationConstraint>
 </CreateBucketConfiguration>`
 
 // locationConstraint returns an io.Reader specifying a LocationConstraint if
@@ -147,11 +147,22 @@ func (b *Bucket) Get(path string) (data []byte, err error) {
 // It is the caller's responsibility to call Close on rc when
 // finished reading.
 func (b *Bucket) GetReader(path string) (rc io.ReadCloser, err error) {
+	resp, err := b.GetResponse(path)
+	if resp != nil {
+		return resp.Body, err
+	}
+	return nil, err
+}
+
+// GetResponse retrieves an object from an S3 bucket returning the http response
+// It is the caller's responsibility to call Close on rc when
+// finished reading.
+func (b *Bucket) GetResponse(path string) (*http.Response, error) {
 	req := &request{
 		bucket: b.Name,
 		path:   path,
 	}
-	err = b.S3.prepare(req)
+	err := b.S3.prepare(req)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +174,7 @@ func (b *Bucket) GetReader(path string) (rc io.ReadCloser, err error) {
 		if err != nil {
 			return nil, err
 		}
-		return resp.Body, nil
+		return resp, nil
 	}
 	panic("unreachable")
 }
