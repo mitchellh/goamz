@@ -416,6 +416,14 @@ var DescribeSnapshotsExample = `
 </DescribeSnapshotsResponse>
 `
 
+// http://goo.gl/YUjO4G
+var ModifyImageAttributeExample = `
+<ModifyImageAttributeResponse xmlns="http://ec2.amazonaws.com/doc/2013-06-15/">
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+  <return>true</return>
+</ModifyImageAttributeResponse>
+`
+
 var CreateKeyPairExample = `
 <CreateKeyPairResponse xmlns="http://ec2.amazonaws.com/doc/2013-02-01/">
   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
