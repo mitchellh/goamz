@@ -433,6 +433,32 @@ func (s *S) TestModifyImageAttributeExample(c *C) {
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 }
 
+func (s *S) TestModifyImageAttributeExample_complex(c *C) {
+	testServer.Response(200, nil, ModifyImageAttributeExample)
+
+	options := ec2.ModifyImageAttribute{
+		AddUsers:     []string{"u1", "u2"},
+		RemoveUsers:  []string{"u3"},
+		AddGroups:    []string{"g1", "g3"},
+		RemoveGroups: []string{"g2"},
+		Description:  "Test Description",
+	}
+
+	resp, err := s.ec2.ModifyImageAttribute("ami-4fa54026", &options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ModifyImageAttribute"})
+	c.Assert(req.Form["LaunchPermission.Add.1.UserId"], DeepEquals, []string{"u1"})
+	c.Assert(req.Form["LaunchPermission.Add.2.UserId"], DeepEquals, []string{"u2"})
+	c.Assert(req.Form["LaunchPermission.Remove.1.UserId"], DeepEquals, []string{"u3"})
+	c.Assert(req.Form["LaunchPermission.Add.1.Group"], DeepEquals, []string{"g1"})
+	c.Assert(req.Form["LaunchPermission.Add.2.Group"], DeepEquals, []string{"g3"})
+	c.Assert(req.Form["LaunchPermission.Remove.1.Group"], DeepEquals, []string{"g2"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
 func (s *S) TestCreateKeyPairExample(c *C) {
 	testServer.Response(200, nil, CreateKeyPairExample)
 
