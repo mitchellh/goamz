@@ -421,7 +421,6 @@ func (s *S) TestModifyImageAttributeExample(c *C) {
 	testServer.Response(200, nil, ModifyImageAttributeExample)
 
 	options := ec2.ModifyImageAttribute{
-		Attribute:   ec2.DescriptionAttribute,
 		Description: "Test Description",
 	}
 

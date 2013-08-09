@@ -694,6 +694,16 @@ type Image struct {
 	BlockDevices       []BlockDeviceMapping `xml:"blockDeviceMapping>item"`
 }
 
+// The ModifyImageAttribute request parameters.
+type ModifyImageAttribute struct {
+	AddUsers     []string
+	RemoveUsers  []string
+	AddGroups    []string
+	RemoveGroups []string
+	ProductCodes []string
+	Description  string
+}
+
 // Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
 // that is either running or stopped.
 //
@@ -740,6 +750,59 @@ func (ec2 *EC2) Images(ids []string, filter *Filter) (resp *ImagesResp, err erro
 	if err != nil {
 		return nil, err
 	}
+	return
+}
+
+// ModifyImageAttribute sets attributes for an image.
+// If options.Attribute is LaunchPermissionAttribute and options.Opertion is nil
+// then the operation defaults to LaunchPermissionAdd
+//
+// See http://goo.gl/YUjO4G for more details.
+func (ec2 *EC2) ModifyImageAttribute(imageId string, options *ModifyImageAttribute) (resp *SimpleResp, err error) {
+	params := makeParams("ModifyImageAttribute")
+	params["ImageId"] = imageId
+	if options.Description != "" {
+		params["Description.Value"] = options.Description
+	}
+
+	if options.AddUsers != nil {
+		for i, user := range options.AddUsers {
+			p := fmt.Sprintf("LaunchPermission.Add.%d.UserId", i+1)
+			params[p] = user
+		}
+	}
+
+	if options.RemoveUsers != nil {
+		for i, user := range options.RemoveUsers {
+			p := fmt.Sprintf("LaunchPermission.Remove.%d.UserId", i+1)
+			params[p] = user
+		}
+	}
+
+	if options.AddGroups != nil {
+		for i, group := range options.AddGroups {
+			p := fmt.Sprintf("LaunchPermission.Add.%d.Group", i+1)
+			params[p] = group
+		}
+	}
+
+	if options.RemoveGroups != nil {
+		for i, group := range options.RemoveGroups {
+			p := fmt.Sprintf("LaunchPermission.Remove.%d.Group", i+1)
+			params[p] = group
+		}
+	}
+
+	if options.ProductCodes != nil {
+		addParamsList(params, "ProductCode", options.ProductCodes)
+	}
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		resp = nil
+	}
+
 	return
 }
 
@@ -888,85 +951,6 @@ func (ec2 *EC2) Snapshots(ids []string, filter *Filter) (resp *SnapshotsResp, er
 	if err != nil {
 		return nil, err
 	}
-	return
-}
-
-// Response to a ModifyImageAttribute request.
-//
-// See http://goo.gl/YUjO4G for more details.
-type ModifyImageAttributeResp struct {
-	RequestId string `xml:"requestId"`
-	Return    bool   `xml:"return"`
-}
-
-// The ModifyImageAttribute request parameters.
-type ModifyImageAttribute struct {
-	Attribute    imageAttribute
-	Operation    launchPermOption
-	Users        []string
-	Groups       []string
-	ProductCodes []string
-	Description  string
-}
-
-// imageAttribute are valid image attributes
-type imageAttribute string
-
-// Image attributes
-const (
-	LaunchPermissionAttribute imageAttribute = "LaunchPermission"
-	ProductCodeAttribute      imageAttribute = "ProductCode"
-	DescriptionAttribute      imageAttribute = "Description"
-)
-
-// launchPermOption are options used with the LaunchPermission attribute
-type launchPermOption string
-
-const (
-	LaunchPermissionAdd    launchPermOption = "Add"
-	LaunchPermissionRemove launchPermOption = "Remove"
-)
-
-// ModifyImageAttribute sets attributes for an image.
-// If options.Attribute is LaunchPermissionAttribute and options.Opertion is nil
-// then the operation defaults to LaunchPermissionAdd
-//
-// See http://goo.gl/YUjO4G for more details.
-func (ec2 *EC2) ModifyImageAttribute(imageId string, options *ModifyImageAttribute) (resp *ModifyImageAttributeResp, err error) {
-	params := makeParams("ModifyImageAttribute")
-	params["ImageId"] = imageId
-
-	switch options.Attribute {
-	case LaunchPermissionAttribute:
-		if options.Operation == "" {
-			options.Operation = LaunchPermissionAdd
-		}
-		if options.Users != nil {
-			for i, user := range options.Users {
-				p := fmt.Sprintf("LaunchPermission.%s.%s.UserId", options.Operation, strconv.Itoa(i+1))
-				params[p] = user
-			}
-		}
-		if options.Groups != nil {
-			for i, group := range options.Groups {
-				p := fmt.Sprintf("LaunchPermission.%s.%s.Group", options.Operation, strconv.Itoa(i+1))
-				params[p] = group
-			}
-		}
-	case ProductCodeAttribute:
-		if options.ProductCodes != nil {
-			addParamsList(params, "ProductCode", options.ProductCodes)
-		}
-	case DescriptionAttribute:
-		params["Description.Value"] = options.Description
-	}
-
-	resp = &ModifyImageAttributeResp{}
-	err = ec2.query(params, resp)
-	if err != nil {
-		return nil, err
-	}
-
 	return
 }
 
