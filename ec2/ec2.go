@@ -134,7 +134,14 @@ func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
 	if debug {
 		log.Printf("get { %v } -> {\n", endpoint.String())
 	}
-	r, err := http.Get(endpoint.String())
+
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+		},
+	}
+
+	r, err := httpClient.Get(endpoint.String())
 	if err != nil {
 		return err
 	}
