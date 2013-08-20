@@ -459,6 +459,24 @@ func (s *S) TestModifyImageAttributeExample_complex(c *C) {
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 }
 
+func (s *S) TestCopyImageExample(c *C) {
+	testServer.Response(200, nil, CopyImageExample)
+
+	options := ec2.CopyImage{
+		SourceRegion:  "us-west-2",
+		SourceImageId: "ami-1a2b3c4d",
+		Description:   "Test Description",
+	}
+
+	resp, err := s.ec2.CopyImage(&options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CopyImage"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "60bc441d-fa2c-494d-b155-5d6a3EXAMPLE")
+}
+
 func (s *S) TestCreateKeyPairExample(c *C) {
 	testServer.Response(200, nil, CreateKeyPairExample)
 

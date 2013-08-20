@@ -711,6 +711,25 @@ type ModifyImageAttribute struct {
 	Description  string
 }
 
+// The CopyImage request parameters.
+//
+// See http://goo.gl/hQwPCK for more details.
+type CopyImage struct {
+	SourceRegion  string
+	SourceImageId string
+	Name          string
+	Description   string
+	ClientToken   string
+}
+
+// Response to a CopyImage request.
+//
+// See http://goo.gl/hQwPCK for more details.
+type CopyImageResp struct {
+	RequestId string `xml:"requestId"`
+	ImageId   string `xml:"imageId"`
+}
+
 // Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
 // that is either running or stopped.
 //
@@ -761,8 +780,6 @@ func (ec2 *EC2) Images(ids []string, filter *Filter) (resp *ImagesResp, err erro
 }
 
 // ModifyImageAttribute sets attributes for an image.
-// If options.Attribute is LaunchPermissionAttribute and options.Opertion is nil
-// then the operation defaults to LaunchPermissionAdd
 //
 // See http://goo.gl/YUjO4G for more details.
 func (ec2 *EC2) ModifyImageAttribute(imageId string, options *ModifyImageAttribute) (resp *SimpleResp, err error) {
@@ -862,6 +879,41 @@ func (ec2 *EC2) DeregisterImage(imageId string) (resp *DeregisterImageResp, err 
 	params["ImageId"] = imageId
 
 	resp = &DeregisterImageResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Copy and Image from one region to another.
+//
+// See http://goo.gl/hQwPCK for more details.
+func (ec2 *EC2) CopyImage(options *CopyImage) (resp *CopyImageResp, err error) {
+	params := makeParams("CopyImage")
+
+	if options.SourceRegion != "" {
+		params["SourceRegion"] = options.SourceRegion
+	}
+
+	if options.SourceImageId != "" {
+		params["SourceImageId"] = options.SourceImageId
+	}
+
+	if options.Name != "" {
+		params["Name"] = options.Name
+	}
+
+	if options.Description != "" {
+		params["Description"] = options.Description
+	}
+
+	if options.ClientToken != "" {
+		params["ClientToken"] = options.ClientToken
+	}
+
+	resp = &CopyImageResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
