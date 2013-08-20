@@ -424,6 +424,14 @@ var ModifyImageAttributeExample = `
 </ModifyImageAttributeResponse>
 `
 
+// http://goo.gl/hQwPCK
+var CopyImageExample = `
+<CopyImageResponse xmlns="http://ec2.amazonaws.com/doc/2013-06-15/">
+   <requestId>60bc441d-fa2c-494d-b155-5d6a3EXAMPLE</requestId>
+   <imageId>ami-4d3c2b1a</imageId>
+</CopyImageResponse>
+`
+
 var CreateKeyPairExample = `
 <CreateKeyPairResponse xmlns="http://ec2.amazonaws.com/doc/2013-02-01/">
   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
