@@ -675,14 +675,6 @@ type BlockDeviceMapping struct {
 	IOPS int64 `xml:"ebs>iops"`
 }
 
-// TagSet represents the tags associated with an image.
-//
-// See http://goo.gl/PNs3Xc for more details.
-type TagSet struct {
-	Key   string `xml:"key"`
-	Value string `xml:"value"`
-}
-
 // Image represents details about an image.
 //
 // See http://goo.gl/iSqJG for more details.
@@ -707,7 +699,7 @@ type Image struct {
 	VirtualizationType string               `xml:"virtualizationType"`
 	Hypervisor         string               `xml:"hypervisor"`
 	BlockDevices       []BlockDeviceMapping `xml:"blockDeviceMapping>item"`
-	TagSet             []TagSet             `xml:"tagSet>item"`
+	Tags               []Tag                `xml:"tagSet>item"`
 }
 
 // The ModifyImageAttribute request parameters.
