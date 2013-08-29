@@ -12,6 +12,7 @@ package ec2
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
@@ -1504,6 +1505,12 @@ type CreateKeyPairResp struct {
 	KeyMaterial    string `xml:"keyMaterial"`
 }
 
+type ImportKeyPairResponse struct {
+	RequestId      string `xml:"requestId"`
+	KeyName        string `xml:"keyName"`
+	KeyFingerprint string `xml:"keyFingerprint"`
+}
+
 // CreateKeyPair creates a new key pair and returns the private key contents.
 //
 // See http://goo.gl/0S6hV
@@ -1553,12 +1560,16 @@ func (ec2 *EC2) KeyPairs(keynames []string, filter *Filter) (resp *KeyPairsResp,
 // ImportKeyPair imports a key into AWS
 //
 // See http://goo.gl/NbZUvw
-func (ec2 *EC2) ImportKeyPair(keyname, key string) (resp *SimpleResp, err error) {
+func (ec2 *EC2) ImportKeyPair(keyname string, key string) (resp *ImportKeyPairResponse, err error) {
 	params := makeParams("ImportKeyPair")
 	params["KeyName"] = keyname
-	params["PublicKeyMaterial"] = key
 
-	resp = &SimpleResp{}
+	// Oddly, AWS requires the key material to be base64-encoded, even if it was
+	// already encoded. So, we force another round of encoding...
+	// c.f. https://groups.google.com/forum/?fromgroups#!topic/boto-dev/IczrStO9Q8M
+	params["PublicKeyMaterial"] = base64.StdEncoding.EncodeToString([]byte(key))
+
+	resp = &ImportKeyPairResponse{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
