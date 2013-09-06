@@ -220,6 +220,9 @@ func addBlockDeviceParams(params map[string]string, blockdevices []BlockDeviceMa
 		if k.DeleteOnTermination {
 			params[prefix+"Ebs.DeleteOnTermination"] = "true"
 		}
+		if k.NoDevice {
+			params[prefix+"NoDevice"] = "true"
+		}
 	}
 }
 
@@ -670,6 +673,7 @@ type BlockDeviceMapping struct {
 	VolumeType          string `xml:"ebs>volumeType"`
 	VolumeSize          int64  `xml:"ebs>volumeSize"`
 	DeleteOnTermination bool   `xml:"ebs>deleteOnTermination"`
+	NoDevice            bool   `xml:"noDevice"`
 
 	// The number of I/O operations per second (IOPS) that the volume supports.
 	IOPS int64 `xml:"ebs>iops"`
