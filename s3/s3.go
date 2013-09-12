@@ -187,6 +187,15 @@ func (b *Bucket) Put(path string, data []byte, contType string, perm ACL) error 
 	return b.PutReader(path, body, int64(len(data)), contType, perm)
 }
 
+/*
+PutHeader - like Put, inserts an object into the S3 bucket.
+Instead of Content-Type string, pass in custom headers to override defaults.
+*/
+func (b *Bucket) PutHeader(path string, data []byte, customHeaders map[string][]string, perm ACL) error {
+	body := bytes.NewBuffer(data)
+	return b.PutReaderHeader(path, body, int64(len(data)), customHeaders, perm)
+}
+
 // PutReader inserts an object into the S3 bucket by consuming data
 // from r until EOF.
 func (b *Bucket) PutReader(path string, r io.Reader, length int64, contType string, perm ACL) error {
@@ -195,6 +204,33 @@ func (b *Bucket) PutReader(path string, r io.Reader, length int64, contType stri
 		"Content-Type":   {contType},
 		"x-amz-acl":      {string(perm)},
 	}
+	req := &request{
+		method:  "PUT",
+		bucket:  b.Name,
+		path:    path,
+		headers: headers,
+		payload: r,
+	}
+	return b.S3.query(req, nil)
+}
+
+/*
+PutReaderHeader - like PutReader, inserts an object into S3 from a reader.
+Instead of Content-Type string, pass in custom headers to override defaults.
+*/
+func (b *Bucket) PutReaderHeader(path string, r io.Reader, length int64, customHeaders map[string][]string, perm ACL) error {
+	// Default headers
+	headers := map[string][]string{
+		"Content-Length": {strconv.FormatInt(length, 10)},
+		"Content-Type":   {"application/text"},
+		"x-amz-acl":      {string(perm)},
+	}
+
+	// Override with custom headers
+	for key, value := range customHeaders {
+		headers[key] = value
+	}
+
 	req := &request{
 		method:  "PUT",
 		bucket:  b.Name,
