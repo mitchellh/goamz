@@ -176,12 +176,58 @@ func (s *S) TestPutObject(c *C) {
 	c.Assert(req.Header["X-Amz-Acl"], DeepEquals, []string{"private"})
 }
 
+func (s *S) TestPutObjectHeader(c *C) {
+	testServer.Response(200, nil, "")
+
+	b := s.s3.Bucket("bucket")
+	err := b.PutHeader(
+		"name",
+		[]byte("content"),
+		map[string][]string{"Content-Type": {"content-type"}},
+		s3.Private,
+	)
+	c.Assert(err, IsNil)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Method, Equals, "PUT")
+	c.Assert(req.URL.Path, Equals, "/bucket/name")
+	c.Assert(req.Header["Date"], Not(DeepEquals), []string{""})
+	c.Assert(req.Header["Content-Type"], DeepEquals, []string{"content-type"})
+	c.Assert(req.Header["Content-Length"], DeepEquals, []string{"7"})
+	//c.Assert(req.Header["Content-MD5"], DeepEquals, "...")
+	c.Assert(req.Header["X-Amz-Acl"], DeepEquals, []string{"private"})
+}
+
 func (s *S) TestPutReader(c *C) {
 	testServer.Response(200, nil, "")
 
 	b := s.s3.Bucket("bucket")
 	buf := bytes.NewBufferString("content")
 	err := b.PutReader("name", buf, int64(buf.Len()), "content-type", s3.Private)
+	c.Assert(err, IsNil)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Method, Equals, "PUT")
+	c.Assert(req.URL.Path, Equals, "/bucket/name")
+	c.Assert(req.Header["Date"], Not(DeepEquals), []string{""})
+	c.Assert(req.Header["Content-Type"], DeepEquals, []string{"content-type"})
+	c.Assert(req.Header["Content-Length"], DeepEquals, []string{"7"})
+	//c.Assert(req.Header["Content-MD5"], Equals, "...")
+	c.Assert(req.Header["X-Amz-Acl"], DeepEquals, []string{"private"})
+}
+
+func (s *S) TestPutReaderHeader(c *C) {
+	testServer.Response(200, nil, "")
+
+	b := s.s3.Bucket("bucket")
+	buf := bytes.NewBufferString("content")
+	err := b.PutReaderHeader(
+		"name",
+		buf,
+		int64(buf.Len()),
+		map[string][]string{"Content-Type": {"content-type"}},
+		s3.Private,
+	)
 	c.Assert(err, IsNil)
 
 	req := testServer.WaitRequest()
