@@ -763,7 +763,8 @@ func (ec2 *EC2) CreateImage(options *CreateImage) (resp *CreateImageResp, err er
 // Images returns details about available images.
 // The ids and filter parameters, if provided, will limit the images returned.
 // For example, to get all the private images associated with this account set
-// the boolean filter "is-private" to true.
+// the boolean filter "is-public" to 0.
+// For list of filters: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeImages.html
 //
 // Note: calling this function with nil ids and filter parameters will result in
 // a very large number of images being returned.
