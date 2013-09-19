@@ -368,6 +368,22 @@ var DescribeImagesExample = `
 </DescribeImagesResponse>
 `
 
+// http://goo.gl/bHO3z
+var ImageAttributeExample = `
+<DescribeImageAttributeResponse xmlns="http://ec2.amazonaws.com/doc/2013-07-15/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+   <imageId>ami-61a54008</imageId>
+   <launchPermission>
+      <item>
+         <group>all</group>
+      </item>
+      <item>
+         <userId>495219933132</userId>
+      </item>
+   </launchPermission>
+</DescribeImageAttributeResponse>
+`
+
 // http://goo.gl/ttcda
 var CreateSnapshotExample = `
 <CreateSnapshotResponse xmlns="http://ec2.amazonaws.com/doc/2012-10-01/">
