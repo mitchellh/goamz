@@ -637,6 +637,21 @@ type ImagesResp struct {
 	Images    []Image `xml:"imagesSet>item"`
 }
 
+// Response to a DescribeImageAttribute request.
+//
+// See http://goo.gl/bHO3zT for more details.
+type ImageAttributeResp struct {
+	RequestId    string               `xml:"requestId"`
+	ImageId      string               `xml:"imageId"`
+	Kernel       string               `xml:"kernel>value"`
+	RamDisk      string               `xml:"ramdisk>value"`
+	Description  string               `xml:"description>value"`
+	Group        string               `xml:"launchPermission>item>group"`
+	UserIds      []string             `xml:"launchPermission>item>userId"`
+	ProductCodes []string             `xml:"productCodes>item>productCode"`
+	BlockDevices []BlockDeviceMapping `xml:"blockDeviceMapping>item"`
+}
+
 // The RegisterImage request parameters.
 type RegisterImage struct {
 	ImageLocation  string
@@ -778,6 +793,25 @@ func (ec2 *EC2) Images(ids []string, filter *Filter) (resp *ImagesResp, err erro
 	filter.addParams(params)
 
 	resp = &ImagesResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// ImageAttribute describes an attribute of an AMI.
+// You can specify only one attribute at a time.
+// Valid attributes are:
+//    description | kernel | ramdisk | launchPermission | productCodes | blockDeviceMapping
+//
+// See http://goo.gl/bHO3zT for more details.
+func (ec2 *EC2) ImageAttribute(imageId, attribute string) (resp *ImageAttributeResp, err error) {
+	params := makeParams("DescribeImageAttribute")
+	params["ImageId"] = imageId
+	params["Attribute"] = attribute
+
+	resp = &ImageAttributeResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err

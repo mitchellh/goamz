@@ -343,6 +343,21 @@ func (s *S) TestDescribeImagesExample(c *C) {
 	c.Assert(i0.BlockDevices[0].DeleteOnTermination, Equals, true)
 }
 
+func (s *S) TestImageAttributeExample(c *C) {
+	testServer.Response(200, nil, ImageAttributeExample)
+
+	resp, err := s.ec2.ImageAttribute("ami-61a54008", "launchPermission")
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeImageAttribute"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.ImageId, Equals, "ami-61a54008")
+	c.Assert(resp.Group, Equals, "all")
+	c.Assert(resp.UserIds[0], Equals, "495219933132")
+}
+
 func (s *S) TestCreateSnapshotExample(c *C) {
 	testServer.Response(200, nil, CreateSnapshotExample)
 
