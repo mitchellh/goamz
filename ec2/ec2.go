@@ -1302,12 +1302,13 @@ type Tag struct {
 	Value string `xml:"value"`
 }
 
-// CreateTags adds or overwrites one or more tags for the specified instance ids.
+// CreateTags adds or overwrites one or more tags for the specified taggable resources.
+// For a list of tagable resources, see: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html
 //
 // See http://goo.gl/Vmkqc for more details
-func (ec2 *EC2) CreateTags(instIds []string, tags []Tag) (resp *SimpleResp, err error) {
+func (ec2 *EC2) CreateTags(resourceIds []string, tags []Tag) (resp *SimpleResp, err error) {
 	params := makeParams("CreateTags")
-	addParamsList(params, "ResourceId", instIds)
+	addParamsList(params, "ResourceId", resourceIds)
 
 	for j, tag := range tags {
 		params["Tag."+strconv.Itoa(j+1)+".Key"] = tag.Key
