@@ -1,7 +1,7 @@
 package aws
 
 import (
-	"github.com/daaku/go.httpcontrol"
+	"github.com/mwhooker/go.httpcontrol"
 	"net/http"
 	"time"
 )
