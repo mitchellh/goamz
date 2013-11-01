@@ -430,7 +430,11 @@ func (req *request) url() (*url.URL, error) {
 func (s3 *S3) query(req *request, resp interface{}) error {
 	err := s3.prepare(req)
 	if err == nil {
-		_, err = s3.run(req, resp)
+		var httpResponse *http.Response
+		httpResponse, err = s3.run(req, resp)
+		if resp == nil && httpResponse != nil {
+			httpResponse.Body.Close()
+		}
 	}
 	return err
 }
@@ -525,6 +529,7 @@ func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
 		log.Printf("} -> %s\n", dump)
 	}
 	if hresp.StatusCode != 200 && hresp.StatusCode != 204 {
+		hresp.Body.Close()
 		return nil, buildError(hresp)
 	}
 	if resp != nil {
