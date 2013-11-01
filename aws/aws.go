@@ -14,10 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net"
-	"net/http"
 	"os"
-	"time"
 )
 
 // Region defines the URLs where AWS services may be accessed.
@@ -177,23 +174,9 @@ type credentials struct {
 }
 
 func GetMetaData(path string) (contents []byte, err error) {
-	c := http.Client{
-		Transport: &http.Transport{
-			Dial: func(netw, addr string) (net.Conn, error) {
-				deadline := time.Now().Add(5 * time.Second)
-				c, err := net.DialTimeout(netw, addr, time.Second*2)
-				if err != nil {
-					return nil, err
-				}
-				c.SetDeadline(deadline)
-				return c, nil
-			},
-		},
-	}
-
 	url := "http://169.254.169.254/latest/meta-data/" + path
 
-	resp, err := c.Get(url)
+	resp, err := RetryingClient.Get(url)
 	if err != nil {
 		return
 	}
