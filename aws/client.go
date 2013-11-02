@@ -19,7 +19,7 @@ func awsRetry(req *http.Request, res *http.Response, err error) bool {
 		}
 	}
 	if res != nil {
-		if 500 > res.StatusCode && res.StatusCode >= 400 {
+		if 600 > res.StatusCode && res.StatusCode >= 500 {
 			retry = true
 		}
 	}
