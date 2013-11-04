@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"fmt"
 	"math"
 	"net"
 	"net/http"
@@ -43,7 +44,6 @@ var RetryingClient = &http.Client{
 }
 
 func (t *ResilientTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	//return t.transport.RoundTrip(req)
 	return t.tries(req)
 }
 
@@ -51,13 +51,18 @@ func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err e
 	retry := false
 
 	for try := 0; try < t.MaxTries; try += 1 {
+		fmt.Println(req.URL)
 		if t.Wait != nil {
+			fmt.Println("waiting: ", try)
 			t.Wait(try)
 		}
 
 		res, err = t.transport.RoundTrip(req)
 
+		fmt.Println(err)
+
 		retry = t.ShouldRetry(req, res, err)
+		fmt.Println("Retry:", retry)
 		if !retry {
 			break
 		}
