@@ -43,7 +43,7 @@ func TestOK(t *testing.T) {
 func TestDelay(t *testing.T) {
 	body := "baz"
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(6)
+		time.Sleep(10)
 		fmt.Fprintln(w, body)
 	})
 	if err != nil {
