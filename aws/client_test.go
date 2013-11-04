@@ -41,9 +41,11 @@ func TestOK(t *testing.T) {
 }
 
 func TestDelay(t *testing.T) {
+	// TODO: go routine.
+	// and reduce latency so it works
 	body := "baz"
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(10)
+		time.Sleep(time.Second * 10)
 		fmt.Fprintln(w, body)
 	})
 	if err != nil {
