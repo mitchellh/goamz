@@ -1,7 +1,6 @@
 package aws
 
 import (
-	"fmt"
 	"math"
 	"net"
 	"net/http"
@@ -48,34 +47,28 @@ func (t *ResilientTransport) RoundTrip(req *http.Request) (*http.Response, error
 }
 
 func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err error) {
-	retry := false
-
 	for try := 0; try < t.MaxTries; try += 1 {
-		fmt.Println(req.URL)
-		if t.Wait != nil {
-			fmt.Println("waiting: ", try)
-			t.Wait(try)
-		}
-
 		res, err = t.transport.RoundTrip(req)
 
-		fmt.Println(err)
-
-		retry = t.ShouldRetry(req, res, err)
-		fmt.Println("Retry:", retry)
-		if !retry {
+		if !t.ShouldRetry(req, res, err) {
 			break
+		}
+
+		res.Body.Close()
+		if t.Wait != nil {
+			t.Wait(try)
 		}
 	}
 	return
 }
 
 func ExpBackoff(try int) {
-	time.Sleep(time.Second * time.Duration(math.Exp2(2)))
+	time.Sleep(100 * time.Millisecond *
+		time.Duration(math.Exp2(float64(try))))
 }
 
 func LinearBackoff(try int) {
-	time.Sleep(time.Second * time.Duration(try))
+	time.Sleep(100 * time.Millisecond * time.Duration(try))
 }
 
 func awsRetry(req *http.Request, res *http.Response, err error) bool {
