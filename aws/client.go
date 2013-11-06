@@ -1,7 +1,6 @@
 package aws
 
 import (
-	"log"
 	"math"
 	"net"
 	"net/http"
@@ -9,7 +8,6 @@ import (
 )
 
 type Retriable func(*http.Request, *http.Response, error) bool
-
 type Wait func(try int)
 type DeadlineFunc func() time.Time
 
@@ -24,17 +22,6 @@ type ResilientTransport struct {
 	// often around 3 minutes.
 	DialTimeout time.Duration
 
-	// ResponseHeaderTimeout, if non-zero, specifies the amount of
-	// time to wait for a server's response headers after fully
-	// writing the request (including its body, if any). This
-	// time does not include the time to read the response body.
-	ResponseHeaderTimeout time.Duration
-
-	// RequestTimeout, if non-zero, specifies the amount of time for the entire
-	// request. This includes dialing (if necessary), the response header as well
-	// as the entire body.
-	RequestTimeout time.Duration
-
 	// MaxTries, if non-zero, specifies the number of times we will retry on
 	// failure. Retries are only attempted for temporary network errors or known
 	// safe failures.
@@ -45,6 +32,7 @@ type ResilientTransport struct {
 	transport   *http.Transport
 }
 
+// Convenience method for creating an http client
 func NewClient(rt *ResilientTransport) *http.Client {
 	rt.transport = &http.Transport{
 		Dial: func(netw, addr string) (net.Conn, error) {
@@ -57,6 +45,8 @@ func NewClient(rt *ResilientTransport) *http.Client {
 		},
 		Proxy: http.ProxyFromEnvironment,
 	}
+	// TODO: Would be nice is ResilientTransport allowed clients to initialize
+	// with http.Transport attributes.
 	return &http.Client{
 		Transport: rt,
 	}
@@ -71,24 +61,25 @@ var retryingTransport = &ResilientTransport{
 	ShouldRetry: awsRetry,
 	Wait:        ExpBackoff,
 }
+
+// Exported default client
 var RetryingClient = NewClient(retryingTransport)
 
-// TODO: I think I need to cancel requests that have timed out
 func (t *ResilientTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	//return t.transport.RoundTrip(req)
 	return t.tries(req)
 }
 
+// Retry a request a maximum of t.MaxTries times.
+// We'll only retry if the proper criteria are met.
+// If a wait function is specified, wait that amount of time
+// In between requests.
 func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err error) {
 	for try := 0; try < t.MaxTries; try += 1 {
-		log.Println("Try", try)
 		res, err = t.transport.RoundTrip(req)
 
 		if !t.ShouldRetry(req, res, err) {
 			break
 		}
-		log.Println("Retrying ", try)
-
 		if res != nil {
 			res.Body.Close()
 		}
@@ -108,20 +99,25 @@ func LinearBackoff(try int) {
 	time.Sleep(time.Duration(try*100) * time.Millisecond)
 }
 
+// Decide if we should retry a request.
+// In general, the criteria for retrying a request is described here
+// http://docs.aws.amazon.com/general/latest/gr/api-retries.html
 func awsRetry(req *http.Request, res *http.Response, err error) bool {
 	retry := false
 
+	// Don't retry if we got a result and no error.
 	if err == nil && res != nil {
 		retry = false
 	}
-	if err == nil && res == nil {
-		retry = true
-	}
+
+	// Retry if there's a temporary network error.
 	if neterr, ok := err.(net.Error); ok {
 		if neterr.Temporary() {
 			retry = true
 		}
 	}
+
+	// Retry if we get a 5xx series error.
 	if res != nil {
 		if 500 <= res.StatusCode && res.StatusCode < 600 {
 			retry = true

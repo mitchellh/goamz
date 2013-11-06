@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	//	"sync"
 	"testing"
 	"time"
 )
 
+// Retrieve the response from handler using aws.RetryingClient
 func serveAndGet(handler http.HandlerFunc) (body string, err error) {
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
@@ -46,10 +46,10 @@ func TestClient_delay(t *testing.T) {
 	wait := 4
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
 		if wait < 0 {
+			// If we dipped to zero delay and still failed.
 			t.Fatal("Never succeeded.")
 		}
 		wait -= 1
-		fmt.Println("delay Waiting", wait)
 		time.Sleep(time.Second * time.Duration(wait))
 		fmt.Fprintln(w, body)
 	})
@@ -64,6 +64,7 @@ func TestClient_delay(t *testing.T) {
 func TestClient_retries(t *testing.T) {
 	body := "biz"
 	failed := false
+	// Fail once before succeeding.
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
 		if !failed {
 			http.Error(w, "error", 500)
@@ -85,6 +86,7 @@ func TestClient_retries(t *testing.T) {
 
 func TestClient_fails(t *testing.T) {
 	tries := 0
+	// Fail 3 times and return the last error.
 	_, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
 		tries += 1
 		http.Error(w, "error", 500)
