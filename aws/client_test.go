@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -26,7 +27,7 @@ func serveAndGet(handler http.HandlerFunc) (body string, err error) {
 	return strings.TrimSpace(string(greeting)), nil
 }
 
-func TestOK(t *testing.T) {
+func TestClient_expected(t *testing.T) {
 	body := "foo bar"
 
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
@@ -40,23 +41,28 @@ func TestOK(t *testing.T) {
 	}
 }
 
-func TestDelay(t *testing.T) {
-	// TODO: go routine.
-	// and reduce latency so it works
+func TestClient_delay(t *testing.T) {
+	mu := new(sync.Mutex)
+
 	body := "baz"
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(time.Second * 10)
-		fmt.Fprintln(w, body)
+		mu.Lock()
+		time.AfterFunc(time.Second*3, func() {
+			fmt.Fprintln(w, body)
+			mu.Unlock()
+		})
+		mu.Lock()
+		mu.Unlock()
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if resp != body {
-		t.Fatal("Body not as expected.")
+		t.Fatal("Body not as expected.", resp)
 	}
 }
 
-func TestStatus(t *testing.T) {
+func TestClient_retries(t *testing.T) {
 	body := "biz"
 	failed := false
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
@@ -75,5 +81,19 @@ func TestStatus(t *testing.T) {
 	}
 	if resp != body {
 		t.Fatal("Body not as expected.")
+	}
+}
+
+func TestClient_fails(t *testing.T) {
+	tries := 0
+	_, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
+		tries += 1
+		http.Error(w, "error", 500)
+	})
+	if err == nil {
+		t.Fatal(err)
+	}
+	if tries != 3 {
+		t.Fatal("Didn't retry enough")
 	}
 }

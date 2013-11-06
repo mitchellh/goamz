@@ -47,12 +47,11 @@ type ResilientTransport struct {
 func NewClient(rt *ResilientTransport) *http.Client {
 	rt.transport = &http.Transport{
 		Dial: func(netw, addr string) (net.Conn, error) {
-			deadline := rt.Deadline
 			c, err := net.DialTimeout(netw, addr, rt.DialTimeout)
 			if err != nil {
 				return nil, err
 			}
-			c.SetDeadline(deadline)
+			//c.SetDeadline(rt.Deadline)
 			return c, nil
 		},
 		Proxy: http.ProxyFromEnvironment,
@@ -101,7 +100,7 @@ func ExpBackoff(try int) {
 }
 
 func LinearBackoff(try int) {
-	time.Sleep(100 * time.Millisecond * time.Duration(try))
+	time.Sleep(time.Duration(try*100) * time.Millisecond)
 }
 
 func awsRetry(req *http.Request, res *http.Response, err error) bool {
