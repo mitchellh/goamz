@@ -11,6 +11,7 @@ import (
 type Retriable func(*http.Request, *http.Response, error) bool
 
 type Wait func(try int)
+type DeadlineFunc func() time.Time
 
 type ResilientTransport struct {
 	// Timeout is the maximum amount of time a dial will wait for
@@ -38,7 +39,7 @@ type ResilientTransport struct {
 	// failure. Retries are only attempted for temporary network errors or known
 	// safe failures.
 	MaxTries    int
-	Deadline    time.Time
+	Deadline    DeadlineFunc
 	ShouldRetry Retriable
 	Wait        Wait
 	transport   *http.Transport
@@ -51,7 +52,7 @@ func NewClient(rt *ResilientTransport) *http.Client {
 			if err != nil {
 				return nil, err
 			}
-			c.SetDeadline(rt.Deadline)
+			c.SetDeadline(rt.Deadline())
 			return c, nil
 		},
 		Proxy: http.ProxyFromEnvironment,
@@ -62,7 +63,9 @@ func NewClient(rt *ResilientTransport) *http.Client {
 }
 
 var retryingTransport = &ResilientTransport{
-	Deadline:    time.Now().Add(2 * time.Second),
+	Deadline: func() time.Time {
+		return time.Now().Add(2 * time.Second)
+	},
 	DialTimeout: time.Second,
 	MaxTries:    3,
 	ShouldRetry: awsRetry,

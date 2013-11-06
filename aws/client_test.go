@@ -43,13 +43,14 @@ func TestClient_expected(t *testing.T) {
 
 func TestClient_delay(t *testing.T) {
 	body := "baz"
-	wait := 3
+	wait := 4
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
 		if wait < 0 {
 			t.Fatal("Never succeeded.")
 		}
-		time.Sleep(time.Second * time.Duration(wait))
 		wait -= 1
+		fmt.Println("delay Waiting", wait)
+		time.Sleep(time.Second * time.Duration(wait))
 		fmt.Fprintln(w, body)
 	})
 	if err != nil {
