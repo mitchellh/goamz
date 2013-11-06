@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"sync"
+	//	"sync"
 	"testing"
 	"time"
 )
@@ -42,17 +42,15 @@ func TestClient_expected(t *testing.T) {
 }
 
 func TestClient_delay(t *testing.T) {
-	mu := new(sync.Mutex)
-
 	body := "baz"
+	wait := 3
 	resp, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
-		mu.Lock()
-		time.AfterFunc(time.Second*3, func() {
-			fmt.Fprintln(w, body)
-			mu.Unlock()
-		})
-		mu.Lock()
-		mu.Unlock()
+		if wait < 0 {
+			t.Fatal("Never succeeded.")
+		}
+		time.Sleep(time.Second * time.Duration(wait))
+		wait -= 1
+		fmt.Fprintln(w, body)
 	})
 	if err != nil {
 		t.Fatal(err)

@@ -51,7 +51,7 @@ func NewClient(rt *ResilientTransport) *http.Client {
 			if err != nil {
 				return nil, err
 			}
-			//c.SetDeadline(rt.Deadline)
+			c.SetDeadline(rt.Deadline)
 			return c, nil
 		},
 		Proxy: http.ProxyFromEnvironment,
@@ -62,8 +62,8 @@ func NewClient(rt *ResilientTransport) *http.Client {
 }
 
 var retryingTransport = &ResilientTransport{
-	Deadline:    time.Now().Add(5 * time.Second),
-	DialTimeout: time.Second * 2,
+	Deadline:    time.Now().Add(2 * time.Second),
+	DialTimeout: time.Second,
 	MaxTries:    3,
 	ShouldRetry: awsRetry,
 	Wait:        ExpBackoff,
@@ -86,7 +86,9 @@ func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err e
 		}
 		log.Println("Retrying ", try)
 
-		res.Body.Close()
+		if res != nil {
+			res.Body.Close()
+		}
 		if t.Wait != nil {
 			t.Wait(try)
 		}
@@ -108,6 +110,9 @@ func awsRetry(req *http.Request, res *http.Response, err error) bool {
 
 	if err == nil && res != nil {
 		retry = false
+	}
+	if err == nil && res == nil {
+		retry = true
 	}
 	if neterr, ok := err.(net.Error); ok {
 		if neterr.Temporary() {
