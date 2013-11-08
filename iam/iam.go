@@ -16,11 +16,12 @@ import (
 type IAM struct {
 	aws.Auth
 	aws.Region
+	httpClient *http.Client
 }
 
 // New creates a new IAM instance.
 func New(auth aws.Auth, region aws.Region) *IAM {
-	return &IAM{auth, region}
+	return &IAM{auth, region, aws.RetryingClient}
 }
 
 func (iam *IAM) query(params map[string]string, resp interface{}) error {
@@ -32,7 +33,7 @@ func (iam *IAM) query(params map[string]string, resp interface{}) error {
 	}
 	sign(iam.Auth, "GET", "/", params, endpoint.Host)
 	endpoint.RawQuery = multimap(params).Encode()
-	r, err := http.Get(endpoint.String())
+	r, err := iam.httpClient.Get(endpoint.String())
 	if err != nil {
 		return err
 	}
