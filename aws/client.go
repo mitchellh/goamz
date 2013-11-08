@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-type Retriable func(*http.Request, *http.Response, error) bool
-type Wait func(try int)
+type RetryableFunc func(*http.Request, *http.Response, error) bool
+type WaitFunc func(try int)
 type DeadlineFunc func() time.Time
 
 type ResilientTransport struct {
@@ -27,8 +27,8 @@ type ResilientTransport struct {
 	// safe failures.
 	MaxTries    int
 	Deadline    DeadlineFunc
-	ShouldRetry Retriable
-	Wait        Wait
+	ShouldRetry RetryableFunc
+	Wait        WaitFunc
 	transport   *http.Transport
 }
 
