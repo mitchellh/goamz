@@ -259,6 +259,7 @@ type ListResp struct {
 	Prefix    string
 	Delimiter string
 	Marker    string
+    NextMarker string
 	MaxKeys   int
 	// IsTruncated is true if the results have been truncated because
 	// there are more keys and prefixes than can fit in MaxKeys.
