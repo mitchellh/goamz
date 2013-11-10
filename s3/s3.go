@@ -255,11 +255,12 @@ func (b *Bucket) Del(path string) error {
 
 // The ListResp type holds the results of a List bucket operation.
 type ListResp struct {
-	Name      string
-	Prefix    string
-	Delimiter string
-	Marker    string
-	MaxKeys   int
+	Name       string
+	Prefix     string
+	Delimiter  string
+	Marker     string
+	NextMarker string
+	MaxKeys    int
 	// IsTruncated is true if the results have been truncated because
 	// there are more keys and prefixes than can fit in MaxKeys.
 	// N.B. this is the opposite sense to that documented (incorrectly) in
@@ -361,6 +362,30 @@ func (b *Bucket) List(prefix, delim, marker string, max int) (result *ListResp, 
 		return nil, err
 	}
 	return result, nil
+}
+
+// Returns a mapping of all key names in this bucket to Key objects
+func (b *Bucket) GetBucketContents() (*map[string]Key, error) {
+	bucket_contents := map[string]Key{}
+	prefix := ""
+	path_separator := ""
+	marker := ""
+	for {
+		contents, err := b.List(prefix, path_separator, marker, 1000)
+		if err != nil {
+			return &bucket_contents, err
+		}
+		for _, key := range contents.Contents {
+			bucket_contents[key.Key] = key
+		}
+		if contents.IsTruncated {
+			marker = contents.NextMarker
+		} else {
+			break
+		}
+	}
+
+	return &bucket_contents, nil
 }
 
 // URL returns a non-signed URL that allows retriving the
