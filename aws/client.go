@@ -54,9 +54,9 @@ func NewClient(rt *ResilientTransport) *http.Client {
 
 var retryingTransport = &ResilientTransport{
 	Deadline: func() time.Time {
-		return time.Now().Add(2 * time.Second)
+		return time.Now().Add(5 * time.Second)
 	},
-	DialTimeout: time.Second,
+	DialTimeout: 10 * time.Second,
 	MaxTries:    3,
 	ShouldRetry: awsRetry,
 	Wait:        ExpBackoff,
