@@ -2,7 +2,7 @@ package s3_test
 
 import (
 	"encoding/xml"
-	"github.com/mitchellh/goamz/s3"
+	"github.com/CpuID/goamz/s3"
 	"io"
 	"io/ioutil"
 	. "launchpad.net/gocheck"
