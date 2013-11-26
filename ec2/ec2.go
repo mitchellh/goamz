@@ -282,7 +282,7 @@ type Instance struct {
 	SubnetId           string        `xml:"subnetId"`
 	IamInstanceProfile string        `xml:"iamInstanceProfile"`
 	PrivateIpAddress   string        `xml:"privateIpAddress"`
-	PublicIpAddress    string        `xml:"IpAddress"`
+	PublicIpAddress    string        `xml:"ipAddress"`
 	Architecture       string        `xml:"architecture"`
 }
 
