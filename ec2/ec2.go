@@ -228,24 +228,25 @@ func addBlockDeviceParams(params map[string]string, blockdevices []BlockDeviceMa
 //
 // See http://goo.gl/Mcm3b for more details.
 type RunInstances struct {
-	ImageId               string
-	MinCount              int
-	MaxCount              int
-	KeyName               string
-	InstanceType          string
-	SecurityGroups        []SecurityGroup
-	IamInstanceProfile    string
-	KernelId              string
-	RamdiskId             string
-	UserData              []byte
-	AvailZone             string
-	PlacementGroupName    string
-	Monitoring            bool
-	SubnetId              string
-	DisableAPITermination bool
-	ShutdownBehavior      string
-	PrivateIPAddress      string
-	BlockDevices          []BlockDeviceMapping
+	ImageId                  string
+	MinCount                 int
+	MaxCount                 int
+	KeyName                  string
+	InstanceType             string
+	SecurityGroups           []SecurityGroup
+	IamInstanceProfile       string
+	KernelId                 string
+	RamdiskId                string
+	UserData                 []byte
+	AvailZone                string
+	PlacementGroupName       string
+	Monitoring               bool
+	SubnetId                 string
+	AssociatePublicIpAddress bool
+	DisableAPITermination    bool
+	ShutdownBehavior         string
+	PrivateIPAddress         string
+	BlockDevices             []BlockDeviceMapping
 }
 
 // Response to a RunInstances request.
@@ -281,6 +282,7 @@ type Instance struct {
 	SubnetId           string        `xml:"subnetId"`
 	IamInstanceProfile string        `xml:"iamInstanceProfile"`
 	PrivateIpAddress   string        `xml:"privateIpAddress"`
+	PublicIpAddress    string        `xml:"IpAddress"`
 	Architecture       string        `xml:"architecture"`
 }
 
@@ -348,6 +350,13 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	}
 	if options.SubnetId != "" {
 		params["SubnetId"] = options.SubnetId
+		// If we have a non-default VPC / Subnet specified, we can flag
+		// AssociatePublicIpAddress to get a Public IP assigned. By default these are not provided.
+		if options.AssociatePublicIpAddress == true {
+			params["NetworkInterface.0.DeviceIndex"] = "0"
+			params["NetworkInterface.0.AssociatePublicIpAddress"] = "true"
+			params["NetworkInterface.0.SubnetId"] = options.SubnetId
+		}
 	}
 	if options.IamInstanceProfile != "" {
 		params["IamInstanceProfile.Name"] = options.IamInstanceProfile
