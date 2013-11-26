@@ -2,10 +2,10 @@ package ec2_test
 
 import (
 	"fmt"
-	"github.com/CpuID/goamz/aws"
-	"github.com/CpuID/goamz/ec2"
-	"github.com/CpuID/goamz/ec2/ec2test"
-	"github.com/CpuID/goamz/testutil"
+	"github.com/mitchellh/goamz/aws"
+	"github.com/mitchellh/goamz/ec2"
+	"github.com/mitchellh/goamz/ec2/ec2test"
+	"github.com/mitchellh/goamz/testutil"
 	. "launchpad.net/gocheck"
 	"regexp"
 	"sort"

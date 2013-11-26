@@ -4,7 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"github.com/CpuID/goamz/aws"
+	"github.com/mitchellh/goamz/aws"
 	"net/http"
 	"net/url"
 	"sort"

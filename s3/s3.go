@@ -14,7 +14,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"github.com/CpuID/goamz/aws"
+	"github.com/mitchellh/goamz/aws"
 	"io"
 	"io/ioutil"
 	"log"
