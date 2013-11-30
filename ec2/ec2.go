@@ -603,6 +603,100 @@ func (ec2 *EC2) Volumes(volIds []string, filter *Filter) (resp *VolumesResp, err
 }
 
 // ----------------------------------------------------------------------------
+// ElasticIp management (for VPC)
+
+// The AllocateAddress request parameters
+//
+// see http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-AllocateAddress.html
+type AllocateAddress struct {
+	Domain string
+}
+
+// Response to an AllocateAddress request
+type AllocateAddressResp struct {
+	RequestId    string `xml:"requestId"`
+	PublicIp     string `xml:"publicIp"`
+	Domain       string `xml:"domain"`
+	AllocationId string `xml:"allocationId"`
+}
+
+// The AssociateAddress request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-AssociateAddress.html
+type AssociateAddress struct {
+	InstanceId         string
+	AllocationId       string
+	AllowReassociation bool
+}
+
+// Response to an AssociateAddress request
+type AssociateAddressResp struct {
+	RequestId     string `xml:"requestId"`
+	Return        bool   `xml:"return"`
+	AssociationId string `xml:"associationId"`
+}
+
+// Allocate a new Elastic IP.
+func (ec2 *EC2) AllocateAddress(options *AllocateAddress) (resp *AllocateAddressResp, err error) {
+	params := makeParams("AllocateAddress")
+	params["Domain"] = options.Domain
+
+	resp = &AllocateAddressResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Release an Elastic IP (VPC).
+func (ec2 *EC2) ReleaseAddress(id string) (resp *SimpleResp, err error) {
+	params := makeParams("ReleaseAddress")
+	params["AllocationId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Associate an address with a VPC instance.
+func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddressResp, err error) {
+	params := makeParams("AssociateAddress")
+	params["InstanceId"] = options.InstanceId
+	params["AllocationId"] = options.AllocationId
+	if options.AllowReassociation {
+		params["AllowReassociation"] = "true"
+	}
+
+	resp = &AssociateAddressResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Disassociate an address from a VPC instance.
+func (ec2 *EC2) DisassociateAddress(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DisassociateAddress")
+	params["AssociationId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Image and snapshot management functions and types.
 
 // The CreateImage request parameters.
