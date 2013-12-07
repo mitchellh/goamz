@@ -829,3 +829,71 @@ func (s *S) TestSignatureWithEndpointPath(c *C) {
 	req := testServer.WaitRequest()
 	c.Assert(req.Form["Signature"], DeepEquals, []string{"klxs+VwDa1EKHBsxlDYYN58wbP6An+RVdhETv1Fm/os="})
 }
+
+func (s *S) TestAllocateAddressExample(c *C) {
+	testServer.Response(200, nil, AllocateAddressExample)
+
+	options := &ec2.AllocateAddress{
+		Domain: "vpc",
+	}
+
+	resp, err := s.ec2.AllocateAddress(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"AllocateAddress"})
+	c.Assert(req.Form["Domain"], DeepEquals, []string{"vpc"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.PublicIp, Equals, "198.51.100.1")
+	c.Assert(resp.Domain, Equals, "vpc")
+	c.Assert(resp.AllocationId, Equals, "eipalloc-5723d13e")
+}
+
+func (s *S) TestReleaseAddressExample(c *C) {
+	testServer.Response(200, nil, ReleaseAddressExample)
+
+	resp, err := s.ec2.ReleaseAddress("eipalloc-5723d13e")
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ReleaseAddress"})
+	c.Assert(req.Form["AllocationId"], DeepEquals, []string{"eipalloc-5723d13e"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
+func (s *S) TestAssociateAddressExample(c *C) {
+	testServer.Response(200, nil, AssociateAddressExample)
+
+	options := &ec2.AssociateAddress{
+        InstanceId: "i-4fd2431a",
+        AllocationId: "eipalloc-5723d13e",
+        AllowReassociation: true,
+	}
+
+	resp, err := s.ec2.AssociateAddress(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"AssociateAddress"})
+	c.Assert(req.Form["InstanceId"], DeepEquals, []string{"i-4fd2431a"})
+	c.Assert(req.Form["AllocationId"], DeepEquals, []string{"eipalloc-5723d13e"})
+	c.Assert(req.Form["AllowReassociation"], DeepEquals, []string{"true"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.AssociationId, Equals, "eipassoc-fc5ca095")
+}
+
+func (s *S) TestDisassociateAddressExample(c *C) {
+	testServer.Response(200, nil, DisassociateAddressExample)
+
+	resp, err := s.ec2.DisassociateAddress("eipassoc-aa7486c3")
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DisassociateAddress"})
+	c.Assert(req.Form["AssociationId"], DeepEquals, []string{"eipassoc-aa7486c3"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
