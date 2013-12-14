@@ -24,7 +24,7 @@ var testServer = testutil.NewHTTPServer()
 func (s *S) SetUpSuite(c *C) {
 	testServer.Start()
 	auth := aws.Auth{"abc", "123", ""}
-	s.iam = iam.New(auth, aws.Region{IAMEndpoint: testServer.URL})
+	s.iam = iam.NewWithClient(auth, aws.Region{IAMEndpoint: testServer.URL}, testutil.DefaultClient)
 }
 
 func (s *S) TearDownTest(c *C) {

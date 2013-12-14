@@ -37,8 +37,12 @@ type EC2 struct {
 }
 
 // New creates a new EC2.
+func NewWithClient(auth aws.Auth, region aws.Region, client *http.Client) *EC2 {
+	return &EC2{auth, region, client, 0}
+}
+
 func New(auth aws.Auth, region aws.Region) *EC2 {
-	return &EC2{auth, region, aws.RetryingClient, 0}
+	return NewWithClient(auth, region, aws.RetryingClient)
 }
 
 // ----------------------------------------------------------------------------

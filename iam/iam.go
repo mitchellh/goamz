@@ -21,7 +21,11 @@ type IAM struct {
 
 // New creates a new IAM instance.
 func New(auth aws.Auth, region aws.Region) *IAM {
-	return &IAM{auth, region, aws.RetryingClient}
+	return NewWithClient(auth, region, aws.RetryingClient)
+}
+
+func NewWithClient(auth aws.Auth, region aws.Region, httpClient *http.Client) *IAM {
+	return &IAM{auth, region, httpClient}
 }
 
 func (iam *IAM) query(params map[string]string, resp interface{}) error {
