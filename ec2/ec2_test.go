@@ -827,7 +827,7 @@ func (s *S) TestSignatureWithEndpointPath(c *C) {
 	c.Assert(err, IsNil)
 
 	req := testServer.WaitRequest()
-	c.Assert(req.Form["Signature"], DeepEquals, []string{"klxs+VwDa1EKHBsxlDYYN58wbP6An+RVdhETv1Fm/os="})
+	c.Assert(req.Form["Signature"], DeepEquals, []string{"WaKDWBipeZzpFeqg5PpHw8ayfiqPqB2SX5HsH8+b6+k="})
 }
 
 func (s *S) TestAllocateAddressExample(c *C) {
