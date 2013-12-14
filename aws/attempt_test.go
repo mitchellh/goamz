@@ -2,7 +2,7 @@ package aws_test
 
 import (
 	"github.com/mitchellh/goamz/aws"
-	. "launchpad.net/gocheck"
+	. "github.com/motain/gocheck"
 	"time"
 )
 
