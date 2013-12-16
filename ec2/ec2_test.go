@@ -56,7 +56,7 @@ func (s *S) TestRunInstancesErrorDump(c *C) {
 }
 
 func (s *S) TestRunInstancesErrorWithoutXML(c *C) {
-	testServer.Response(500, nil, "")
+	testServer.Responses(5, 500, nil, "")
 	options := ec2.RunInstances{ImageId: "image-id"}
 
 	resp, err := s.ec2.RunInstances(&options)
@@ -827,7 +827,7 @@ func (s *S) TestSignatureWithEndpointPath(c *C) {
 	c.Assert(err, IsNil)
 
 	req := testServer.WaitRequest()
-	c.Assert(req.Form["Signature"], DeepEquals, []string{"klxs+VwDa1EKHBsxlDYYN58wbP6An+RVdhETv1Fm/os="})
+	c.Assert(req.Form["Signature"], DeepEquals, []string{"WaKDWBipeZzpFeqg5PpHw8ayfiqPqB2SX5HsH8+b6+k="})
 }
 
 func (s *S) TestAllocateAddressExample(c *C) {
