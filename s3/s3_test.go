@@ -9,7 +9,7 @@ import (
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"github.com/mitchellh/goamz/testutil"
-	. "launchpad.net/gocheck"
+	. "github.com/motain/gocheck"
 	"time"
 )
 

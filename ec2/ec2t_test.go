@@ -6,7 +6,7 @@ import (
 	"github.com/mitchellh/goamz/ec2"
 	"github.com/mitchellh/goamz/ec2/ec2test"
 	"github.com/mitchellh/goamz/testutil"
-	. "launchpad.net/gocheck"
+	. "github.com/motain/gocheck"
 	"regexp"
 	"sort"
 )

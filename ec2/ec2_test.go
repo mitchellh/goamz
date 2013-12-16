@@ -4,7 +4,7 @@ import (
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/ec2"
 	"github.com/mitchellh/goamz/testutil"
-	. "launchpad.net/gocheck"
+	. "github.com/motain/gocheck"
 	"testing"
 )
 
@@ -867,9 +867,9 @@ func (s *S) TestAssociateAddressExample(c *C) {
 	testServer.Response(200, nil, AssociateAddressExample)
 
 	options := &ec2.AssociateAddress{
-        InstanceId: "i-4fd2431a",
-        AllocationId: "eipalloc-5723d13e",
-        AllowReassociation: true,
+		InstanceId:         "i-4fd2431a",
+		AllocationId:       "eipalloc-5723d13e",
+		AllowReassociation: true,
 	}
 
 	resp, err := s.ec2.AssociateAddress(options)
