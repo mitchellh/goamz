@@ -342,7 +342,7 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	if options.Monitoring {
 		params["Monitoring.Enabled"] = "true"
 	}
-	if options.SubnetId != "" {
+	if options.SubnetId != "" && options.AssociatePublicIpAddress {
 		// If we have a non-default VPC / Subnet specified, we can flag
 		// AssociatePublicIpAddress to get a Public IP assigned. By default these are not provided.
 		// You cannot specify both SubnetId and the NetworkInterface.0.* parameters though, otherwise
@@ -350,29 +350,31 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 		// You also need to attach Security Groups to the NetworkInterface instead of the instance,
 		// to avoid: Network interfaces and an instance-level security groups may not be specified on
 		// the same request
-		if options.AssociatePublicIpAddress == true {
-			params["NetworkInterface.0.DeviceIndex"] = "0"
-			params["NetworkInterface.0.AssociatePublicIpAddress"] = "true"
-			params["NetworkInterface.0.SubnetId"] = options.SubnetId
-			i := 1
-			for _, g := range options.SecurityGroups {
-				// We only have SecurityGroupId's on NetworkInterface's, no SecurityGroup params.
-				if g.Id != "" {
-					params["NetworkInterface.0.SecurityGroupId."+strconv.Itoa(i)] = g.Id
-					i++
-				}
+		params["NetworkInterface.0.DeviceIndex"] = "0"
+		params["NetworkInterface.0.AssociatePublicIpAddress"] = "true"
+		params["NetworkInterface.0.SubnetId"] = options.SubnetId
+
+		i := 1
+		for _, g := range options.SecurityGroups {
+			// We only have SecurityGroupId's on NetworkInterface's, no SecurityGroup params.
+			if g.Id != "" {
+				params["NetworkInterface.0.SecurityGroupId."+strconv.Itoa(i)] = g.Id
+				i++
 			}
-		} else {
+		}
+	} else {
+		if options.SubnetId != "" {
 			params["SubnetId"] = options.SubnetId
-			i, j := 1, 1
-			for _, g := range options.SecurityGroups {
-				if g.Id != "" {
-					params["SecurityGroupId."+strconv.Itoa(i)] = g.Id
-					i++
-				} else {
-					params["SecurityGroup."+strconv.Itoa(j)] = g.Name
-					j++
-				}
+		}
+
+		i, j := 1, 1
+		for _, g := range options.SecurityGroups {
+			if g.Id != "" {
+				params["SecurityGroupId."+strconv.Itoa(i)] = g.Id
+				i++
+			} else {
+				params["SecurityGroup."+strconv.Itoa(j)] = g.Name
+				j++
 			}
 		}
 	}

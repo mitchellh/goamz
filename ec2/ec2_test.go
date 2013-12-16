@@ -60,7 +60,7 @@ func (s *S) TestRunInstancesErrorDump(c *C) {
 }
 
 func (s *S) TestRunInstancesErrorWithoutXML(c *C) {
-	testServer.Response(500, nil, "")
+	testServer.Responses(5, 500, nil, "")
 	options := ec2.RunInstances{ImageId: "image-id"}
 
 	resp, err := s.ec2.RunInstances(&options)
