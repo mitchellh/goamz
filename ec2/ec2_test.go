@@ -863,16 +863,36 @@ func (s *S) TestReleaseAddressExample(c *C) {
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 }
 
-func (s *S) TestAssociateAddressExample(c *C) {
+func (s *S) TestAssociateEC2AddressExample(c *C) {
 	testServer.Response(200, nil, AssociateAddressExample)
 
-	options := &ec2.AssociateAddress{
-        InstanceId: "i-4fd2431a",
-        AllocationId: "eipalloc-5723d13e",
-        AllowReassociation: true,
+	options := &ec2.AssociateEC2Address{
+		InstanceId:   "i-4fd2431a",
+		AllocationId: "eipalloc-5723d13e",
 	}
 
-	resp, err := s.ec2.AssociateAddress(options)
+	resp, err := s.ec2.AssociateEC2Address(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"AssociateAddress"})
+	c.Assert(req.Form["InstanceId"], DeepEquals, []string{"i-4fd2431a"})
+	c.Assert(req.Form["AllocationId"], DeepEquals, []string{"eipalloc-5723d13e"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.AssociationId, Equals, "eipassoc-fc5ca095")
+}
+
+func (s *S) TestAssociateVPCAddressExample(c *C) {
+	testServer.Response(200, nil, AssociateVPCAddressExample)
+
+	options := &ec2.AssociateVPCAddress{
+		InstanceId:         "i-4fd2431a",
+		AllocationId:       "eipalloc-5723d13e",
+		AllowReassociation: true,
+	}
+
+	resp, err := s.ec2.AssociateVPCAddress(options)
 
 	req := testServer.WaitRequest()
 	c.Assert(req.Form["Action"], DeepEquals, []string{"AssociateAddress"})

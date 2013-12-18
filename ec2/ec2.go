@@ -626,7 +626,7 @@ func (ec2 *EC2) Volumes(volIds []string, filter *Filter) (resp *VolumesResp, err
 }
 
 // ----------------------------------------------------------------------------
-// ElasticIp management (for VPC)
+// Elastic IP management
 
 // The AllocateAddress request parameters
 //
@@ -643,17 +643,31 @@ type AllocateAddressResp struct {
 	AllocationId string `xml:"allocationId"`
 }
 
-// The AssociateAddress request parameters
+// The AssociateEC2Address request parameters
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-AssociateAddress.html
-type AssociateAddress struct {
+type AssociateEC2Address struct {
+	PublicIP   string
+	InstanceId string
+}
+
+// Response to an AssociateEC2Address request
+type AssociateEC2AddressResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
+// The AssociateVPCAddress request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-AssociateAddress.html
+type AssociateVPCAddress struct {
 	InstanceId         string
 	AllocationId       string
 	AllowReassociation bool
 }
 
-// Response to an AssociateAddress request
-type AssociateAddressResp struct {
+// Response to an AssociateVPCAddress request
+type AssociateVPCAddressResp struct {
 	RequestId     string `xml:"requestId"`
 	Return        bool   `xml:"return"`
 	AssociationId string `xml:"associationId"`
@@ -687,16 +701,13 @@ func (ec2 *EC2) ReleaseAddress(id string) (resp *SimpleResp, err error) {
 	return
 }
 
-// Associate an address with a VPC instance.
-func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddressResp, err error) {
+// Associate an EIP address with a EC2 instance.
+func (ec2 *EC2) AssociateEC2Address(options *AssociateEC2Address) (resp *AssociateEC2AddressResp, err error) {
 	params := makeParams("AssociateAddress")
+	params["PublicIp"] = options.PublicIP
 	params["InstanceId"] = options.InstanceId
-	params["AllocationId"] = options.AllocationId
-	if options.AllowReassociation {
-		params["AllowReassociation"] = "true"
-	}
 
-	resp = &AssociateAddressResp{}
+	resp = &AssociateEC2AddressResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
@@ -705,10 +716,28 @@ func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddr
 	return
 }
 
-// Disassociate an address from a VPC instance.
-func (ec2 *EC2) DisassociateAddress(id string) (resp *SimpleResp, err error) {
+// Associate an address with a VPC instance.
+func (ec2 *EC2) AssociateVPCAddress(options *AssociateVPCAddress) (resp *AssociateVPCAddressResp, err error) {
+	params := makeParams("AssociateVPCAddress")
+	params["InstanceId"] = options.InstanceId
+	params["AllocationId"] = options.AllocationId
+	if options.AllowReassociation {
+		params["AllowReassociation"] = "true"
+	}
+
+	resp = &AssociateVPCAddressResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Disassociate an address from an instance.
+func (ec2 *EC2) DisassociateAddress(ip string) (resp *SimpleResp, err error) {
 	params := makeParams("DisassociateAddress")
-	params["AssociationId"] = id
+	params["PublicIp"] = ip
 
 	resp = &SimpleResp{}
 	err = ec2.query(params, resp)
