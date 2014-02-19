@@ -341,6 +341,48 @@ func (s *S) TestDescribeImagesExample(c *C) {
 	c.Assert(i0.BlockDevices[0].SnapshotId, Equals, "snap-787e9403")
 	c.Assert(i0.BlockDevices[0].VolumeSize, Equals, int64(8))
 	c.Assert(i0.BlockDevices[0].DeleteOnTermination, Equals, true)
+
+	resp2, err := s.ec2.ImagesByOwners([]string{"ami-1", "ami-2"}, []string{"123456789999", "id2"}, filter)
+
+	req2 := testServer.WaitRequest()
+	c.Assert(req2.Form["Action"], DeepEquals, []string{"DescribeImages"})
+	c.Assert(req2.Form["ImageId.1"], DeepEquals, []string{"ami-1"})
+	c.Assert(req2.Form["ImageId.2"], DeepEquals, []string{"ami-2"})
+	c.Assert(req2.Form["Owner.1"], DeepEquals, []string{"123456789999"})
+	c.Assert(req2.Form["Owner.2"], DeepEquals, []string{"id2"})
+	c.Assert(req2.Form["Filter.1.Name"], DeepEquals, []string{"key1"})
+	c.Assert(req2.Form["Filter.1.Value.1"], DeepEquals, []string{"value1"})
+	c.Assert(req2.Form["Filter.1.Value.2"], IsNil)
+	c.Assert(req2.Form["Filter.2.Name"], DeepEquals, []string{"key2"})
+	c.Assert(req2.Form["Filter.2.Value.1"], DeepEquals, []string{"value2"})
+	c.Assert(req2.Form["Filter.2.Value.2"], DeepEquals, []string{"value3"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp2.RequestId, Equals, "4a4a27a2-2e7c-475d-b35b-ca822EXAMPLE")
+	c.Assert(resp2.Images, HasLen, 1)
+
+	i1 := resp2.Images[0]
+	c.Assert(i1.Id, Equals, "ami-a2469acf")
+	c.Assert(i1.Type, Equals, "machine")
+	c.Assert(i1.Name, Equals, "example-marketplace-amzn-ami.1")
+	c.Assert(i1.Description, Equals, "Amazon Linux AMI i386 EBS")
+	c.Assert(i1.Location, Equals, "aws-marketplace/example-marketplace-amzn-ami.1")
+	c.Assert(i1.State, Equals, "available")
+	c.Assert(i1.Public, Equals, true)
+	c.Assert(i1.OwnerId, Equals, "123456789999")
+	c.Assert(i1.OwnerAlias, Equals, "aws-marketplace")
+	c.Assert(i1.Architecture, Equals, "i386")
+	c.Assert(i1.KernelId, Equals, "aki-805ea7e9")
+	c.Assert(i1.RootDeviceType, Equals, "ebs")
+	c.Assert(i1.RootDeviceName, Equals, "/dev/sda1")
+	c.Assert(i1.VirtualizationType, Equals, "paravirtual")
+	c.Assert(i1.Hypervisor, Equals, "xen")
+
+	c.Assert(i1.BlockDevices, HasLen, 1)
+	c.Assert(i1.BlockDevices[0].DeviceName, Equals, "/dev/sda1")
+	c.Assert(i1.BlockDevices[0].SnapshotId, Equals, "snap-787e9403")
+	c.Assert(i1.BlockDevices[0].VolumeSize, Equals, int64(8))
+	c.Assert(i1.BlockDevices[0].DeleteOnTermination, Equals, true)
 }
 
 func (s *S) TestImageAttributeExample(c *C) {
