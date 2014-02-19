@@ -302,12 +302,14 @@ func (s *S) TestDescribeImagesExample(c *C) {
 	filter.Add("key1", "value1")
 	filter.Add("key2", "value2", "value3")
 
-	resp, err := s.ec2.Images([]string{"ami-1", "ami-2"}, filter)
+	resp, err := s.ec2.Images([]string{"ami-1", "ami-2"}, []string{"123456789999", "id2"}, filter)
 
 	req := testServer.WaitRequest()
 	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeImages"})
 	c.Assert(req.Form["ImageId.1"], DeepEquals, []string{"ami-1"})
 	c.Assert(req.Form["ImageId.2"], DeepEquals, []string{"ami-2"})
+	c.Assert(req.Form["Owner.1"], DeepEquals, []string{"123456789999"})
+	c.Assert(req.Form["Owner.2"], DeepEquals, []string{"id2"})
 	c.Assert(req.Form["Filter.1.Name"], DeepEquals, []string{"key1"})
 	c.Assert(req.Form["Filter.1.Value.1"], DeepEquals, []string{"value1"})
 	c.Assert(req.Form["Filter.1.Value.2"], IsNil)

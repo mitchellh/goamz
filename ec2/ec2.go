@@ -890,7 +890,7 @@ func (ec2 *EC2) CreateImage(options *CreateImage) (resp *CreateImageResp, err er
 }
 
 // Images returns details about available images.
-// The ids and filter parameters, if provided, will limit the images returned.
+// The ids, owners, and filter parameters, if provided, will limit the images returned.
 // For example, to get all the private images associated with this account set
 // the boolean filter "is-public" to 0.
 // For list of filters: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeImages.html
@@ -899,11 +899,15 @@ func (ec2 *EC2) CreateImage(options *CreateImage) (resp *CreateImageResp, err er
 // a very large number of images being returned.
 //
 // See http://goo.gl/SRBhW for more details.
-func (ec2 *EC2) Images(ids []string, filter *Filter) (resp *ImagesResp, err error) {
+func (ec2 *EC2) Images(ids []string, owners []string, filter *Filter) (resp *ImagesResp, err error) {
 	params := makeParams("DescribeImages")
 	for i, id := range ids {
 		params["ImageId."+strconv.Itoa(i+1)] = id
 	}
+        for i, owner := range owners {
+                params[fmt.Sprintf("Owner.%d", i+1)] = owner
+        }
+
 	filter.addParams(params)
 
 	resp = &ImagesResp{}
