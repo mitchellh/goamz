@@ -87,6 +87,7 @@ func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err e
 			t.Wait(try)
 		}
 	}
+
 	return
 }
 
@@ -105,11 +106,6 @@ func LinearBackoff(try int) {
 func awsRetry(req *http.Request, res *http.Response, err error) bool {
 	retry := false
 
-	// Don't retry if we got a result and no error.
-	if err == nil && res != nil {
-		retry = false
-	}
-
 	// Retry if there's a temporary network error.
 	if neterr, ok := err.(net.Error); ok {
 		if neterr.Temporary() {
@@ -119,9 +115,10 @@ func awsRetry(req *http.Request, res *http.Response, err error) bool {
 
 	// Retry if we get a 5xx series error.
 	if res != nil {
-		if 500 <= res.StatusCode && res.StatusCode < 600 {
+		if res.StatusCode >= 500 && res.StatusCode < 600 {
 			retry = true
 		}
 	}
+
 	return retry
 }

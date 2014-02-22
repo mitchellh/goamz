@@ -19,6 +19,9 @@ func serveAndGet(handler http.HandlerFunc) (body string, err error) {
 	if err != nil {
 		return
 	}
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("Bad status code: %d", resp.StatusCode)
+	}
 	greeting, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
@@ -58,6 +61,24 @@ func TestClient_delay(t *testing.T) {
 	}
 	if resp != body {
 		t.Fatal("Body not as expected.", resp)
+	}
+}
+
+func TestClient_no4xxRetry(t *testing.T) {
+	tries := 0
+
+	// Fail once before succeeding.
+	_, err := serveAndGet(func(w http.ResponseWriter, r *http.Request) {
+		tries += 1
+		http.Error(w, "error", 404)
+	})
+
+	if err == nil {
+		t.Fatal("should have error")
+	}
+
+	if tries != 1 {
+		t.Fatalf("should only try once: %d", tries)
 	}
 }
 
