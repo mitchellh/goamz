@@ -42,8 +42,8 @@ var _ = Suite(&LocalServerSuite{})
 
 func (s *LocalServerSuite) SetUpSuite(c *C) {
 	s.srv.SetUp(c)
-	s.ServerTests.ec2 = ec2.New(s.srv.auth, s.srv.region)
-	s.clientTests.ec2 = ec2.New(s.srv.auth, s.srv.region)
+	s.ServerTests.ec2 = ec2.NewWithClient(s.srv.auth, s.srv.region, testutil.DefaultClient)
+	s.clientTests.ec2 = ec2.NewWithClient(s.srv.auth, s.srv.region, testutil.DefaultClient)
 }
 
 func (s *LocalServerSuite) TestRunAndTerminate(c *C) {
@@ -93,7 +93,7 @@ func (s *AmazonServerSuite) SetUpSuite(c *C) {
 		c.Skip("AmazonServerSuite tests not enabled")
 	}
 	s.srv.SetUp(c)
-	s.ServerTests.ec2 = ec2.New(s.srv.auth, aws.USEast)
+	s.ServerTests.ec2 = ec2.NewWithClient(s.srv.auth, aws.USEast, testutil.DefaultClient)
 }
 
 // ServerTests defines a set of tests designed to test

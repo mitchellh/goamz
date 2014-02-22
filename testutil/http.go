@@ -25,6 +25,12 @@ type Response struct {
 	Body    string
 }
 
+var DefaultClient = &http.Client{
+	Transport: &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+	},
+}
+
 func NewHTTPServer() *HTTPServer {
 	return &HTTPServer{URL: "http://localhost:4444", Timeout: 5 * time.Second}
 }
