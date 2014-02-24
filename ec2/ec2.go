@@ -918,6 +918,35 @@ func (ec2 *EC2) Images(ids []string, filter *Filter) (resp *ImagesResp, err erro
 	return
 }
 
+// ImagesByOwners returns details about available images.
+// The ids, owners, and filter parameters, if provided, will limit the images returned.
+// For example, to get all the private images associated with this account set
+// the boolean filter "is-public" to 0.
+// For list of filters: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeImages.html
+//
+// Note: calling this function with nil ids and filter parameters will result in
+// a very large number of images being returned.
+//
+// See http://goo.gl/SRBhW for more details.
+func (ec2 *EC2) ImagesByOwners(ids []string, owners []string, filter *Filter) (resp *ImagesResp, err error) {
+	params := makeParams("DescribeImages")
+	for i, id := range ids {
+		params["ImageId."+strconv.Itoa(i+1)] = id
+	}
+        for i, owner := range owners {
+                params[fmt.Sprintf("Owner.%d", i+1)] = owner
+        }
+
+	filter.addParams(params)
+
+	resp = &ImagesResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
 // ImageAttribute describes an attribute of an AMI.
 // You can specify only one attribute at a time.
 // Valid attributes are:
