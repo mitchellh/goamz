@@ -532,6 +532,7 @@ type Volume struct {
 	Attachments []VolumeAttachment `xml:"attachmentSet>item"`
 	VolumeType  string             `xml:"volumeType"`
 	IOPS        int64              `xml:"iops"`
+	Tags        []Tag              `xml:"tagSet>item"`
 }
 
 type VolumeAttachment struct {
@@ -933,9 +934,9 @@ func (ec2 *EC2) ImagesByOwners(ids []string, owners []string, filter *Filter) (r
 	for i, id := range ids {
 		params["ImageId."+strconv.Itoa(i+1)] = id
 	}
-        for i, owner := range owners {
-                params[fmt.Sprintf("Owner.%d", i+1)] = owner
-        }
+	for i, owner := range owners {
+		params[fmt.Sprintf("Owner.%d", i+1)] = owner
+	}
 
 	filter.addParams(params)
 
