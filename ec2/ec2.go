@@ -532,6 +532,7 @@ type Volume struct {
 	Attachments []VolumeAttachment `xml:"attachmentSet>item"`
 	VolumeType  string             `xml:"volumeType"`
 	IOPS        int64              `xml:"iops"`
+	Tags        []Tag              `xml:"tagSet>item"`
 }
 
 type VolumeAttachment struct {
