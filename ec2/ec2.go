@@ -779,6 +779,7 @@ type RegisterImage struct {
 	KernelId       string
 	RamdiskId      string
 	RootDeviceName string
+	VirtType       string
 	BlockDevices   []BlockDeviceMapping
 }
 
@@ -1045,6 +1046,10 @@ func (ec2 *EC2) RegisterImage(options *RegisterImage) (resp *RegisterImageResp, 
 
 	if options.RootDeviceName != "" {
 		params["RootDeviceName"] = options.RootDeviceName
+	}
+
+	if options.VirtType != "" {
+		params["VirtualizationType"] = options.VirtType
 	}
 
 	addBlockDeviceParams(params, options.BlockDevices)
