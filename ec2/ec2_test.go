@@ -346,6 +346,7 @@ func (s *S) TestDescribeImagesExample(c *C) {
 	c.Assert(i0.BlockDevices[0].VolumeSize, Equals, int64(8))
 	c.Assert(i0.BlockDevices[0].DeleteOnTermination, Equals, true)
 
+	testServer.Response(200, nil, DescribeImagesExample)
 	resp2, err := s.ec2.ImagesByOwners([]string{"ami-1", "ami-2"}, []string{"123456789999", "id2"}, filter)
 
 	req2 := testServer.WaitRequest()
@@ -939,6 +940,49 @@ func (s *S) TestDisassociateAddressExample(c *C) {
 	req := testServer.WaitRequest()
 	c.Assert(req.Form["Action"], DeepEquals, []string{"DisassociateAddress"})
 	c.Assert(req.Form["AssociationId"], DeepEquals, []string{"eipassoc-aa7486c3"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
+func (s *S) TestModifyInstance(c *C) {
+	testServer.Response(200, nil, ModifyInstanceExample)
+
+	options := ec2.ModifyInstance{
+		InstanceType:          "m1.small",
+		DisableAPITermination: true,
+		EbsOptimized:          true,
+		SecurityGroups:        []ec2.SecurityGroup{{Id: "g1"}, {Id: "g2"}},
+		ShutdownBehavior:      "terminate",
+		KernelId:              "kernel-id",
+		RamdiskId:             "ramdisk-id",
+		SourceDestCheck:       true,
+		SriovNetSupport:       true,
+		UserData:              []byte("1234"),
+		BlockDevices: []ec2.BlockDeviceMapping{
+			{DeviceName: "/dev/sda1", SnapshotId: "snap-a08912c9", DeleteOnTermination: true},
+		},
+	}
+
+	resp, err := s.ec2.ModifyInstance("i-2ba64342", &options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ModifyInstanceAttribute"})
+	c.Assert(req.Form["InstanceId"], DeepEquals, []string{"i-2ba64342"})
+	c.Assert(req.Form["InstanceType.Value"], DeepEquals, []string{"m1.small"})
+	c.Assert(req.Form["BlockDeviceMapping.1.DeviceName"], DeepEquals, []string{"/dev/sda1"})
+	c.Assert(req.Form["BlockDeviceMapping.1.Ebs.SnapshotId"], DeepEquals, []string{"snap-a08912c9"})
+	c.Assert(req.Form["BlockDeviceMapping.1.Ebs.DeleteOnTermination"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["DisableApiTermination.Value"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["EbsOptimized"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["GroupId.1"], DeepEquals, []string{"g1"})
+	c.Assert(req.Form["GroupId.2"], DeepEquals, []string{"g2"})
+	c.Assert(req.Form["InstanceInitiatedShutdownBehavior.Value"], DeepEquals, []string{"terminate"})
+	c.Assert(req.Form["Kernel.Value"], DeepEquals, []string{"kernel-id"})
+	c.Assert(req.Form["Ramdisk.Value"], DeepEquals, []string{"ramdisk-id"})
+	c.Assert(req.Form["SourceDestCheck.Value"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["SriovNetSupport.Value"], DeepEquals, []string{"simple"})
+	c.Assert(req.Form["UserData"], DeepEquals, []string{"MTIzNA=="})
 
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")

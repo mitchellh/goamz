@@ -532,7 +532,6 @@ type Volume struct {
 	Attachments []VolumeAttachment `xml:"attachmentSet>item"`
 	VolumeType  string             `xml:"volumeType"`
 	IOPS        int64              `xml:"iops"`
-	Tags        []Tag              `xml:"tagSet>item"`
 }
 
 type VolumeAttachment struct {
@@ -1531,4 +1530,91 @@ func (ec2 *EC2) RebootInstances(ids ...string) (resp *SimpleResp, err error) {
 		return nil, err
 	}
 	return resp, nil
+}
+
+// The ModifyInstanceAttribute request parameters.
+type ModifyInstance struct {
+	InstanceType          string
+	BlockDevices          []BlockDeviceMapping
+	DisableAPITermination bool
+	EbsOptimized          bool
+	SecurityGroups        []SecurityGroup
+	ShutdownBehavior      string
+	KernelId              string
+	RamdiskId             string
+	SourceDestCheck       bool
+	SriovNetSupport       bool
+	UserData              []byte
+}
+
+// Response to a ModifyInstanceAttribute request.
+//
+// http://goo.gl/icuXh5 for more details.
+type ModifyInstanceResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
+// ModifyImageAttribute modifies the specified attribute of the specified instance.
+// You can specify only one attribute at a time. To modify some attributes, the
+// instance must be stopped.
+//
+// See http://goo.gl/icuXh5 for more details.
+func (ec2 *EC2) ModifyInstance(instId string, options *ModifyInstance) (resp *ModifyInstanceResp, err error) {
+	params := makeParams("ModifyInstanceAttribute")
+	params["InstanceId"] = instId
+	addBlockDeviceParams(params, options.BlockDevices)
+
+	if options.InstanceType != "" {
+		params["InstanceType.Value"] = options.InstanceType
+	}
+
+	if options.DisableAPITermination {
+		params["DisableApiTermination.Value"] = "true"
+	}
+
+	if options.EbsOptimized {
+		params["EbsOptimized"] = "true"
+	}
+
+	if options.ShutdownBehavior != "" {
+		params["InstanceInitiatedShutdownBehavior.Value"] = options.ShutdownBehavior
+	}
+
+	if options.KernelId != "" {
+		params["Kernel.Value"] = options.KernelId
+	}
+
+	if options.RamdiskId != "" {
+		params["Ramdisk.Value"] = options.RamdiskId
+	}
+
+	if options.SourceDestCheck {
+		params["SourceDestCheck.Value"] = "true"
+	}
+
+	if options.SriovNetSupport {
+		params["SriovNetSupport.Value"] = "simple"
+	}
+
+	if options.UserData != nil {
+		userData := make([]byte, b64.EncodedLen(len(options.UserData)))
+		b64.Encode(userData, options.UserData)
+		params["UserData"] = string(userData)
+	}
+
+	i := 1
+	for _, g := range options.SecurityGroups {
+		if g.Id != "" {
+			params["GroupId."+strconv.Itoa(i)] = g.Id
+			i++
+		}
+	}
+
+	resp = &ModifyInstanceResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		resp = nil
+	}
+	return
 }

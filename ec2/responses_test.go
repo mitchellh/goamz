@@ -660,7 +660,7 @@ var RebootInstancesExample = `
 // http://goo.gl/9rprDN
 var AllocateAddressExample = `
 <AllocateAddressResponse xmlns="http://ec2.amazonaws.com/doc/2013-10-15/">
-   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
    <publicIp>198.51.100.1</publicIp>
    <domain>vpc</domain>
    <allocationId>eipalloc-5723d13e</allocationId>
@@ -670,7 +670,7 @@ var AllocateAddressExample = `
 // http://goo.gl/3Q0oCc
 var ReleaseAddressExample = `
 <ReleaseAddressResponse xmlns="http://ec2.amazonaws.com/doc/2013-10-15/">
-   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
    <return>true</return>
 </ReleaseAddressResponse>
 `
@@ -687,7 +687,15 @@ var AssociateAddressExample = `
 // http://goo.gl/LrOa0
 var DisassociateAddressExample = `
 <DisassociateAddressResponse xmlns="http://ec2.amazonaws.com/doc/2013-10-15/">
-   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
    <return>true</return>
 </DisassociateAddressResponse>
+`
+
+// http://goo.gl/icuXh5
+var ModifyInstanceExample = `
+<ModifyImageAttributeResponse xmlns="http://ec2.amazonaws.com/doc/2013-06-15/">
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+  <return>true</return>
+</ModifyImageAttributeResponse>
 `
