@@ -130,3 +130,22 @@ func (s *S) TestSignExampleUnicodeKeys(c *C) {
 	expected := "AWS 0PN5J17HBGZHT7JJ3X82:dxhSBHoI6eVSPcXJqEghlUzZMnY="
 	c.Assert(headers["Authorization"], DeepEquals, []string{expected})
 }
+
+// Not included in AWS documentation
+
+func (s *S) TestSignWithIAMToken(c *C) {
+	method := "GET"
+	path := "/"
+	headers := map[string][]string{
+		"Host": {"s3.amazonaws.com"},
+		"Date": {"Wed, 28 Mar 2007 01:29:59 +0000"},
+	}
+
+	authWithToken := testAuth
+	authWithToken.Token = "totallysecret"
+
+	s3.Sign(authWithToken, method, path, nil, headers)
+	expected := "AWS 0PN5J17HBGZHT7JJ3X82:SJ0yQO7NpHyXJ7zkxY+/fGQ6aUw="
+	c.Assert(headers["Authorization"], DeepEquals, []string{expected})
+	c.Assert(headers["x-amz-security-token"], DeepEquals, []string{authWithToken.Token})
+}

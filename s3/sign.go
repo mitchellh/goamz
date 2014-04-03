@@ -41,6 +41,12 @@ func sign(auth aws.Auth, method, canonicalPath string, params, headers map[strin
 	var md5, ctype, date, xamz string
 	var xamzDate bool
 	var sarray []string
+
+	// add security token
+	if auth.Token != "" {
+		headers["x-amz-security-token"] = []string{auth.Token}
+	}
+
 	for k, v := range headers {
 		k = strings.ToLower(k)
 		switch k {
