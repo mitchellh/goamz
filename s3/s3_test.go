@@ -321,3 +321,21 @@ func (s *S) TestListWithDelimiter(c *C) {
 	c.Assert(len(data.Contents), Equals, 0)
 	c.Assert(data.CommonPrefixes, DeepEquals, []string{"photos/2006/feb/", "photos/2006/jan/"})
 }
+
+func (s *S) TestGetKey(c *C) {
+	testServer.Response(200, GetKeyHeaderDump, "")
+
+	b := s.s3.Bucket("bucket")
+	key, err := b.GetKey("name")
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Method, Equals, "HEAD")
+	c.Assert(req.URL.Path, Equals, "/bucket/name")
+	c.Assert(req.Header["Date"], Not(Equals), "")
+
+	c.Assert(err, IsNil)
+	c.Assert(key.Key, Equals, "name")
+	c.Assert(key.LastModified, Equals, GetKeyHeaderDump["Last-Modified"])
+	c.Assert(key.Size, Equals, int64(434234))
+	c.Assert(key.ETag, Equals, GetKeyHeaderDump["ETag"])
+}
