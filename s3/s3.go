@@ -375,11 +375,20 @@ func (b *Bucket) GetBucketContents() (*map[string]Key, error) {
 		if err != nil {
 			return &bucket_contents, err
 		}
+		last_key := ""
 		for _, key := range contents.Contents {
 			bucket_contents[key.Key] = key
+			last_key = key.Key
 		}
 		if contents.IsTruncated {
 			marker = contents.NextMarker
+			if marker == "" {
+				// From the s3 docs: If response does not include the
+				// NextMarker and it is truncated, you can use the value of the
+				// last Key in the response as the marker in the subsequent
+				// request to get the next set of object keys.
+				marker = last_key
+			}
 		} else {
 			break
 		}
