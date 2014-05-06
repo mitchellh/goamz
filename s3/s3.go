@@ -364,10 +364,13 @@ func (b *Bucket) List(prefix, delim, marker string, max int) (result *ListResp, 
 	return result, nil
 }
 
-// Returns a mapping of all key names in this bucket to Key objects
 func (b *Bucket) GetBucketContents() (*map[string]Key, error) {
+	return GetBucketContentsWithPrefix("")
+}
+
+// Returns a mapping of all key names in this bucket to Key objects
+func (b *Bucket) GetBucketContentsWithPrefix(prefix string) (*map[string]Key, error) {
 	bucket_contents := map[string]Key{}
-	prefix := ""
 	path_separator := ""
 	marker := ""
 	for {
