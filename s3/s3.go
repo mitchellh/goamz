@@ -365,14 +365,12 @@ func (b *Bucket) List(prefix, delim, marker string, max int) (result *ListResp, 
 }
 
 func (b *Bucket) GetBucketContents() (*map[string]Key, error) {
-	return GetBucketContentsWithPrefix("")
+	return b.GetBucketContentsFiltered("", "", "")
 }
 
 // Returns a mapping of all key names in this bucket to Key objects
-func (b *Bucket) GetBucketContentsWithPrefix(prefix string) (*map[string]Key, error) {
+func (b *Bucket) GetBucketContentsFiltered(prefix, path_separator, marker string) (*map[string]Key, error) {
 	bucket_contents := map[string]Key{}
-	path_separator := ""
-	marker := ""
 	for {
 		contents, err := b.List(prefix, path_separator, marker, 1000)
 		if err != nil {
