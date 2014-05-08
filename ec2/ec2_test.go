@@ -59,11 +59,56 @@ func (s *S) TestRunInstancesErrorDump(c *C) {
 	c.Assert(ec2err.RequestId, Equals, "0503f4e9-bbd6-483c-b54f-c4ae9f3b30f4")
 }
 
+func (s *S) TestRequestSpotInstancesErrorDump(c *C) {
+	testServer.Response(400, nil, ErrorDump)
+
+	options := ec2.RequestSpotInstances{
+	    SpotPrice:    "0.01",
+		ImageId:      "ami-a6f504cf", // Ubuntu Maverick, i386, instance store
+		InstanceType: "t1.micro",     // Doesn't work with micro, results in 400.
+	}
+
+	msg := `AMIs with an instance-store root device are not supported for the instance type 't1\.micro'\.`
+
+	resp, err := s.ec2.RequestSpotInstances(&options)
+
+	testServer.WaitRequest()
+
+	c.Assert(resp, IsNil)
+	c.Assert(err, ErrorMatches, msg+` \(UnsupportedOperation\)`)
+
+	ec2err, ok := err.(*ec2.Error)
+	c.Assert(ok, Equals, true)
+	c.Assert(ec2err.StatusCode, Equals, 400)
+	c.Assert(ec2err.Code, Equals, "UnsupportedOperation")
+	c.Assert(ec2err.Message, Matches, msg)
+	c.Assert(ec2err.RequestId, Equals, "0503f4e9-bbd6-483c-b54f-c4ae9f3b30f4")
+}
+
 func (s *S) TestRunInstancesErrorWithoutXML(c *C) {
 	testServer.Responses(5, 500, nil, "")
 	options := ec2.RunInstances{ImageId: "image-id"}
 
 	resp, err := s.ec2.RunInstances(&options)
+
+	testServer.WaitRequest()
+
+	c.Assert(resp, IsNil)
+	c.Assert(err, ErrorMatches, "500 Internal Server Error")
+
+	ec2err, ok := err.(*ec2.Error)
+	c.Assert(ok, Equals, true)
+	c.Assert(ec2err.StatusCode, Equals, 500)
+	c.Assert(ec2err.Code, Equals, "")
+	c.Assert(ec2err.Message, Equals, "500 Internal Server Error")
+	c.Assert(ec2err.RequestId, Equals, "")
+}
+
+func (s *S) TestRequestSpotInstancesErrorWithoutXML(c *C) {
+	testServer.Responses(5, 500, nil, "")
+	options := ec2.RequestSpotInstances{SpotPrice: "spot-price", ImageId: "image-id"}
+
+	resp, err := s.ec2.RequestSpotInstances(&options)
 
 	testServer.WaitRequest()
 
@@ -167,6 +212,62 @@ func (s *S) TestRunInstancesExample(c *C) {
 	c.Assert(i2.Hypervisor, Equals, "xen")
 }
 
+func (s *S) TestRequestSpotInstancesExample(c *C) {
+	testServer.Response(200, nil, RequestSpotInstancesExample)
+
+	options := ec2.RequestSpotInstances{
+	    SpotPrice:             "0.5",
+		KeyName:               "my-keys",
+		ImageId:               "image-id",
+		InstanceType:          "inst-type",
+		SecurityGroups:        []ec2.SecurityGroup{{Name: "g1"}, {Id: "g2"}, {Name: "g3"}, {Id: "g4"}},
+		UserData:              []byte("1234"),
+		KernelId:              "kernel-id",
+		RamdiskId:             "ramdisk-id",
+		AvailZone:             "zone",
+		PlacementGroupName:    "group",
+		Monitoring:            true,
+		SubnetId:              "subnet-id",
+		PrivateIPAddress:      "10.0.0.25",
+		BlockDevices: []ec2.BlockDeviceMapping{
+			{DeviceName: "/dev/sdb", VirtualName: "ephemeral0"},
+			{DeviceName: "/dev/sdc", SnapshotId: "snap-a08912c9", DeleteOnTermination: true},
+		},
+	}
+	resp, err := s.ec2.RequestSpotInstances(&options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"RequestSpotInstances"})
+	c.Assert(req.Form["SpotPrice"], DeepEquals, []string{"0.5"})
+	c.Assert(req.Form["LaunchSpecification.ImageId"], DeepEquals, []string{"image-id"})
+	c.Assert(req.Form["LaunchSpecification.KeyName"], DeepEquals, []string{"my-keys"})
+	c.Assert(req.Form["LaunchSpecification.InstanceType"], DeepEquals, []string{"inst-type"})
+	c.Assert(req.Form["LaunchSpecification.SecurityGroup.1"], DeepEquals, []string{"g1"})
+	c.Assert(req.Form["LaunchSpecification.SecurityGroup.2"], DeepEquals, []string{"g3"})
+	c.Assert(req.Form["LaunchSpecification.SecurityGroupId.1"], DeepEquals, []string{"g2"})
+	c.Assert(req.Form["LaunchSpecification.SecurityGroupId.2"], DeepEquals, []string{"g4"})
+	c.Assert(req.Form["LaunchSpecification.UserData"], DeepEquals, []string{"MTIzNA=="})
+	c.Assert(req.Form["LaunchSpecification.KernelId"], DeepEquals, []string{"kernel-id"})
+	c.Assert(req.Form["LaunchSpecification.RamdiskId"], DeepEquals, []string{"ramdisk-id"})
+	c.Assert(req.Form["LaunchSpecification.Placement.AvailabilityZone"], DeepEquals, []string{"zone"})
+	c.Assert(req.Form["LaunchSpecification.Placement.GroupName"], DeepEquals, []string{"group"})
+	c.Assert(req.Form["LaunchSpecification.Monitoring.Enabled"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["LaunchSpecification.SubnetId"], DeepEquals, []string{"subnet-id"})
+	c.Assert(req.Form["LaunchSpecification.PrivateIpAddress"], DeepEquals, []string{"10.0.0.25"})
+	c.Assert(req.Form["LaunchSpecification.BlockDeviceMapping.1.DeviceName"], DeepEquals, []string{"/dev/sdb"})
+	c.Assert(req.Form["LaunchSpecification.BlockDeviceMapping.1.VirtualName"], DeepEquals, []string{"ephemeral0"})
+	c.Assert(req.Form["LaunchSpecification.BlockDeviceMapping.2.Ebs.SnapshotId"], DeepEquals, []string{"snap-a08912c9"})
+	c.Assert(req.Form["LaunchSpecification.BlockDeviceMapping.2.Ebs.DeleteOnTermination"], DeepEquals, []string{"true"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.SpotRequestResults[0].SpotRequestId, Equals, "sir-1a2b3c4d")
+	c.Assert(resp.SpotRequestResults[0].SpotPrice, Equals, "0.5")
+	c.Assert(resp.SpotRequestResults[0].State, Equals, "open")
+	c.Assert(resp.SpotRequestResults[0].SpotLaunchSpec.ImageId, Equals, "ami-1a2b3c4d")
+}
+
+
 func (s *S) TestTerminateInstancesExample(c *C) {
 	testServer.Response(200, nil, TerminateInstancesExample)
 
@@ -195,6 +296,29 @@ func (s *S) TestTerminateInstancesExample(c *C) {
 	c.Assert(resp.StateChanges[0].CurrentState.Name, Equals, "shutting-down")
 	c.Assert(resp.StateChanges[0].PreviousState.Code, Equals, 16)
 	c.Assert(resp.StateChanges[0].PreviousState.Name, Equals, "running")
+}
+
+
+func (s *S) TestDescribeSpotRequestsExample(c *C) {
+	testServer.Response(200, nil, DescribeSpotRequestsExample)
+
+	filter := ec2.NewFilter()
+	filter.Add("key1", "value1")
+	filter.Add("key2", "value2", "value3")
+
+	resp, err := s.ec2.DescribeSpotRequests([]string{"s-1", "s-2"}, filter) 
+ 
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeSpotInstanceRequests"})
+	c.Assert(req.Form["SpotInstanceRequestId.1"], DeepEquals, []string{"s-1"})
+	c.Assert(req.Form["SpotInstanceRequestId.2"], DeepEquals, []string{"s-2"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "b1719f2a-5334-4479-b2f1-26926EXAMPLE")
+	c.Assert(resp.SpotRequestResults[0].SpotRequestId, Equals, "sir-1a2b3c4d")
+	c.Assert(resp.SpotRequestResults[0].State, Equals, "active")
+	c.Assert(resp.SpotRequestResults[0].SpotPrice, Equals, "0.5")
+	c.Assert(resp.SpotRequestResults[0].SpotLaunchSpec.ImageId, Equals, "ami-1a2b3c4d")
 }
 
 func (s *S) TestDescribeInstancesExample1(c *C) {

@@ -96,6 +96,84 @@ var RunInstancesExample = `
 </RunInstancesResponse>
 `
 
+// http://goo.gl/GRZgCD
+var RequestSpotInstancesExample = `
+<RequestSpotInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2014-02-01/">
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+  <spotInstanceRequestSet>
+    <item>
+      <spotInstanceRequestId>sir-1a2b3c4d</spotInstanceRequestId>
+      <spotPrice>0.5</spotPrice>
+      <type>one-time</type>
+      <state>open</state>
+      <status>
+        <code>pending-evaluation</code>
+        <updateTime>YYYY-MM-DDTHH:MM:SS.000Z</updateTime>
+        <message>Your Spot request has been submitted for review, and is pending evaluation.</message>
+      </status>
+      <availabilityZoneGroup>MyAzGroup</availabilityZoneGroup>
+      <launchSpecification>
+        <imageId>ami-1a2b3c4d</imageId>
+        <keyName>gsg-keypair</keyName>
+        <groupSet>
+          <item>
+            <groupId>sg-1a2b3c4d</groupId>
+            <groupName>websrv</groupName>
+          </item>
+        </groupSet>
+        <instanceType>m1.small</instanceType>
+        <blockDeviceMapping/>
+        <monitoring>
+          <enabled>false</enabled>
+        </monitoring>
+        <ebsOptimized>false</ebsOptimized>
+      </launchSpecification>
+      <createTime>YYYY-MM-DDTHH:MM:SS.000Z</createTime>
+      <productDescription>Linux/UNIX</productDescription>
+    </item>
+ </spotInstanceRequestSet>
+</RequestSpotInstancesResponse>
+`
+
+// http://goo.gl/KsKJJk
+var DescribeSpotRequestsExample = `
+<DescribeSpotInstanceRequestsResponse xmlns="http://ec2.amazonaws.com/doc/2014-02-01/">
+  <requestId>b1719f2a-5334-4479-b2f1-26926EXAMPLE</requestId>
+  <spotInstanceRequestSet>
+    <item>
+      <spotInstanceRequestId>sir-1a2b3c4d</spotInstanceRequestId>
+      <spotPrice>0.5</spotPrice>
+      <type>one-time</type>
+      <state>active</state>
+      <status>
+        <code>fulfilled</code>
+        <updateTime>YYYY-MM-DDTHH:MM:SS.000Z</updateTime>
+        <message>Your Spot request is fulfilled.</message>
+      </status>
+      <launchSpecification>
+        <imageId>ami-1a2b3c4d</imageId>
+        <keyName>gsg-keypair</keyName>
+        <groupSet>
+          <item>
+            <groupId>sg-1a2b3c4d</groupId>
+            <groupName>websrv</groupName>
+          </item>
+        </groupSet>
+        <instanceType>m1.small</instanceType>
+        <monitoring>
+          <enabled>false</enabled>
+        </monitoring>
+        <ebsOptimized>false</ebsOptimized>
+      </launchSpecification>
+      <instanceId>i-1a2b3c4d</instanceId>
+      <createTime>YYYY-MM-DDTHH:MM:SS.000Z</createTime>
+      <productDescription>Linux/UNIX</productDescription>
+      <launchedAvailabilityZone>us-east-1a</launchedAvailabilityZone>
+    </item>
+  </spotInstanceRequestSet>
+</DescribeSpotInstanceRequestsResponse>
+`
+
 // http://goo.gl/3BKHj
 var TerminateInstancesExample = `
 <TerminateInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
