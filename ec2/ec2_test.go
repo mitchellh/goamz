@@ -63,7 +63,7 @@ func (s *S) TestRequestSpotInstancesErrorDump(c *C) {
 	testServer.Response(400, nil, ErrorDump)
 
 	options := ec2.RequestSpotInstances{
-	    SpotPrice:    "0.01",
+		SpotPrice:    "0.01",
 		ImageId:      "ami-a6f504cf", // Ubuntu Maverick, i386, instance store
 		InstanceType: "t1.micro",     // Doesn't work with micro, results in 400.
 	}
@@ -216,19 +216,19 @@ func (s *S) TestRequestSpotInstancesExample(c *C) {
 	testServer.Response(200, nil, RequestSpotInstancesExample)
 
 	options := ec2.RequestSpotInstances{
-	    SpotPrice:             "0.5",
-		KeyName:               "my-keys",
-		ImageId:               "image-id",
-		InstanceType:          "inst-type",
-		SecurityGroups:        []ec2.SecurityGroup{{Name: "g1"}, {Id: "g2"}, {Name: "g3"}, {Id: "g4"}},
-		UserData:              []byte("1234"),
-		KernelId:              "kernel-id",
-		RamdiskId:             "ramdisk-id",
-		AvailZone:             "zone",
-		PlacementGroupName:    "group",
-		Monitoring:            true,
-		SubnetId:              "subnet-id",
-		PrivateIPAddress:      "10.0.0.25",
+		SpotPrice:          "0.5",
+		KeyName:            "my-keys",
+		ImageId:            "image-id",
+		InstanceType:       "inst-type",
+		SecurityGroups:     []ec2.SecurityGroup{{Name: "g1"}, {Id: "g2"}, {Name: "g3"}, {Id: "g4"}},
+		UserData:           []byte("1234"),
+		KernelId:           "kernel-id",
+		RamdiskId:          "ramdisk-id",
+		AvailZone:          "zone",
+		PlacementGroupName: "group",
+		Monitoring:         true,
+		SubnetId:           "subnet-id",
+		PrivateIPAddress:   "10.0.0.25",
 		BlockDevices: []ec2.BlockDeviceMapping{
 			{DeviceName: "/dev/sdb", VirtualName: "ephemeral0"},
 			{DeviceName: "/dev/sdc", SnapshotId: "snap-a08912c9", DeleteOnTermination: true},
@@ -267,6 +267,21 @@ func (s *S) TestRequestSpotInstancesExample(c *C) {
 	c.Assert(resp.SpotRequestResults[0].SpotLaunchSpec.ImageId, Equals, "ami-1a2b3c4d")
 }
 
+func (s *S) TestCancelSpotRequestsExample(c *C) {
+	testServer.Response(200, nil, CancelSpotRequestsExample)
+
+	resp, err := s.ec2.CancelSpotRequests([]string{"s-1", "s-2"})
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CancelSpotInstanceRequests"})
+	c.Assert(req.Form["SpotInstanceRequestId.1"], DeepEquals, []string{"s-1"})
+	c.Assert(req.Form["SpotInstanceRequestId.2"], DeepEquals, []string{"s-2"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.CancelSpotRequestResults[0].SpotRequestId, Equals, "sir-1a2b3c4d")
+	c.Assert(resp.CancelSpotRequestResults[0].State, Equals, "cancelled")
+}
 
 func (s *S) TestTerminateInstancesExample(c *C) {
 	testServer.Response(200, nil, TerminateInstancesExample)
@@ -298,7 +313,6 @@ func (s *S) TestTerminateInstancesExample(c *C) {
 	c.Assert(resp.StateChanges[0].PreviousState.Name, Equals, "running")
 }
 
-
 func (s *S) TestDescribeSpotRequestsExample(c *C) {
 	testServer.Response(200, nil, DescribeSpotRequestsExample)
 
@@ -306,8 +320,8 @@ func (s *S) TestDescribeSpotRequestsExample(c *C) {
 	filter.Add("key1", "value1")
 	filter.Add("key2", "value2", "value3")
 
-	resp, err := s.ec2.DescribeSpotRequests([]string{"s-1", "s-2"}, filter) 
- 
+	resp, err := s.ec2.DescribeSpotRequests([]string{"s-1", "s-2"}, filter)
+
 	req := testServer.WaitRequest()
 	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeSpotInstanceRequests"})
 	c.Assert(req.Form["SpotInstanceRequestId.1"], DeepEquals, []string{"s-1"})
