@@ -174,6 +174,19 @@ var DescribeSpotRequestsExample = `
 </DescribeSpotInstanceRequestsResponse>
 `
 
+// http://goo.gl/DcfFgJ
+var CancelSpotRequestsExample = `
+<CancelSpotInstanceRequestsResponse xmlns="http://ec2.amazonaws.com/doc/2014-02-01/">
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+  <spotInstanceRequestSet>
+    <item>
+      <spotInstanceRequestId>sir-1a2b3c4d</spotInstanceRequestId>
+      <state>cancelled</state>
+    </item>
+  </spotInstanceRequestSet>
+</CancelSpotInstanceRequestsResponse>
+`
+
 // http://goo.gl/3BKHj
 var TerminateInstancesExample = `
 <TerminateInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">

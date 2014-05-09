@@ -418,89 +418,89 @@ func clientToken() (string, error) {
 //
 // See http://goo.gl/GRZgCD for more details.
 type RequestSpotInstances struct {
-    SpotPrice                string
-    InstanceCount            int
-    Type                     string
-    ImageId                  string
-    KeyName                  string
-    InstanceType             string
-    SecurityGroups           []SecurityGroup
-    IamInstanceProfile       string
-    KernelId                 string
-    RamdiskId                string
-    UserData                 []byte
-    AvailZone                string
-    PlacementGroupName       string
-    Monitoring               bool
-    SubnetId                 string
-    AssociatePublicIpAddress bool
-    PrivateIPAddress         string
-    BlockDevices             []BlockDeviceMapping
+	SpotPrice                string
+	InstanceCount            int
+	Type                     string
+	ImageId                  string
+	KeyName                  string
+	InstanceType             string
+	SecurityGroups           []SecurityGroup
+	IamInstanceProfile       string
+	KernelId                 string
+	RamdiskId                string
+	UserData                 []byte
+	AvailZone                string
+	PlacementGroupName       string
+	Monitoring               bool
+	SubnetId                 string
+	AssociatePublicIpAddress bool
+	PrivateIPAddress         string
+	BlockDevices             []BlockDeviceMapping
 }
 
 type SpotInstanceSpec struct {
-    ImageId                  string
-    KeyName                  string
-    InstanceType             string
-    SecurityGroups           []SecurityGroup
-    IamInstanceProfile       string
-    KernelId                 string
-    RamdiskId                string
-    UserData                 []byte
-    AvailZone                string
-    PlacementGroupName       string
-    Monitoring               bool
-    SubnetId                 string
-    AssociatePublicIpAddress bool
-    PrivateIPAddress         string
-    BlockDevices             []BlockDeviceMapping
+	ImageId                  string
+	KeyName                  string
+	InstanceType             string
+	SecurityGroups           []SecurityGroup
+	IamInstanceProfile       string
+	KernelId                 string
+	RamdiskId                string
+	UserData                 []byte
+	AvailZone                string
+	PlacementGroupName       string
+	Monitoring               bool
+	SubnetId                 string
+	AssociatePublicIpAddress bool
+	PrivateIPAddress         string
+	BlockDevices             []BlockDeviceMapping
 }
 
 type SpotLaunchSpec struct {
-    ImageId                  string                 `xml:"imageId"`
-    KeyName                  string                 `xml:"keyName"`
-    InstanceType             string                 `xml:"instanceType"`
-    SecurityGroups           []SecurityGroup        `xml:"groupSet>item"`
-    IamInstanceProfile       string                 `xml:"iamInstanceProfile"`
-    KernelId                 string                 `xml:"kernelId"`
-    RamdiskId                string                 `xml:"ramdiskId"`
-    PlacementGroupName       string                 `xml:"placement>groupName"`
-    Monitoring               bool                   `xml:"monitoring>enabled"`
-    SubnetId                 string                 `xml:"subnetId"`
-    BlockDevices             []BlockDeviceMapping   `xml:"blockDeviceMapping>item"`
+	ImageId            string               `xml:"imageId"`
+	KeyName            string               `xml:"keyName"`
+	InstanceType       string               `xml:"instanceType"`
+	SecurityGroups     []SecurityGroup      `xml:"groupSet>item"`
+	IamInstanceProfile string               `xml:"iamInstanceProfile"`
+	KernelId           string               `xml:"kernelId"`
+	RamdiskId          string               `xml:"ramdiskId"`
+	PlacementGroupName string               `xml:"placement>groupName"`
+	Monitoring         bool                 `xml:"monitoring>enabled"`
+	SubnetId           string               `xml:"subnetId"`
+	BlockDevices       []BlockDeviceMapping `xml:"blockDeviceMapping>item"`
 }
 
 type SpotRequestResult struct {
-    SpotRequestId      string           `xml:"spotInstanceRequestId"`
-    SpotPrice          string           `xml:"spotPrice"`
-    Type               string           `xml:"type"`
-    AvailZone          string           `xml:"launchedAvailabilityZone"`
-    InstanceId         string           `xml:"instanceId"`
-    State              string           `xml:"state"`
-    SpotLaunchSpec     SpotLaunchSpec   `xml:"launchSpecification"`
-    CreateTime         string           `xml:"createTime"`
-    Tags               []Tag            `xml:"tagSet>item"`
+	SpotRequestId  string         `xml:"spotInstanceRequestId"`
+	SpotPrice      string         `xml:"spotPrice"`
+	Type           string         `xml:"type"`
+	AvailZone      string         `xml:"launchedAvailabilityZone"`
+	InstanceId     string         `xml:"instanceId"`
+	State          string         `xml:"state"`
+	SpotLaunchSpec SpotLaunchSpec `xml:"launchSpecification"`
+	CreateTime     string         `xml:"createTime"`
+	Tags           []Tag          `xml:"tagSet>item"`
 }
 
 // Response to a RequestSpotInstances request.
 //
 // See http://goo.gl/GRZgCD for more details.
 type RequestSpotInstancesResp struct {
-	RequestId                   string                      `xml:"requestId"`
-	SpotRequestResults          []SpotRequestResult         `xml:"spotInstanceRequestSet>item"`
+	RequestId          string              `xml:"requestId"`
+	SpotRequestResults []SpotRequestResult `xml:"spotInstanceRequestSet>item"`
 }
 
 // RequestSpotInstances requests a new spot instances in EC2.
 func (ec2 *EC2) RequestSpotInstances(options *RequestSpotInstances) (resp *RequestSpotInstancesResp, err error) {
 	params := makeParams("RequestSpotInstances")
-    prefix := "LaunchSpecification" + "."
+	prefix := "LaunchSpecification" + "."
 
-    params["SpotPrice"] = options.SpotPrice
+	params["SpotPrice"] = options.SpotPrice
 	params[prefix+"ImageId"] = options.ImageId
 	params[prefix+"InstanceType"] = options.InstanceType
 
 	if options.InstanceCount != 0 {
-	    params["InstanceCount"] = strconv.Itoa(options.InstanceCount)
+		params["InstanceCount"] = strconv.Itoa(options.InstanceCount)
 	}
 	if options.KeyName != "" {
 		params[prefix+"KeyName"] = options.KeyName
@@ -581,8 +581,8 @@ func (ec2 *EC2) RequestSpotInstances(options *RequestSpotInstances) (resp *Reque
 //
 // See http://goo.gl/KsKJJk for more details.
 type SpotRequestsResp struct {
-	RequestId                   string                      `xml:"requestId"`
-	SpotRequestResults          []SpotRequestResult         `xml:"spotInstanceRequestSet>item"`
+	RequestId          string              `xml:"requestId"`
+	SpotRequestResults []SpotRequestResult `xml:"spotInstanceRequestSet>item"`
 }
 
 // DescribeSpotInstanceRequests returns details about spot requests in EC2.  Both parameters
@@ -595,6 +595,32 @@ func (ec2 *EC2) DescribeSpotRequests(spotrequestIds []string, filter *Filter) (r
 	addParamsList(params, "SpotInstanceRequestId", spotrequestIds)
 	filter.addParams(params)
 	resp = &SpotRequestsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Response to a CancelSpotInstanceRequests request.
+//
+// See http://goo.gl/3BKHj for more details.
+type CancelSpotRequestResult struct {
+	SpotRequestId string `xml:"spotInstanceRequestId"`
+	State         string `xml:"state"`
+}
+type CancelSpotRequestsResp struct {
+	RequestId                string                    `xml:"requestId"`
+	CancelSpotRequestResults []CancelSpotRequestResult `xml:"spotInstanceRequestSet>item"`
+}
+
+// CancelSpotRequests requests the cancellation of spot requests when the given ids.
+//
+// See http://goo.gl/3BKHj for more details.
+func (ec2 *EC2) CancelSpotRequests(spotrequestIds []string) (resp *CancelSpotRequestsResp, err error) {
+	params := makeParams("CancelSpotInstanceRequests")
+	addParamsList(params, "SpotInstanceRequestId", spotrequestIds)
+	resp = &CancelSpotRequestsResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
