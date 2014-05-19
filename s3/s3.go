@@ -94,6 +94,35 @@ const (
 	BucketOwnerFull   = ACL("bucket-owner-full-control")
 )
 
+// The ListBucketsResp type holds the results of a List buckets operation.
+type ListBucketsResp struct {
+	Buckets []Bucket `xml:">Bucket"`
+}
+
+// ListBuckets lists all buckets
+//
+// See: http://goo.gl/NqlyMN
+func (s3 *S3) ListBuckets() (result *ListBucketsResp, err error) {
+	req := &request{
+		path: "/",
+	}
+	result = &ListBucketsResp{}
+	for attempt := attempts.Start(); attempt.Next(); {
+		err = s3.query(req, result)
+		if !shouldRetry(err) {
+			break
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	// set S3 instance on buckets
+	for i := range result.Buckets {
+		result.Buckets[i].S3 = s3
+	}
+	return result, nil
+}
+
 // PutBucket creates a new bucket.
 //
 // See http://goo.gl/ndjnR for details.
@@ -544,6 +573,8 @@ func (s3 *S3) prepare(req *request) error {
 				req.baseurl = strings.Replace(req.baseurl, "${bucket}", req.bucket, -1)
 			}
 			req.signpath = "/" + req.bucket + req.signpath
+		} else {
+			req.baseurl = s3.Region.S3Endpoint
 		}
 	}
 

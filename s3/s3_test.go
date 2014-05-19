@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"testing"
 
+	"time"
+
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"github.com/mitchellh/goamz/testutil"
 	. "github.com/motain/gocheck"
-	"time"
 )
 
 func Test(t *testing.T) {
@@ -79,6 +80,22 @@ func (s *S) TestDelBucket(c *C) {
 	c.Assert(req.Method, Equals, "DELETE")
 	c.Assert(req.URL.Path, Equals, "/bucket/")
 	c.Assert(req.Header["Date"], Not(Equals), "")
+}
+
+// ListBuckets: http://goo.gl/NqlyMN
+
+func (s *S) TestListBuckets(c *C) {
+	testServer.Response(200, nil, GetListBucketsDump)
+
+	buckets, err := s.s3.ListBuckets()
+	c.Assert(err, IsNil)
+	c.Assert(len(buckets.Buckets), Equals, 2)
+	c.Assert(buckets.Buckets[0].Name, Equals, "bucket1")
+	c.Assert(buckets.Buckets[1].Name, Equals, "bucket2")
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Method, Equals, "GET")
+	c.Assert(req.URL.Path, Equals, "/")
 }
 
 // GetObject docs: http://goo.gl/isCO7
