@@ -12,6 +12,8 @@ package s3
 
 import (
 	"bytes"
+	"crypto/md5"
+	"encoding/base64"
 	"encoding/xml"
 	"fmt"
 	"github.com/mitchellh/goamz/aws"
@@ -279,6 +281,49 @@ func (b *Bucket) Del(path string) error {
 		bucket: b.Name,
 		path:   path,
 	}
+	return b.S3.query(req, nil)
+}
+
+type Object struct {
+	Key string
+}
+
+type MultiObjectDeleteBody struct {
+	XMLName xml.Name `xml:"Delete"`
+	Quiet   bool
+	Object  []Object
+}
+
+func base64md5(data []byte) string {
+	h := md5.New()
+	h.Write(data)
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
+}
+
+// MultiDel removes multiple objects from the S3 bucket efficiently.
+// A maximum of 1000 keys at once may be specified.
+//
+// See http://goo.gl/WvA5sj for details.
+func (b *Bucket) MultiDel(paths []string) error {
+	// create XML payload
+	v := MultiObjectDeleteBody{}
+	v.Object = make([]Object, len(paths))
+	for i, path := range paths {
+		v.Object[i] = Object{path}
+	}
+	data, _ := xml.Marshal(v)
+
+	// Content-MD5 is required
+	md5hash := base64md5(data)
+	req := &request{
+		method:  "POST",
+		bucket:  b.Name,
+		path:    "/",
+		params:  url.Values{"delete": {""}},
+		headers: http.Header{"Content-MD5": {md5hash}},
+		payload: bytes.NewReader(data),
+	}
+
 	return b.S3.query(req, nil)
 }
 
@@ -559,6 +604,23 @@ func (s3 *S3) prepare(req *request) error {
 			req.path = "/" + req.path
 		}
 		req.signpath = req.path
+		// signpath includes subresource, if present: "?acl", "?delete", "?location", "?logging", or "?torrent"
+		if req.params["acl"] != nil {
+			req.signpath += "?acl"
+		}
+		if req.params["delete"] != nil {
+			req.signpath += "?delete"
+		}
+		if req.params["location"] != nil {
+			req.signpath += "?location"
+		}
+		if req.params["logging"] != nil {
+			req.signpath += "?logging"
+		}
+		if req.params["torrent"] != nil {
+			req.signpath += "?torrent"
+		}
+
 		if req.bucket != "" {
 			req.baseurl = s3.Region.S3BucketEndpoint
 			if req.baseurl == "" {
