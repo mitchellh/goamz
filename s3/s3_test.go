@@ -272,6 +272,26 @@ func (s *S) TestDelObject(c *C) {
 	c.Assert(req.Header["Date"], Not(Equals), "")
 }
 
+// Delete Multiple Objects docs: http://goo.gl/WvA5sj
+
+func (s *S) TestMultiDelObject(c *C) {
+	testServer.Response(200, nil, "")
+
+	b := s.s3.Bucket("bucket")
+	err := b.MultiDel([]string{"a", "b"})
+	c.Assert(err, IsNil)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Method, Equals, "POST")
+	c.Assert(req.URL.Path, Equals, "/bucket/")
+	c.Assert(req.RequestURI, Equals, "/bucket/?delete=")
+	c.Assert(req.Header["Content-Md5"], DeepEquals, []string{"nos/vZNvjGs17xIyjEFlwQ=="})
+	data, err := ioutil.ReadAll(req.Body)
+	req.Body.Close()
+	c.Assert(err, IsNil)
+	c.Assert(string(data), Equals, "<Delete><Quiet>false</Quiet><Object><Key>a</Key></Object><Object><Key>b</Key></Object></Delete>")
+}
+
 // Bucket List Objects docs: http://goo.gl/YjQTc
 
 func (s *S) TestList(c *C) {

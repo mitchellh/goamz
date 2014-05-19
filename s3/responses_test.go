@@ -227,3 +227,15 @@ var GetListBucketsDump = `
   </Buckets>
 </ListAllMyBucketsResult>
 `
+
+var MultiDelDump = `
+<?xml version="1.0" encoding="UTF-8"?>
+<DeleteResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+  <Deleted>
+    <Key>a.go</Key>
+  </Deleted>
+  <Deleted>
+    <Key>b.go</Key>
+  </Deleted>
+</DeleteResult>
+`
