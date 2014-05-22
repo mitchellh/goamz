@@ -219,6 +219,9 @@ func addBlockDeviceParams(prename string, params map[string]string, blockdevices
 		if k.DeleteOnTermination {
 			params[prefix+"Ebs.DeleteOnTermination"] = "true"
 		}
+		if k.Encrypted {
+			params[prefix+"Ebs.Encrypted"] = "true"
+		}
 		if k.NoDevice {
 			params[prefix+"NoDevice"] = "true"
 		}
@@ -714,6 +717,7 @@ type CreateVolume struct {
 	SnapshotId string
 	VolumeType string
 	IOPS       int64
+	Encrypted  bool
 }
 
 // Response to an AttachVolume request
@@ -737,6 +741,7 @@ type CreateVolumeResp struct {
 	CreateTime string `xml:"createTime"`
 	VolumeType string `xml:"volumeType"`
 	IOPS       int64  `xml:"iops"`
+	Encrypted  bool   `xml:"encrypted"`
 }
 
 // Volume is a single volume.
@@ -749,6 +754,7 @@ type Volume struct {
 	Attachments []VolumeAttachment `xml:"attachmentSet>item"`
 	VolumeType  string             `xml:"volumeType"`
 	IOPS        int64              `xml:"iops"`
+	Encrypted   bool               `xml:"encrypted"`
 	Tags        []Tag              `xml:"tagSet>item"`
 }
 
@@ -800,6 +806,10 @@ func (ec2 *EC2) CreateVolume(options *CreateVolume) (resp *CreateVolumeResp, err
 	if options.IOPS > 0 {
 		params["Iops"] = strconv.FormatInt(options.IOPS, 10)
 	}
+
+		if options.Encrypted {
+			params["Encrypted"] = "true"
+		}
 
 	resp = &CreateVolumeResp{}
 	err = ec2.query(params, resp)
@@ -1025,6 +1035,7 @@ type BlockDeviceMapping struct {
 	VolumeType          string `xml:"ebs>volumeType"`
 	VolumeSize          int64  `xml:"ebs>volumeSize"`
 	DeleteOnTermination bool   `xml:"ebs>deleteOnTermination"`
+	Encrypted           bool   `xml:"ebs>encrypted"`
 	NoDevice            bool   `xml:"noDevice"`
 
 	// The number of I/O operations per second (IOPS) that the volume supports.
@@ -1401,6 +1412,7 @@ type Snapshot struct {
 	Progress    string `xml:"progress"`
 	OwnerId     string `xml:"ownerId"`
 	OwnerAlias  string `xml:"ownerAlias"`
+	Encrypted   bool   `xml:"encrypted"`
 	Tags        []Tag  `xml:"tagSet>item"`
 }
 
