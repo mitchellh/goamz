@@ -15,7 +15,6 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
-	"github.com/mitchellh/goamz/aws"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -24,6 +23,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/goamz/aws"
 )
 
 const debug = false
@@ -807,9 +808,9 @@ func (ec2 *EC2) CreateVolume(options *CreateVolume) (resp *CreateVolumeResp, err
 		params["Iops"] = strconv.FormatInt(options.IOPS, 10)
 	}
 
-		if options.Encrypted {
-			params["Encrypted"] = "true"
-		}
+	if options.Encrypted {
+		params["Encrypted"] = "true"
+	}
 
 	resp = &CreateVolumeResp{}
 	err = ec2.query(params, resp)
@@ -882,6 +883,7 @@ type AllocateAddressResp struct {
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-AssociateAddress.html
 type AssociateAddress struct {
 	InstanceId         string
+	PublicIp           string
 	AllocationId       string
 	AllowReassociation bool
 }
@@ -925,7 +927,12 @@ func (ec2 *EC2) ReleaseAddress(id string) (resp *SimpleResp, err error) {
 func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddressResp, err error) {
 	params := makeParams("AssociateAddress")
 	params["InstanceId"] = options.InstanceId
-	params["AllocationId"] = options.AllocationId
+	if options.PublicIp != "" {
+		params["PublicIp"] = options.PublicIp
+	}
+	if options.AllocationId != "" {
+		params["AllocationId"] = options.AllocationId
+	}
 	if options.AllowReassociation {
 		params["AllowReassociation"] = "true"
 	}
