@@ -895,6 +895,24 @@ type AssociateAddressResp struct {
 	AssociationId string `xml:"associationId"`
 }
 
+// Address represents an Elastic IP Address
+// See http://goo.gl/uxCjp7 for more details
+type Address struct {
+	PublicIp                string `xml:"publicIp"`
+	AllocationId            string `xml:"allocationId"`
+	Domain                  string `xml:"domain"`
+	InstanceId              string `xml:"instanceId"`
+	AssociationId           string `xml:"associationId"`
+	NetworkInterfaceId      string `xml:"networkInterfaceId"`
+	NetworkInterfaceOwnerId string `xml:"networkInterfaceOwnerId"`
+	PrivateIpAddress        string `xml:"privateIpAddress"`
+}
+
+type DescribeAddressesResp struct {
+	RequestId string    `xml:"requestId"`
+	Addresses []Address `xml:"addressesSet>item"`
+}
+
 // Allocate a new Elastic IP.
 func (ec2 *EC2) AllocateAddress(options *AllocateAddress) (resp *AllocateAddressResp, err error) {
 	params := makeParams("AllocateAddress")
@@ -957,6 +975,24 @@ func (ec2 *EC2) DisassociateAddress(id string) (resp *SimpleResp, err error) {
 		return nil, err
 	}
 
+	return
+}
+
+// DescribeAddresses returns details about one or more
+// Elastic IP Addresses. Returned addresses can be
+// filtered by Public IP, Allocation ID or multiple filters
+//
+// See http://goo.gl/zW7J4p for more details.
+func (ec2 *EC2) Addresses(publicIps []string, allocationIds []string, filter *Filter) (resp *DescribeAddressesResp, err error) {
+	params := makeParams("DescribeAddresses")
+	addParamsList(params, "PublicIp", publicIps)
+	addParamsList(params, "AllocationId", allocationIds)
+	filter.addParams(params)
+	resp = &DescribeAddressesResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
 	return
 }
 
