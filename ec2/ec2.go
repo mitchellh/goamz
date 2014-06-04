@@ -1043,15 +1043,16 @@ type ImageAttributeResp struct {
 
 // The RegisterImage request parameters.
 type RegisterImage struct {
-	ImageLocation  string
-	Name           string
-	Description    string
-	Architecture   string
-	KernelId       string
-	RamdiskId      string
-	RootDeviceName string
-	VirtType       string
-	BlockDevices   []BlockDeviceMapping
+	ImageLocation   string
+	Name            string
+	Description     string
+	Architecture    string
+	KernelId        string
+	RamdiskId       string
+	RootDeviceName  string
+	VirtType        string
+	SriovNetSupport string
+	BlockDevices    []BlockDeviceMapping
 }
 
 // Response to a RegisterImage request.
@@ -1322,6 +1323,10 @@ func (ec2 *EC2) RegisterImage(options *RegisterImage) (resp *RegisterImageResp, 
 
 	if options.VirtType != "" {
 		params["VirtualizationType"] = options.VirtType
+	}
+
+	if options.SriovNetSupport != "" {
+		params["SriovNetSupport"] = "simple"
 	}
 
 	addBlockDeviceParams("", params, options.BlockDevices)
