@@ -173,7 +173,6 @@ type credentials struct {
 	Expiration      string
 }
 
-
 // GetMetaData retrieves instance metadata about the current machine.
 //
 // See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html for more details.

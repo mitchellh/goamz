@@ -16,7 +16,7 @@ import (
 	"encoding/base64"
 	"encoding/xml"
 	"fmt"
-	"github.com/mitchellh/goamz/aws"
+	"github.com/wkj/goamz/aws"
 	"io"
 	"io/ioutil"
 	"log"
@@ -272,6 +272,37 @@ func (b *Bucket) PutReaderHeader(path string, r io.Reader, length int64, customH
 	return b.S3.query(req, nil)
 }
 
+/*
+PutReaderHeaderResult - like PutReaderHeader, inserts an object into S3 from a reader.
+Instead of Content-Type string, pass in custom headers to override defaults.
+*/
+func (b *Bucket) PutReaderHeaderResult(path string, r io.Reader, length int64, customHeaders map[string][]string, perm ACL) (resp_headers map[string] string, err error) {
+	// Default headers
+	headers := map[string][]string{
+		"Content-Length": {strconv.FormatInt(length, 10)},
+		"Content-Type":   {"application/text"},
+		"x-amz-acl":      {string(perm)},
+	}
+
+	// Override with custom headers
+	for key, value := range customHeaders {
+		headers[key] = value
+	}
+
+	req := &request{
+		method:  "PUT",
+		bucket:  b.Name,
+		path:    path,
+		headers: headers,
+		payload: r,
+	}
+	var http_resp *http.Response
+	if http_resp, err = b.S3.query(req, nil); err != nil {
+		return
+	}
+	resp_headers = http_resp.Headers
+	return
+}
 // Del removes an object from the S3 bucket.
 //
 // See http://goo.gl/APeTt for details.
@@ -574,6 +605,20 @@ func (s3 *S3) query(req *request, resp interface{}) error {
 	err := s3.prepare(req)
 	if err == nil {
 		var httpResponse *http.Response
+		httpResponse, err = s3.run(req, resp)
+		if resp == nil && httpResponse != nil {
+			httpResponse.Body.Close()
+		}
+	}
+	return err
+}
+
+// query prepares and runs the req request.
+// If resp is not nil, the XML data contained in the response
+// body will be unmarshalled on it.
+// body will be consumed and closed
+func (s3 *S3) query_http_response(req *request, resp interface{}) (httpResponse *http.Response, err error) {
+	if err = s3.prepare(req); err == nil {
 		httpResponse, err = s3.run(req, resp)
 		if resp == nil && httpResponse != nil {
 			httpResponse.Body.Close()
