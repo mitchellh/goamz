@@ -292,6 +292,7 @@ type Instance struct {
 	PrivateIpAddress   string        `xml:"privateIpAddress"`
 	PublicIpAddress    string        `xml:"ipAddress"`
 	Architecture       string        `xml:"architecture"`
+	LaunchTime         time.Time     `xml:"launchTime"`
 }
 
 // RunInstances starts new instances in EC2.
