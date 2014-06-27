@@ -133,3 +133,23 @@ func (s *S) TestDeregisterInstancesFromLoadBalancer(c *C) {
 	c.Assert(resp.Instances[0].InstanceId, Equals, "i-6ec63d59")
 	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
 }
+
+
+func (s *S) TestDescribeInstanceHealth(c *C) {
+	testServer.Response(200, nil, DescribeInstanceHealthExample)
+
+	options := elb.DescribeInstanceHealth{
+		LoadBalancerName: "foobar",
+	}
+
+	resp, err := s.elb.DescribeInstanceHealth(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeInstanceHealth"})
+	c.Assert(req.Form["LoadBalancerName"], DeepEquals, []string{"foobar"})
+	c.Assert(err, IsNil)
+
+	c.Assert(resp.InstanceStates[0].InstanceId, Equals, "i-90d8c2a5")
+	c.Assert(resp.InstanceStates[0].State, Equals, "InService")
+	c.Assert(resp.RequestId, Equals, "1549581b-12b7-11e3-895e-1334aEXAMPLE")
+}

@@ -102,6 +102,14 @@ type Instance struct {
 	InstanceId string `xml:"member>InstanceId"`
 }
 
+// An InstanceState from an elb health query
+type InstanceState struct {
+	InstanceId  string `xml:"member>InstanceId"`
+	Description string `xml:"member>Description"`
+	State       string `xml:"member>State"`
+	ReasonCode  string `xml:"member>ReasonCode"`
+}
+
 // An Instance attaches to an elb
 type AvailabilityZone struct {
 	AvailabilityZone string `xml:"member"`
@@ -223,8 +231,6 @@ func (elb *ELB) DescribeLoadBalancers() (resp *DescribeLoadBalancersResp, err er
 // ----------------------------------------------------------------------------
 // Instance Registration / degregistration
 
-// ----------------------------------------------------------------------------
-
 // The RegisterInstancesWithLoadBalancer request parameters
 type RegisterInstancesWithLoadBalancer struct {
 	LoadBalancerName string
@@ -277,6 +283,35 @@ func (elb *ELB) DeregisterInstancesFromLoadBalancer(options *DeregisterInstances
 	}
 
 	resp = &DeregisterInstancesFromLoadBalancerResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
+// Instance Health
+
+// The DescribeInstanceHealth request parameters
+type DescribeInstanceHealth struct {
+	LoadBalancerName string
+}
+
+type DescribeInstanceHealthResp struct {
+	InstanceStates []InstanceState `xml:"DescribeInstanceHealthResult>InstanceStates"`
+	RequestId      string          `xml:"ResponseMetadata>RequestId"`
+}
+
+func (elb *ELB) DescribeInstanceHealth(options *DescribeInstanceHealth) (resp *DescribeInstanceHealthResp, err error) {
+	params := makeParams("DescribeInstanceHealth")
+
+	params["LoadBalancerName"] = options.LoadBalancerName
+
+	resp = &DescribeInstanceHealthResp{}
 
 	err = elb.query(params, resp)
 

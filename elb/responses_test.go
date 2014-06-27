@@ -118,3 +118,21 @@ var DeregisterInstancesFromLoadBalancerExample = `
 </ResponseMetadata>
 </DeregisterInstancesFromLoadBalancerResponse>
 `
+
+// http://goo.gl/cGNxfj
+var DescribeInstanceHealthExample = `
+<DescribeInstanceHealthResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2012-06-01/">
+  <DescribeInstanceHealthResult>
+    <InstanceStates>
+      <member>
+        <Description>N/A</Description>
+        <InstanceId>i-90d8c2a5</InstanceId>
+        <State>InService</State>
+        <ReasonCode>N/A</ReasonCode>
+      </member>
+    </InstanceStates>
+  </DescribeInstanceHealthResult>
+  <ResponseMetadata>
+    <RequestId>1549581b-12b7-11e3-895e-1334aEXAMPLE</RequestId>
+  </ResponseMetadata>
+</DescribeInstanceHealthResponse>`
