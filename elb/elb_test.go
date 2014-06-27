@@ -56,3 +56,19 @@ func (s *S) TestCreateLoadBalancer(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "1549581b-12b7-11e3-895e-1334aEXAMPLE")
 }
+
+func (s *S) TestDeleteLoadBalancer(c *C) {
+	testServer.Response(200, nil, DeleteLoadBalancerExample)
+
+	options := elb.DeleteLoadBalancer{
+		LoadBalancerName: "foobar",
+	}
+
+	resp, err := s.elb.DeleteLoadBalancer(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteLoadBalancer"})
+	c.Assert(req.Form["LoadBalancerName"], DeepEquals, []string{"foobar"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "1549581b-12b7-11e3-895e-1334aEXAMPLE")
+}

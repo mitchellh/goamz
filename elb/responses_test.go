@@ -18,3 +18,12 @@ var CreateLoadBalancerExample = `
   </ResponseMetadata>
 </CreateLoadBalancerResponse>
 `
+
+// http://goo.gl/GLZeBN
+var DeleteLoadBalancerExample = `
+<DeleteLoadBalancerResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2012-06-01/">
+  <ResponseMetadata>
+    <RequestId>1549581b-12b7-11e3-895e-1334aEXAMPLE</RequestId>
+  </ResponseMetadata>
+</DeleteLoadBalancerResponse>
+`

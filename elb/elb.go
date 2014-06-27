@@ -152,6 +152,30 @@ func (elb *ELB) CreateLoadBalancer(options *CreateLoadBalancer) (resp *CreateLoa
 }
 
 // ----------------------------------------------------------------------------
+// Destroy
+
+// The DestroyLoadBalancer request parameters
+type DeleteLoadBalancer struct {
+	LoadBalancerName string
+}
+
+func (elb *ELB) DeleteLoadBalancer(options *DeleteLoadBalancer) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteLoadBalancer")
+
+	params["LoadBalancerName"] = options.LoadBalancerName
+
+	resp = &SimpleResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Responses
 
 type SimpleResp struct {
