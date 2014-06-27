@@ -86,3 +86,35 @@ var DescribeLoadBalancersExample = `
   </ResponseMetadata>
 </DescribeLoadBalancersResponse>
 `
+
+// http://goo.gl/Uz1N66
+var RegisterInstancesWithLoadBalancerExample = `
+<RegisterInstancesWithLoadBalancerResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2012-06-01/">
+  <RegisterInstancesWithLoadBalancerResult>
+    <Instances>
+      <member>
+        <InstanceId>i-315b7e51</InstanceId>
+      </member>
+    </Instances>
+  </RegisterInstancesWithLoadBalancerResult>
+<ResponseMetadata>
+    <RequestId>83c88b9d-12b7-11e3-8b82-87b12EXAMPLE</RequestId>
+</ResponseMetadata>
+</RegisterInstancesWithLoadBalancerResponse>
+ `
+
+// http://goo.gl/5OMv62
+var DeregisterInstancesFromLoadBalancerExample = `
+<DeregisterInstancesFromLoadBalancerResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2012-06-01/">
+  <DeregisterInstancesFromLoadBalancerResult>
+    <Instances>
+      <member>
+        <InstanceId>i-6ec63d59</InstanceId>
+      </member>
+    </Instances>
+  </DeregisterInstancesFromLoadBalancerResult>
+<ResponseMetadata>
+    <RequestId>83c88b9d-12b7-11e3-8b82-87b12EXAMPLE</RequestId>
+</ResponseMetadata>
+</DeregisterInstancesFromLoadBalancerResponse>
+`

@@ -131,15 +131,15 @@ func (elb *ELB) CreateLoadBalancer(options *CreateLoadBalancer) (resp *CreateLoa
 	params["LoadBalancerName"] = options.LoadBalancerName
 
 	for i, v := range options.SecurityGroups {
-		params["AvailabilityZones.member."+strconv.Itoa(i)] = v
+		params["AvailabilityZones.member."+strconv.Itoa(i+1)] = v
 	}
 
 	for i, v := range options.AvailZone {
-		params["SecurityGroups.member."+strconv.Itoa(i)] = v
+		params["SecurityGroups.member."+strconv.Itoa(i+1)] = v
 	}
 
 	for i, v := range options.Subnets {
-		params["Subnets.member."+strconv.Itoa(i)] = v
+		params["Subnets.member."+strconv.Itoa(i+1)] = v
 	}
 
 	for i, v := range options.Listeners {
@@ -221,6 +221,72 @@ func (elb *ELB) DescribeLoadBalancers() (resp *DescribeLoadBalancersResp, err er
 }
 
 // ----------------------------------------------------------------------------
+// Instance Registration / degregistration
+
+// ----------------------------------------------------------------------------
+
+// The RegisterInstancesWithLoadBalancer request parameters
+type RegisterInstancesWithLoadBalancer struct {
+	LoadBalancerName string
+	Instances        []string
+}
+
+type RegisterInstancesWithLoadBalancerResp struct {
+	Instances []Instance `xml:"RegisterInstancesWithLoadBalancerResult>Instances"`
+	RequestId string     `xml:"ResponseMetadata>RequestId"`
+}
+
+func (elb *ELB) RegisterInstancesWithLoadBalancer(options *RegisterInstancesWithLoadBalancer) (resp *RegisterInstancesWithLoadBalancerResp, err error) {
+	params := makeParams("RegisterInstancesWithLoadBalancer")
+
+	params["LoadBalancerName"] = options.LoadBalancerName
+
+	for i, v := range options.Instances {
+		params["Instances.member."+strconv.Itoa(i+1)+".InstanceId"] = v
+	}
+
+	resp = &RegisterInstancesWithLoadBalancerResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// The DeregisterInstancesFromLoadBalancer request parameters
+type DeregisterInstancesFromLoadBalancer struct {
+	LoadBalancerName string
+	Instances        []string
+}
+
+type DeregisterInstancesFromLoadBalancerResp struct {
+	Instances []Instance `xml:"DeregisterInstancesFromLoadBalancerResult>Instances"`
+	RequestId string     `xml:"ResponseMetadata>RequestId"`
+}
+
+func (elb *ELB) DeregisterInstancesFromLoadBalancer(options *DeregisterInstancesFromLoadBalancer) (resp *DeregisterInstancesFromLoadBalancerResp, err error) {
+	params := makeParams("DeregisterInstancesFromLoadBalancer")
+
+	params["LoadBalancerName"] = options.LoadBalancerName
+
+	for i, v := range options.Instances {
+		params["Instances.member."+strconv.Itoa(i+1)+".InstanceId"] = v
+	}
+
+	resp = &DeregisterInstancesFromLoadBalancerResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Responses
 
 type SimpleResp struct {

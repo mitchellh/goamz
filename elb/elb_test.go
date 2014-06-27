@@ -89,3 +89,47 @@ func (s *S) TestDescribeLoadBalancers(c *C) {
 	c.Assert(resp.LoadBalancers[0].Scheme, Equals, "internet-facing")
 	c.Assert(resp.LoadBalancers[0].DNSName, Equals, "MyLoadBalancer-123456789.us-east-1.elb.amazonaws.com")
 }
+
+
+func (s *S) TestRegisterInstancesWithLoadBalancer(c *C) {
+	testServer.Response(200, nil, RegisterInstancesWithLoadBalancerExample)
+
+	options := elb.RegisterInstancesWithLoadBalancer{
+		LoadBalancerName: "foobar",
+		Instances:          []string{"instance-1", "instance-2"},
+	}
+
+	resp, err := s.elb.RegisterInstancesWithLoadBalancer(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"RegisterInstancesWithLoadBalancer"})
+	c.Assert(req.Form["LoadBalancerName"], DeepEquals, []string{"foobar"})
+	c.Assert(req.Form["Instances.member.1.InstanceId"], DeepEquals, []string{"instance-1"})
+	c.Assert(req.Form["Instances.member.2.InstanceId"], DeepEquals, []string{"instance-2"})
+	c.Assert(err, IsNil)
+
+	c.Assert(resp.Instances[0].InstanceId, Equals, "i-315b7e51")
+	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
+}
+
+
+func (s *S) TestDeregisterInstancesFromLoadBalancer(c *C) {
+	testServer.Response(200, nil, DeregisterInstancesFromLoadBalancerExample)
+
+	options := elb.DeregisterInstancesFromLoadBalancer{
+		LoadBalancerName: "foobar",
+		Instances:          []string{"instance-1", "instance-2"},
+	}
+
+	resp, err := s.elb.DeregisterInstancesFromLoadBalancer(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeregisterInstancesFromLoadBalancer"})
+	c.Assert(req.Form["LoadBalancerName"], DeepEquals, []string{"foobar"})
+	c.Assert(req.Form["Instances.member.1.InstanceId"], DeepEquals, []string{"instance-1"})
+	c.Assert(req.Form["Instances.member.2.InstanceId"], DeepEquals, []string{"instance-2"})
+	c.Assert(err, IsNil)
+
+	c.Assert(resp.Instances[0].InstanceId, Equals, "i-6ec63d59")
+	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
+}
