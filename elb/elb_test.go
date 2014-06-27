@@ -72,3 +72,20 @@ func (s *S) TestDeleteLoadBalancer(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "1549581b-12b7-11e3-895e-1334aEXAMPLE")
 }
+
+func (s *S) TestDescribeLoadBalancers(c *C) {
+	testServer.Response(200, nil, DescribeLoadBalancersExample)
+
+	resp, err := s.elb.DescribeLoadBalancers()
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeLoadBalancers"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
+	c.Assert(resp.LoadBalancers[0].LoadBalancerName, Equals, "MyLoadBalancer")
+	c.Assert(resp.LoadBalancers[0].Listeners[0].Protocol, Equals, "HTTP")
+	c.Assert(resp.LoadBalancers[0].Instances[0].InstanceId, Equals, "i-e4cbe38d")
+	c.Assert(resp.LoadBalancers[0].AvailabilityZones[0].AvailabilityZone, Equals, "us-east-1a")
+	c.Assert(resp.LoadBalancers[0].Scheme, Equals, "internet-facing")
+	c.Assert(resp.LoadBalancers[0].DNSName, Equals, "MyLoadBalancer-123456789.us-east-1.elb.amazonaws.com")
+}

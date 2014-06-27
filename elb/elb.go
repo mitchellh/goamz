@@ -87,15 +87,28 @@ func makeParams(action string) map[string]string {
 }
 
 // ----------------------------------------------------------------------------
-// Create
+// ELB objects
 
 // A listener attaches to an elb
 type Listener struct {
-	InstancePort     int64  `xml:"instancePort"`
-	InstanceProtocol string `xml:"instanceProtocol"`
-	LoadBalancerPort int64  `xml:"loadBalancerPort"`
-	Protocol         string `xml:"protocol"`
+	InstancePort     int64  `xml:"member>Listener>InstancePort"`
+	InstanceProtocol string `xml:"member>Listener>InstanceProtocol"`
+	LoadBalancerPort int64  `xml:"member>Listener>LoadBalancerPort"`
+	Protocol         string `xml:"member>Listener>Protocol"`
 }
+
+// An Instance attaches to an elb
+type Instance struct {
+	InstanceId string `xml:"member>InstanceId"`
+}
+
+// An Instance attaches to an elb
+type AvailabilityZone struct {
+	AvailabilityZone string `xml:"member"`
+}
+
+// ----------------------------------------------------------------------------
+// Create
 
 // The CreateLoadBalancer request parameters
 type CreateLoadBalancer struct {
@@ -165,6 +178,38 @@ func (elb *ELB) DeleteLoadBalancer(options *DeleteLoadBalancer) (resp *SimpleRes
 	params["LoadBalancerName"] = options.LoadBalancerName
 
 	resp = &SimpleResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
+// Describe
+
+// An individual load balancer
+type LoadBalancer struct {
+	LoadBalancerName  string             `xml:"member>LoadBalancerName"`
+	Listeners         []Listener         `xml:"member>ListenerDescriptions"`
+	Instances         []Instance         `xml:"member>Instances"`
+	AvailabilityZones []AvailabilityZone `xml:"member>AvailabilityZones"`
+	Scheme            string             `xml:"member>Scheme"`
+	DNSName           string             `xml:"member>DNSName"`
+}
+
+type DescribeLoadBalancersResp struct {
+	RequestId     string         `xml:"ResponseMetadata>RequestId"`
+	LoadBalancers []LoadBalancer `xml:"DescribeLoadBalancersResult>LoadBalancerDescriptions"`
+}
+
+func (elb *ELB) DescribeLoadBalancers() (resp *DescribeLoadBalancersResp, err error) {
+	params := makeParams("DescribeLoadBalancers")
+
+	resp = &DescribeLoadBalancersResp{}
 
 	err = elb.query(params, resp)
 

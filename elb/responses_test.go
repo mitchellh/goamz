@@ -27,3 +27,62 @@ var DeleteLoadBalancerExample = `
   </ResponseMetadata>
 </DeleteLoadBalancerResponse>
 `
+
+// http://goo.gl/8UgpQ8
+var DescribeLoadBalancersExample = `
+<DescribeLoadBalancersResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2012-06-01/">
+  <DescribeLoadBalancersResult>
+      <LoadBalancerDescriptions>
+        <member>
+          <SecurityGroups/>
+          <LoadBalancerName>MyLoadBalancer</LoadBalancerName>
+          <CreatedTime>2013-05-24T21:15:31.280Z</CreatedTime>
+          <HealthCheck>
+            <Interval>90</Interval>
+            <Target>HTTP:80/</Target>
+            <HealthyThreshold>2</HealthyThreshold>
+            <Timeout>60</Timeout>
+            <UnhealthyThreshold>10</UnhealthyThreshold>
+          </HealthCheck>
+          <ListenerDescriptions>
+            <member>
+              <PolicyNames/>
+              <Listener>
+                <Protocol>HTTP</Protocol>
+                <LoadBalancerPort>80</LoadBalancerPort>
+                <InstanceProtocol>HTTP</InstanceProtocol>
+                <InstancePort>80</InstancePort>
+              </Listener>
+            </member>
+          </ListenerDescriptions>
+          <Instances>
+            <member>
+              <InstanceId>i-e4cbe38d</InstanceId>
+            </member>
+          </Instances>
+          <Policies>
+            <AppCookieStickinessPolicies/>
+            <OtherPolicies/>
+            <LBCookieStickinessPolicies/>
+          </Policies>
+          <AvailabilityZones>
+            <member>us-east-1a</member>
+          </AvailabilityZones>
+          <CanonicalHostedZoneNameID>ZZZZZZZZZZZ123X</CanonicalHostedZoneNameID>
+          <CanonicalHostedZoneName>MyLoadBalancer-123456789.us-east-1.elb.amazonaws.com</CanonicalHostedZoneName>
+          <Scheme>internet-facing</Scheme>
+          <SourceSecurityGroup>
+            <OwnerAlias>amazon-elb</OwnerAlias>
+            <GroupName>amazon-elb-sg</GroupName>
+          </SourceSecurityGroup>
+          <DNSName>MyLoadBalancer-123456789.us-east-1.elb.amazonaws.com</DNSName>
+          <BackendServerDescriptions/>
+          <Subnets/>
+        </member>
+      </LoadBalancerDescriptions>
+    </DescribeLoadBalancersResult>
+  <ResponseMetadata>
+      <RequestId>83c88b9d-12b7-11e3-8b82-87b12EXAMPLE</RequestId>
+  </ResponseMetadata>
+</DescribeLoadBalancersResponse>
+`
