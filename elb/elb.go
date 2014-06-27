@@ -33,7 +33,7 @@ func (elb *ELB) query(params map[string]string, resp interface{}) error {
 	params["Version"] = APIVersion
 	params["Timestamp"] = time.Now().In(time.UTC).Format(time.RFC3339)
 
-	endpoint, err := url.Parse(elb.ELBEndpoint)
+	endpoint, err := url.Parse(elb.Region.ELBEndpoint)
 	if err != nil {
 		return err
 	}
