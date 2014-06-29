@@ -12,6 +12,7 @@ package ec2
 
 import (
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
@@ -1487,11 +1488,27 @@ func (ec2 *EC2) Snapshots(ids []string, filter *Filter) (resp *SnapshotsResp, er
 // ----------------------------------------------------------------------------
 // KeyPair management functions and types.
 
+type KeyPair struct {
+	Name        string `xml:"keyName"`
+	Fingerprint string `xml:"keyFingerprint"`
+}
+
+type KeyPairsResp struct {
+	RequestId string	`xml:"requestId"`
+	Keys      []KeyPair     `xml:"keySet>item"`
+}
+
 type CreateKeyPairResp struct {
 	RequestId      string `xml:"requestId"`
 	KeyName        string `xml:"keyName"`
 	KeyFingerprint string `xml:"keyFingerprint"`
 	KeyMaterial    string `xml:"keyMaterial"`
+}
+
+type ImportKeyPairResponse struct {
+	RequestId      string `xml:"requestId"`
+	KeyName        string `xml:"keyName"`
+	KeyFingerprint string `xml:"keyFingerprint"`
 }
 
 // CreateKeyPair creates a new key pair and returns the private key contents.
@@ -1520,6 +1537,46 @@ func (ec2 *EC2) DeleteKeyPair(name string) (resp *SimpleResp, err error) {
 	err = ec2.query(params, resp)
 	return
 }
+
+// KeyPairs returns list of key pairs for this account
+//
+// See http://goo.gl/Apzsfz
+func (ec2 *EC2) KeyPairs(keynames []string, filter *Filter) (resp *KeyPairsResp, err error) {
+	params := makeParams("DescribeKeyPairs")
+	for i, name := range keynames {
+		params["KeyName." + strconv.Itoa(i)] = name
+	}
+	filter.addParams(params)
+
+	resp = &KeyPairsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// ImportKeyPair imports a key into AWS
+//
+// See http://goo.gl/NbZUvw
+func (ec2 *EC2) ImportKeyPair(keyname string, key string) (resp *ImportKeyPairResponse, err error) {
+	params := makeParams("ImportKeyPair")
+	params["KeyName"] = keyname
+
+	// Oddly, AWS requires the key material to be base64-encoded, even if it was
+	// already encoded. So, we force another round of encoding...
+	// c.f. https://groups.google.com/forum/?fromgroups#!topic/boto-dev/IczrStO9Q8M
+	params["PublicKeyMaterial"] = base64.StdEncoding.EncodeToString([]byte(key))
+
+	resp = &ImportKeyPairResponse{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 
 // ----------------------------------------------------------------------------
 // Security group management functions and types.
