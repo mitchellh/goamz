@@ -211,7 +211,7 @@ type LoadBalancer struct {
 
 // DescribeLoadBalancer request params
 type DescribeLoadBalancer struct {
-	DNSNames []string
+	Names []string
 }
 
 type DescribeLoadBalancersResp struct {
@@ -222,7 +222,7 @@ type DescribeLoadBalancersResp struct {
 func (elb *ELB) DescribeLoadBalancers(options *DescribeLoadBalancer) (resp *DescribeLoadBalancersResp, err error) {
 	params := makeParams("DescribeLoadBalancers")
 
-	for i, v := range options.DNSNames {
+	for i, v := range options.Names {
 		params["LoadBalancerNames.member."+strconv.Itoa(i+1)] = v
 	}
 

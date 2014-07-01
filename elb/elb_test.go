@@ -77,7 +77,7 @@ func (s *S) TestDescribeLoadBalancers(c *C) {
 	testServer.Response(200, nil, DescribeLoadBalancersExample)
 
 	options := elb.DescribeLoadBalancer{
-		DNSNames: []string{"foobar"},
+		Names: []string{"foobar"},
 	}
 
 	resp, err := s.elb.DescribeLoadBalancers(&options)
