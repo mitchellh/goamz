@@ -76,7 +76,11 @@ func (s *S) TestDeleteLoadBalancer(c *C) {
 func (s *S) TestDescribeLoadBalancers(c *C) {
 	testServer.Response(200, nil, DescribeLoadBalancersExample)
 
-	resp, err := s.elb.DescribeLoadBalancers()
+	options := elb.DescribeLoadBalancer{
+		DNSNames: []string{"foobar"},
+	}
+
+	resp, err := s.elb.DescribeLoadBalancers(&options)
 	req := testServer.WaitRequest()
 
 	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeLoadBalancers"})
@@ -90,13 +94,12 @@ func (s *S) TestDescribeLoadBalancers(c *C) {
 	c.Assert(resp.LoadBalancers[0].DNSName, Equals, "MyLoadBalancer-123456789.us-east-1.elb.amazonaws.com")
 }
 
-
 func (s *S) TestRegisterInstancesWithLoadBalancer(c *C) {
 	testServer.Response(200, nil, RegisterInstancesWithLoadBalancerExample)
 
 	options := elb.RegisterInstancesWithLoadBalancer{
 		LoadBalancerName: "foobar",
-		Instances:          []string{"instance-1", "instance-2"},
+		Instances:        []string{"instance-1", "instance-2"},
 	}
 
 	resp, err := s.elb.RegisterInstancesWithLoadBalancer(&options)
@@ -112,13 +115,12 @@ func (s *S) TestRegisterInstancesWithLoadBalancer(c *C) {
 	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
 }
 
-
 func (s *S) TestDeregisterInstancesFromLoadBalancer(c *C) {
 	testServer.Response(200, nil, DeregisterInstancesFromLoadBalancerExample)
 
 	options := elb.DeregisterInstancesFromLoadBalancer{
 		LoadBalancerName: "foobar",
-		Instances:          []string{"instance-1", "instance-2"},
+		Instances:        []string{"instance-1", "instance-2"},
 	}
 
 	resp, err := s.elb.DeregisterInstancesFromLoadBalancer(&options)
@@ -133,7 +135,6 @@ func (s *S) TestDeregisterInstancesFromLoadBalancer(c *C) {
 	c.Assert(resp.Instances[0].InstanceId, Equals, "i-6ec63d59")
 	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
 }
-
 
 func (s *S) TestDescribeInstanceHealth(c *C) {
 	testServer.Response(200, nil, DescribeInstanceHealthExample)

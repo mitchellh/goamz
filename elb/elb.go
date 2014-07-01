@@ -209,13 +209,22 @@ type LoadBalancer struct {
 	DNSName           string             `xml:"member>DNSName"`
 }
 
+// DescribeLoadBalancer request params
+type DescribeLoadBalancer struct {
+	DNSNames []string
+}
+
 type DescribeLoadBalancersResp struct {
 	RequestId     string         `xml:"ResponseMetadata>RequestId"`
 	LoadBalancers []LoadBalancer `xml:"DescribeLoadBalancersResult>LoadBalancerDescriptions"`
 }
 
-func (elb *ELB) DescribeLoadBalancers() (resp *DescribeLoadBalancersResp, err error) {
+func (elb *ELB) DescribeLoadBalancers(options *DescribeLoadBalancer) (resp *DescribeLoadBalancersResp, err error) {
 	params := makeParams("DescribeLoadBalancers")
+
+	for i, v := range options.DNSNames {
+		params["LoadBalancerNames.member."+strconv.Itoa(i+1)] = v
+	}
 
 	resp = &DescribeLoadBalancersResp{}
 
