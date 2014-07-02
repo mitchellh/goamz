@@ -151,10 +151,10 @@ func (elb *ELB) CreateLoadBalancer(options *CreateLoadBalancer) (resp *CreateLoa
 	}
 
 	for i, v := range options.Listeners {
-		params["Subnets.member."+strconv.Itoa(i+1)+".LoadBalancerPort"] = strconv.FormatInt(v.LoadBalancerPort, 10)
-		params["Subnets.member."+strconv.Itoa(i+1)+".InstancePort"] = strconv.FormatInt(v.InstancePort, 10)
-		params["Subnets.member."+strconv.Itoa(i+1)+".Protocol"] = v.Protocol
-		params["Subnets.member."+strconv.Itoa(i+1)+".InstanceProtocol"] = v.InstanceProtocol
+		params["Listeners.member."+strconv.Itoa(i+1)+".LoadBalancerPort"] = strconv.FormatInt(v.LoadBalancerPort, 10)
+		params["Listeners.member."+strconv.Itoa(i+1)+".InstancePort"] = strconv.FormatInt(v.InstancePort, 10)
+		params["Listeners.member."+strconv.Itoa(i+1)+".Protocol"] = v.Protocol
+		params["Listeners.member."+strconv.Itoa(i+1)+".InstanceProtocol"] = v.InstanceProtocol
 	}
 
 	if options.Internal {
