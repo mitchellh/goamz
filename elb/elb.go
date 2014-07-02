@@ -138,11 +138,11 @@ func (elb *ELB) CreateLoadBalancer(options *CreateLoadBalancer) (resp *CreateLoa
 
 	params["LoadBalancerName"] = options.LoadBalancerName
 
-	for i, v := range options.SecurityGroups {
+	for i, v := range options.AvailZone {
 		params["AvailabilityZones.member."+strconv.Itoa(i+1)] = v
 	}
 
-	for i, v := range options.AvailZone {
+	for i, v := range options.SecurityGroups {
 		params["SecurityGroups.member."+strconv.Itoa(i+1)] = v
 	}
 
