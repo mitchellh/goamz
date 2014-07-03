@@ -2449,3 +2449,27 @@ func (ec2 *EC2) ReplaceRoute(options *ReplaceRoute) (resp *SimpleResp, err error
 	}
 	return
 }
+
+// The ResetImageAttribute request parameters.
+type ResetImageAttribute struct {
+	Attribute string
+}
+
+// ResetImageAttribute resets an attribute of an AMI to its default value.
+//
+// http://goo.gl/r6ZCPm for more details.
+func (ec2 *EC2) ResetImageAttribute(imageId string, options *ResetImageAttribute) (resp *SimpleResp, err error) {
+	params := makeParams("ResetImageAttribute")
+	params["ImageId"] = imageId
+
+	if options.Attribute != "" {
+		params["Attribute"] = options.Attribute
+	}
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
