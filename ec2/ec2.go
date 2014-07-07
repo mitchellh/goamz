@@ -2004,3 +2004,16 @@ func (ec2 *EC2) CreateVpc(options *CreateVpc) (resp *CreateVpcResp, err error) {
 
 	return
 }
+
+// Delete a VPC.
+func (ec2 *EC2) DeleteVpc(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteVpc")
+	params["VpcId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
