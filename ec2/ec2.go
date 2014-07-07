@@ -2002,6 +2002,12 @@ type CreateSubnetResp struct {
 	Subnet    Subnet `xml:"subnet"`
 }
 
+// Response to a DescribeInternetGateways request.
+type InternetGatewaysResp struct {
+	RequestId        string            `xml:"requestId"`
+	InternetGateways []InternetGateway `xml:"internetGatewaySet>item"`
+}
+
 // Response to a DescribeVpcs request.
 type VpcsResp struct {
 	RequestId string `xml:"requestId"`
@@ -2149,6 +2155,64 @@ func (ec2 *EC2) CreateInternetGateway(
 	params := makeParams("CreateInternetGateway")
 
 	resp = &CreateInternetGatewayResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Attach an InternetGateway.
+func (ec2 *EC2) AttachInternetGateway(id, vpcId string) (resp *SimpleResp, err error) {
+	params := makeParams("AttachInternetGateway")
+	params["InternetGatewayId"] = id
+	params["VpcId"] = vpcId
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Detach an InternetGateway.
+func (ec2 *EC2) DetachInternetGateway(id, vpcId string) (resp *SimpleResp, err error) {
+	params := makeParams("DetachInternetGateway")
+	params["InternetGatewayId"] = id
+	params["VpcId"] = vpcId
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Delete an InternetGateway.
+func (ec2 *EC2) DeleteInternetGateway(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteInternetGateway")
+	params["InternetGatewayId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// DescribeInternetGateways
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeInternetGateways.html
+func (ec2 *EC2) DescribeInternetGateways(ids []string, filter *Filter) (resp *InternetGatewaysResp, err error) {
+	params := makeParams("DescribeInternetGateways")
+	addParamsList(params, "InternetGatewayId", ids)
+	filter.addParams(params)
+
+	resp = &InternetGatewaysResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
