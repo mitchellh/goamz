@@ -1171,3 +1171,28 @@ func (s *S) TestDescribeVpcs(c *C) {
 	c.Assert(resp.RequestId, Equals, "7a62c49f-347e-4fc4-9331-6e8eEXAMPLE")
 	c.Assert(resp.VPCs, HasLen, 1)
 }
+
+func (s *S) TestCreateSubnet(c *C) {
+	testServer.Response(200, nil, CreateSubnetExample)
+
+	options := &ec2.CreateSubnet{
+		AvailabilityZone: "baz",
+		CidrBlock:        "foo",
+		VpcId:            "bar",
+	}
+
+	resp, err := s.ec2.CreateSubnet(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["VpcId"], DeepEquals, []string{"bar"})
+	c.Assert(req.Form["CidrBlock"], DeepEquals, []string{"foo"})
+	c.Assert(req.Form["AvailabilityZone"], DeepEquals, []string{"baz"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7a62c49f-347e-4fc4-9331-6e8eEXAMPLE")
+	c.Assert(resp.Subnet.SubnetId, Equals, "subnet-9d4a7b6c")
+	c.Assert(resp.Subnet.State, Equals, "pending")
+	c.Assert(resp.Subnet.VpcId, Equals, "vpc-1a2b3c4d")
+	c.Assert(resp.Subnet.CidrBlock, Equals, "10.0.1.0/24")
+	c.Assert(resp.Subnet.AvailableIpAddressCount, Equals, 251)
+}

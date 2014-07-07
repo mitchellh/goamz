@@ -1976,6 +1976,21 @@ type CreateVpcResp struct {
 	VPC       VPC    `xml:"vpc"`
 }
 
+// The CreateSubnet request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateSubnet.html
+type CreateSubnet struct {
+	VpcId            string
+	CidrBlock        string
+	AvailabilityZone string
+}
+
+// Response to a CreateSubnet request
+type CreateSubnetResp struct {
+	RequestId string `xml:"requestId"`
+	Subnet    Subnet `xml:"subnet"`
+}
+
 // Response to a DescribeVpcs request.
 type VpcsResp struct {
 	RequestId string `xml:"requestId"`
@@ -1991,6 +2006,19 @@ type VPC struct {
 	InstanceTenancy string `xml:"instanceTenancy"`
 	IsDefault       bool   `xml:"isDefault"`
 	Tags            []Tag  `xml:"tagSet>item"`
+}
+
+// Subnet
+type Subnet struct {
+	SubnetId                string `xml:"subnetId"`
+	State                   string `xml:"state"`
+	VpcId                   string `xml:"vpcId"`
+	CidrBlock               string `xml:"cidrBlock"`
+	AvailableIpAddressCount int    `xml:"availableIpAddressCount"`
+	AvailabilityZone        string `xml:"availabilityZone"`
+	DefaultForAZ            bool   `xml:"defaultForAz"`
+	MapPublicIpOnLaunch     bool   `xml:"mapPublicIpOnLaunch"`
+	Tags                    []Tag  `xml:"tagSet>item"`
 }
 
 // Create a new VPC.
@@ -2032,6 +2060,22 @@ func (ec2 *EC2) DescribeVpcs(ids []string, filter *Filter) (resp *VpcsResp, err 
 	addParamsList(params, "VpcId", ids)
 	filter.addParams(params)
 	resp = &VpcsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Create a new subnet.
+func (ec2 *EC2) CreateSubnet(options *CreateSubnet) (resp *CreateSubnetResp, err error) {
+	params := makeParams("CreateSubnet")
+	params["AvailabilityZone"] = options.AvailabilityZone
+	params["CidrBlock"] = options.CidrBlock
+	params["VpcId"] = options.VpcId
+
+	resp = &CreateSubnetResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
