@@ -1976,6 +1976,17 @@ type CreateVpcResp struct {
 	VPC       VPC    `xml:"vpc"`
 }
 
+// CreateInternetGateway request parameters.
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateInternetGateway.html
+type CreateInternetGateway struct{}
+
+// CreateInternetGateway response
+type CreateInternetGatewayResp struct {
+	RequestId       string          `xml:"requestId"`
+	InternetGateway InternetGateway `xml:"internetGateway"`
+}
+
 // The CreateSubnet request parameters
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateSubnet.html
@@ -1997,15 +2008,16 @@ type VpcsResp struct {
 	VPCs      []VPC  `xml:"vpcSet>item"`
 }
 
-// VPC represents a single VPC.
-type VPC struct {
-	VpcId           string `xml:"vpcId"`
-	State           string `xml:"state"`
-	CidrBlock       string `xml:"cidrBlock"`
-	DHCPOptionsID   string `xml:"dhcpOptionsId"`
-	InstanceTenancy string `xml:"instanceTenancy"`
-	IsDefault       bool   `xml:"isDefault"`
-	Tags            []Tag  `xml:"tagSet>item"`
+// Internet Gateway
+type InternetGateway struct {
+	InternetGatewayId string                      `xml:"internetGatewayId"`
+	Attachments       []InternetGatewayAttachment `xml:"attachmentSet>item"`
+	Tags              []Tag                       `xml:"tagSet>item"`
+}
+
+type InternetGatewayAttachment struct {
+	VpcId string `xml:"vpcId"`
+	State string `xml:"state"`
 }
 
 // Subnet
@@ -2019,6 +2031,17 @@ type Subnet struct {
 	DefaultForAZ            bool   `xml:"defaultForAz"`
 	MapPublicIpOnLaunch     bool   `xml:"mapPublicIpOnLaunch"`
 	Tags                    []Tag  `xml:"tagSet>item"`
+}
+
+// VPC represents a single VPC.
+type VPC struct {
+	VpcId           string `xml:"vpcId"`
+	State           string `xml:"state"`
+	CidrBlock       string `xml:"cidrBlock"`
+	DHCPOptionsID   string `xml:"dhcpOptionsId"`
+	InstanceTenancy string `xml:"instanceTenancy"`
+	IsDefault       bool   `xml:"isDefault"`
+	Tags            []Tag  `xml:"tagSet>item"`
 }
 
 // Response to a DescribeSubnets request.
@@ -2103,7 +2126,6 @@ func (ec2 *EC2) DeleteSubnet(id string) (resp *SimpleResp, err error) {
 	return
 }
 
-
 // DescribeSubnets
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeSubnets.html
@@ -2113,6 +2135,20 @@ func (ec2 *EC2) DescribeSubnets(ids []string, filter *Filter) (resp *SubnetsResp
 	filter.addParams(params)
 
 	resp = &SubnetsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Create a new internet gateway.
+func (ec2 *EC2) CreateInternetGateway(
+	options *CreateInternetGateway) (resp *CreateInternetGatewayResp, err error) {
+	params := makeParams("CreateInternetGateway")
+
+	resp = &CreateInternetGatewayResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
