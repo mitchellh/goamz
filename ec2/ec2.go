@@ -2021,6 +2021,12 @@ type Subnet struct {
 	Tags                    []Tag  `xml:"tagSet>item"`
 }
 
+// Response to a DescribeSubnets request.
+type SubnetsResp struct {
+	RequestId string   `xml:"requestId"`
+	Subnets   []Subnet `xml:"subnetSet>item"`
+}
+
 // Create a new VPC.
 func (ec2 *EC2) CreateVpc(options *CreateVpc) (resp *CreateVpcResp, err error) {
 	params := makeParams("CreateVpc")
@@ -2076,6 +2082,37 @@ func (ec2 *EC2) CreateSubnet(options *CreateSubnet) (resp *CreateSubnetResp, err
 	params["VpcId"] = options.VpcId
 
 	resp = &CreateSubnetResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Delete a Subnet.
+func (ec2 *EC2) DeleteSubnet(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteSubnet")
+	params["SubnetId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+
+// DescribeSubnets
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeSubnets.html
+func (ec2 *EC2) DescribeSubnets(ids []string, filter *Filter) (resp *SubnetsResp, err error) {
+	params := makeParams("DescribeSubnets")
+	addParamsList(params, "SubnetId", ids)
+	filter.addParams(params)
+
+	resp = &SubnetsResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
