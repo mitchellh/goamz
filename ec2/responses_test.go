@@ -804,3 +804,20 @@ var CreateVpcExample = `
    </vpc>
 </CreateVpcResponse>
 `
+
+var DescribeVpcsExample = `
+<DescribeVpcsResponse xmlns="http://ec2.amazonaws.com/doc/2014-06-15/">
+  <requestId>7a62c49f-347e-4fc4-9331-6e8eEXAMPLE</requestId>
+  <vpcSet>
+    <item>
+      <vpcId>vpc-1a2b3c4d</vpcId>
+      <state>available</state>
+      <cidrBlock>10.0.0.0/23</cidrBlock>
+      <dhcpOptionsId>dopt-7a8b9c2d</dhcpOptionsId>
+      <instanceTenancy>default</instanceTenancy>
+      <isDefault>false</isDefault>
+      <tagSet/>
+    </item>
+  </vpcSet>
+</DescribeVpcsResponse>
+`

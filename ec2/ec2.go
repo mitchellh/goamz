@@ -1976,6 +1976,12 @@ type CreateVpcResp struct {
 	VPC       VPC    `xml:"vpc"`
 }
 
+// Response to a DescribeVpcs request.
+type VpcsResp struct {
+	RequestId string `xml:"requestId"`
+	VPCs      []VPC  `xml:"vpcSet>item"`
+}
+
 // VPC represents a single VPC.
 type VPC struct {
 	VPCID           string `xml:"vpcId"`
@@ -2015,5 +2021,21 @@ func (ec2 *EC2) DeleteVpc(id string) (resp *SimpleResp, err error) {
 	if err != nil {
 		return nil, err
 	}
+	return
+}
+
+// DescribeVpcs
+//
+// See http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeVpcs.html
+func (ec2 *EC2) DescribeVpcs(ids []string, filter *Filter) (resp *VpcsResp, err error) {
+	params := makeParams("DescribeVpcs")
+	addParamsList(params, "VpcId", ids)
+	filter.addParams(params)
+	resp = &VpcsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
 	return
 }
