@@ -1494,8 +1494,8 @@ type KeyPair struct {
 }
 
 type KeyPairsResp struct {
-	RequestId string	`xml:"requestId"`
-	Keys      []KeyPair     `xml:"keySet>item"`
+	RequestId string    `xml:"requestId"`
+	Keys      []KeyPair `xml:"keySet>item"`
 }
 
 type CreateKeyPairResp struct {
@@ -1544,7 +1544,7 @@ func (ec2 *EC2) DeleteKeyPair(name string) (resp *SimpleResp, err error) {
 func (ec2 *EC2) KeyPairs(keynames []string, filter *Filter) (resp *KeyPairsResp, err error) {
 	params := makeParams("DescribeKeyPairs")
 	for i, name := range keynames {
-		params["KeyName." + strconv.Itoa(i)] = name
+		params["KeyName."+strconv.Itoa(i)] = name
 	}
 	filter.addParams(params)
 
@@ -1576,7 +1576,6 @@ func (ec2 *EC2) ImportKeyPair(keyname string, key string) (resp *ImportKeyPairRe
 	}
 	return resp, nil
 }
-
 
 // ----------------------------------------------------------------------------
 // Security group management functions and types.
@@ -1957,5 +1956,51 @@ func (ec2 *EC2) ModifyInstance(instId string, options *ModifyInstance) (resp *Mo
 	if err != nil {
 		resp = nil
 	}
+	return
+}
+
+// ----------------------------------------------------------------------------
+// VPC management functions and types.
+
+// The CreateVpc request parameters
+//
+// See http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateVpc.html
+type CreateVpc struct {
+	CidrBlock       string
+	InstanceTenancy string
+}
+
+// Response to a CreateVpc request
+type CreateVpcResp struct {
+	RequestId string `xml:"requestId"`
+	VPC       VPC    `xml:"vpc"`
+}
+
+// VPC represents a single VPC.
+type VPC struct {
+	VPCID           string `xml:"vpcId"`
+	State           string `xml:"state"`
+	CidrBlock       string `xml:"cidrBlock"`
+	DHCPOptionsID   string `xml:"dhcpOptionsId"`
+	InstanceTenancy string `xml:"instanceTenancy"`
+	IsDefault       bool   `xml:"isDefault"`
+	Tags            []Tag  `xml:"tagSet>item"`
+}
+
+// Create a new VPC.
+func (ec2 *EC2) CreateVpc(options *CreateVpc) (resp *CreateVpcResp, err error) {
+	params := makeParams("CreateVpc")
+	params["CidrBlock"] = options.CidrBlock
+
+	if options.InstanceTenancy != "" {
+		params["InstanceTenancy"] = options.InstanceTenancy
+	}
+
+	resp = &CreateVpcResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
 	return
 }

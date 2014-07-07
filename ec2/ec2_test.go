@@ -1125,3 +1125,24 @@ func (s *S) TestModifyInstance(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 }
+
+func (s *S) TestCreateVpc(c *C) {
+	testServer.Response(200, nil, CreateVpcExample)
+
+	options := &ec2.CreateVpc{
+		CidrBlock: "foo",
+	}
+
+	resp, err := s.ec2.CreateVpc(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["CidrBlock"], DeepEquals, []string{"foo"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7a62c49f-347e-4fc4-9331-6e8eEXAMPLE")
+	c.Assert(resp.VPC.VPCID, Equals, "vpc-1a2b3c4d")
+	c.Assert(resp.VPC.State, Equals, "pending")
+	c.Assert(resp.VPC.CidrBlock, Equals, "10.0.0.0/16")
+	c.Assert(resp.VPC.DHCPOptionsID, Equals, "dopt-1a2b3c4d2")
+	c.Assert(resp.VPC.InstanceTenancy, Equals, "default")
+}
