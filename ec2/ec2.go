@@ -1999,7 +1999,7 @@ type VpcsResp struct {
 
 // VPC represents a single VPC.
 type VPC struct {
-	VPCID           string `xml:"vpcId"`
+	VpcId           string `xml:"vpcId"`
 	State           string `xml:"state"`
 	CidrBlock       string `xml:"cidrBlock"`
 	DHCPOptionsID   string `xml:"dhcpOptionsId"`
