@@ -1995,6 +1995,19 @@ type CreateInternetGatewayResp struct {
 	InternetGateway InternetGateway `xml:"internetGateway"`
 }
 
+// The CreateRouteTable request parameters.
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateRouteTable.html
+type CreateRouteTable struct {
+	VpcId string
+}
+
+// Response to a CreateRouteTable request.
+type CreateRouteTableResp struct {
+	RequestId  string     `xml:"requestId"`
+	RouteTable RouteTable `xml:"routeTable"`
+}
+
 // The CreateSubnet request parameters
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateSubnet.html
@@ -2016,6 +2029,12 @@ type InternetGatewaysResp struct {
 	InternetGateways []InternetGateway `xml:"internetGatewaySet>item"`
 }
 
+// Response to a DescribeRouteTables request.
+type RouteTablesResp struct {
+	RequestId   string       `xml:"requestId"`
+	RouteTables []RouteTable `xml:"routeTableSet>item"`
+}
+
 // Response to a DescribeVpcs request.
 type VpcsResp struct {
 	RequestId string `xml:"requestId"`
@@ -2032,6 +2051,25 @@ type InternetGateway struct {
 type InternetGatewayAttachment struct {
 	VpcId string `xml:"vpcId"`
 	State string `xml:"state"`
+}
+
+// Routing Table
+type RouteTable struct {
+	RouteTableId string  `xml:"routeTableId"`
+	VpcId        string  `xml:"vpcId"`
+	Routes       []Route `xml:"routeSet>item"`
+	Tags         []Tag   `xml:"tagSet>item"`
+}
+
+type Route struct {
+	DestinationCidrBlock   string `xml:"destinationCidrBlock"`
+	GatewayId              string `xml:"gatewayId"`
+	InstanceId             string `xml:"instanceId"`
+	InstanceOwnerId        string `xml:"instanceOwnerId"`
+	NetworkInterfaceId     string `xml:"networkInterfaceId"`
+	State                  string `xml:"state"`
+	Origin                 string `xml:"origin"`
+	VpcPeeringConnectionId string `xml:"vpcPeeringConnectionId"`
 }
 
 // Subnet
@@ -2221,6 +2259,51 @@ func (ec2 *EC2) DescribeInternetGateways(ids []string, filter *Filter) (resp *In
 	filter.addParams(params)
 
 	resp = &InternetGatewaysResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Create a new routing table.
+func (ec2 *EC2) CreateRouteTable(
+	options *CreateRouteTable) (resp *CreateRouteTableResp, err error) {
+	params := makeParams("CreateRouteTable")
+	params["VpcId"] = options.VpcId
+
+	resp = &CreateRouteTableResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Delete a RouteTable.
+func (ec2 *EC2) DeleteRouteTable(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteRouteTable")
+	params["RouteTableId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// DescribeRouteTables
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeRouteTables.html
+func (ec2 *EC2) DescribeRouteTables(ids []string, filter *Filter) (resp *RouteTablesResp, err error) {
+	params := makeParams("DescribeRouteTables")
+	addParamsList(params, "RouteTableId", ids)
+	filter.addParams(params)
+
+	resp = &RouteTablesResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
