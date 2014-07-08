@@ -865,6 +865,31 @@ func (s *S) TestAuthorizeSecurityGroupExample1(c *C) {
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 }
 
+func (s *S) TestAuthorizeSecurityGroupEgress(c *C) {
+	testServer.Response(200, nil, AuthorizeSecurityGroupEgressExample)
+
+	perms := []ec2.IPPerm{{
+		Protocol:  "tcp",
+		FromPort:  80,
+		ToPort:    80,
+		SourceIPs: []string{"205.192.0.0/16", "205.159.0.0/16"},
+	}}
+	resp, err := s.ec2.AuthorizeSecurityGroupEgress(ec2.SecurityGroup{Name: "websrv"}, perms)
+
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"AuthorizeSecurityGroupEgress"})
+	c.Assert(req.Form["GroupName"], DeepEquals, []string{"websrv"})
+	c.Assert(req.Form["IpPermissions.1.IpProtocol"], DeepEquals, []string{"tcp"})
+	c.Assert(req.Form["IpPermissions.1.FromPort"], DeepEquals, []string{"80"})
+	c.Assert(req.Form["IpPermissions.1.ToPort"], DeepEquals, []string{"80"})
+	c.Assert(req.Form["IpPermissions.1.IpRanges.1.CidrIp"], DeepEquals, []string{"205.192.0.0/16"})
+	c.Assert(req.Form["IpPermissions.1.IpRanges.2.CidrIp"], DeepEquals, []string{"205.159.0.0/16"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
 func (s *S) TestAuthorizeSecurityGroupExample1WithId(c *C) {
 	testServer.Response(200, nil, AuthorizeSecurityGroupIngressExample)
 

@@ -684,6 +684,14 @@ var AuthorizeSecurityGroupIngressExample = `
 </AuthorizeSecurityGroupIngressResponse>
 `
 
+// http://goo.gl/u2sDJ
+var AuthorizeSecurityGroupEgressExample = `
+<AuthorizeSecurityGroupEgressResponse xmlns="http://ec2.amazonaws.com/doc/2014-06-15/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+   <return>true</return>
+</AuthorizeSecurityGroupEgressResponse>
+`
+
 // http://goo.gl/Mz7xr
 var RevokeSecurityGroupIngressExample = `
 <RevokeSecurityGroupIngressResponse xmlns="http://ec2.amazonaws.com/doc/2011-12-15/">
