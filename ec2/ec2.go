@@ -2008,6 +2008,26 @@ type CreateRouteTableResp struct {
 	RouteTable RouteTable `xml:"routeTable"`
 }
 
+// CreateRoute request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateRoute.html
+type CreateRoute struct {
+	RouteTableId           string
+	DestinationCidrBlock   string
+	GatewayId              string
+	InstanceId             string
+	NetworkInterfaceId     string
+	VpcPeeringConnectionId string
+}
+type ReplaceRoute struct {
+	RouteTableId           string
+	DestinationCidrBlock   string
+	GatewayId              string
+	InstanceId             string
+	NetworkInterfaceId     string
+	VpcPeeringConnectionId string
+}
+
 // The CreateSubnet request parameters
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateSubnet.html
@@ -2311,3 +2331,72 @@ func (ec2 *EC2) DescribeRouteTables(ids []string, filter *Filter) (resp *RouteTa
 
 	return
 }
+
+// Create a new route.
+func (ec2 *EC2) CreateRoute(options *CreateRoute) (resp *SimpleResp, err error) {
+	params := makeParams("CreateRoute")
+	params["RouteTableId"] = options.RouteTableId
+	params["DestinationCidrBlock"] = options.DestinationCidrBlock
+
+	if v := options.GatewayId; v != "" {
+		params["GatewayId"] = v
+	}
+	if v := options.InstanceId; v != "" {
+		params["InstanceId"] = v
+	}
+	if v := options.NetworkInterfaceId; v != "" {
+		params["NetworkInterfaceId"] = v
+	}
+	if v := options.VpcPeeringConnectionId; v != "" {
+		params["VpcPeeringConnectionId"] = v
+	}
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Delete a Route.
+func (ec2 *EC2) DeleteRoute(routeTableId, cidr string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteRoute")
+	params["RouteTableId"] = routeTableId
+	params["DestinationCidrBlock"] = cidr
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Replace a new route.
+func (ec2 *EC2) ReplaceRoute(options *ReplaceRoute) (resp *SimpleResp, err error) {
+	params := makeParams("ReplaceRoute")
+	params["RouteTableId"] = options.RouteTableId
+	params["DestinationCidrBlock"] = options.DestinationCidrBlock
+
+	if v := options.GatewayId; v != "" {
+		params["GatewayId"] = v
+	}
+	if v := options.InstanceId; v != "" {
+		params["InstanceId"] = v
+	}
+	if v := options.NetworkInterfaceId; v != "" {
+		params["NetworkInterfaceId"] = v
+	}
+	if v := options.VpcPeeringConnectionId; v != "" {
+		params["VpcPeeringConnectionId"] = v
+	}
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
