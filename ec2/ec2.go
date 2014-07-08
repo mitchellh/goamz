@@ -2028,6 +2028,15 @@ type ReplaceRoute struct {
 	VpcPeeringConnectionId string
 }
 
+type AssociateRouteTableResp struct {
+	RequestId     string `xml:"requestId"`
+	AssociationId string `xml:"associationId"`
+}
+type ReassociateRouteTableResp struct {
+	RequestId     string `xml:"requestId"`
+	AssociationId string `xml:"newAssociationId"`
+}
+
 // The CreateSubnet request parameters
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateSubnet.html
@@ -2332,6 +2341,47 @@ func (ec2 *EC2) DescribeRouteTables(ids []string, filter *Filter) (resp *RouteTa
 	return
 }
 
+// Associate a routing table.
+func (ec2 *EC2) AssociateRouteTable(id, subnetId string) (*AssociateRouteTableResp, error) {
+	params := makeParams("AssociateRouteTable")
+	params["RouteTableId"] = id
+	params["SubnetId"] = subnetId
+
+	resp := &AssociateRouteTableResp{}
+	err := ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// Disassociate a routing table.
+func (ec2 *EC2) DisassociateRouteTable(id string) (*SimpleResp, error) {
+	params := makeParams("DisassociateRouteTable")
+	params["AssociationId"] = id
+
+	resp := &SimpleResp{}
+	err := ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// Re-associate a routing table.
+func (ec2 *EC2) ReassociateRouteTable(id, routeTableId string) (*ReassociateRouteTableResp, error) {
+	params := makeParams("ReassociateRouteTable")
+	params["AssociationId"] = id
+	params["RouteTableId"] = routeTableId
+
+	resp := &ReassociateRouteTableResp{}
+	err := ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // Create a new route.
 func (ec2 *EC2) CreateRoute(options *CreateRoute) (resp *SimpleResp, err error) {
 	params := makeParams("CreateRoute")
@@ -2399,4 +2449,3 @@ func (ec2 *EC2) ReplaceRoute(options *ReplaceRoute) (resp *SimpleResp, err error
 	}
 	return
 }
-
