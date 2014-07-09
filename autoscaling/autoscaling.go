@@ -117,18 +117,19 @@ type LaunchConfiguration struct {
 }
 
 type AutoScalingGroup struct {
-	AvailabilityZones      []AvailabilityZone `xml:"member>AvailabilityZones"`
-	DefaultCooldown        int                `xml:"member>DefaultCooldown"`
-	DesiredCapacity        int                `xml:"member>DesiredCapacity"`
-	HealthCheckGracePeriod int                `xml:"member>HealthCheckGracePeriod"`
-	HealthCheckType        string             `xml:"member>HealthCheckType"`
-	InstanceId             string             `xml:"member>InstanceId"`
-	KeyName                string             `xml:"member>KeyName"`
-	LoadBalancerNames      []LoadBalancerName `xml:"member>LoadBalancerNames"`
-	MaxSize                int                `xml:"member>MaxSize"`
-	MinSize                int                `xml:"member>MinSize"`
-	Name                   string             `xml:"member>LaunchConfigurationName"`
-	VPCZoneIdentifier      string             `xml:"member>VPCZoneIdentifier"`
+	AvailabilityZones       []AvailabilityZone `xml:"member>AvailabilityZones"`
+	DefaultCooldown         int                `xml:"member>DefaultCooldown"`
+	DesiredCapacity         int                `xml:"member>DesiredCapacity"`
+	HealthCheckGracePeriod  int                `xml:"member>HealthCheckGracePeriod"`
+	HealthCheckType         string             `xml:"member>HealthCheckType"`
+	InstanceId              string             `xml:"member>InstanceId"`
+	KeyName                 string             `xml:"member>KeyName"`
+	LaunchConfigurationName string             `xml:"member>LaunchConfigurationName"`
+	LoadBalancerNames       []LoadBalancerName `xml:"member>LoadBalancerNames"`
+	MaxSize                 int                `xml:"member>MaxSize"`
+	MinSize                 int                `xml:"member>MinSize"`
+	Name                    string             `xml:"member>AutoScalingGroupName"`
+	VPCZoneIdentifier       string             `xml:"member>VPCZoneIdentifier"`
 }
 
 // ----------------------------------------------------------------------------
