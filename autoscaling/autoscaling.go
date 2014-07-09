@@ -123,7 +123,6 @@ type AutoScalingGroup struct {
 	HealthCheckGracePeriod  int                `xml:"member>HealthCheckGracePeriod"`
 	HealthCheckType         string             `xml:"member>HealthCheckType"`
 	InstanceId              string             `xml:"member>InstanceId"`
-	KeyName                 string             `xml:"member>KeyName"`
 	LaunchConfigurationName string             `xml:"member>LaunchConfigurationName"`
 	LoadBalancerNames       []LoadBalancerName `xml:"member>LoadBalancerNames"`
 	MaxSize                 int                `xml:"member>MaxSize"`
