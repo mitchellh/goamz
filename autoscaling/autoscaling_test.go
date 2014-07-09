@@ -85,3 +85,37 @@ func (s *S) Test_CreateLaunchConfiguration(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "7c6e177f-f082-11e1-ac58-3714bEXAMPLE")
 }
+
+func (s *S) Test_DescribeAutoScalingGroups(c *C) {
+	testServer.Response(200, nil, DescribeAutoScalingGroupsExample)
+
+	options := autoscaling.DescribeAutoScalingGroups{
+		Names: []string{"foobar"},
+	}
+
+	resp, err := s.autoscaling.DescribeAutoScalingGroups(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeAutoScalingGroups"})
+	c.Assert(req.Form["AutoScalingGroupNames.member.1"], DeepEquals, []string{"foobar"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "0f02a07d-b677-11e2-9eb0-dd50EXAMPLE")
+	c.Assert(resp.AutoScalingGroups[0].Name, Equals, "my-test-lc")
+}
+
+func (s *S) Test_DescribeLaunchConfigurations(c *C) {
+	testServer.Response(200, nil, DescribeLaunchConfigurationsExample)
+
+	options := autoscaling.DescribeLaunchConfigurations{
+		Names: []string{"foobar"},
+	}
+
+	resp, err := s.autoscaling.DescribeLaunchConfigurations(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeLaunchConfigurations"})
+	c.Assert(req.Form["LaunchConfigurationNames.member.1"], DeepEquals, []string{"foobar"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "d05a22f8-b690-11e2-bf8e-2113fEXAMPLE")
+	c.Assert(resp.LaunchConfigurations[0].InstanceType, Equals, "m1.small")
+}

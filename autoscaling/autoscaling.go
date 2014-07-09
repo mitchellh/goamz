@@ -96,6 +96,41 @@ type Tag struct {
 	PropogateAtLaunch string `xml:"PropogateAtLaunch"`
 }
 
+type SecurityGroup struct {
+	SecurityGroup string `xml:"member"`
+}
+
+type AvailabilityZone struct {
+	AvailabilityZone string `xml:"member"`
+}
+
+type LoadBalancerName struct {
+	LoadBalancerName string `xml:"member"`
+}
+
+type LaunchConfiguration struct {
+	ImageId        string          `xml:"member>ImageId"`
+	InstanceType   string          `xml:"member>InstanceType"`
+	KeyName        string          `xml:"member>KeyName"`
+	Name           string          `xml:"member>LaunchConfigurationName"`
+	SecurityGroups []SecurityGroup `xml:"member>SecurityGroups"`
+}
+
+type AutoScalingGroup struct {
+	AvailabilityZones      []AvailabilityZone `xml:"member>AvailabilityZones"`
+	DefaultCooldown        int                `xml:"member>DefaultCooldown"`
+	DesiredCapacity        int                `xml:"member>DesiredCapacity"`
+	HealthCheckGracePeriod int                `xml:"member>HealthCheckGracePeriod"`
+	HealthCheckType        string             `xml:"member>HealthCheckType"`
+	InstanceId             string             `xml:"member>InstanceId"`
+	KeyName                string             `xml:"member>KeyName"`
+	LoadBalancerNames      []LoadBalancerName `xml:"member>LoadBalancerNames"`
+	MaxSize                int                `xml:"member>MaxSize"`
+	MinSize                int                `xml:"member>MinSize"`
+	Name                   string             `xml:"member>LaunchConfigurationName"`
+	VPCZoneIdentifier      string             `xml:"member>VPCZoneIdentifier"`
+}
+
 // ----------------------------------------------------------------------------
 // Create
 
@@ -182,6 +217,64 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 	}
 
 	resp = &SimpleResp{}
+
+	err = autoscaling.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// Describe
+
+// DescribeAutoScalingGroups request params
+type DescribeAutoScalingGroups struct {
+	Names []string
+}
+
+type DescribeAutoScalingGroupsResp struct {
+	RequestId         string             `xml:"ResponseMetadata>RequestId"`
+	AutoScalingGroups []AutoScalingGroup `xml:"DescribeAutoScalingGroupsResult>AutoScalingGroups"`
+}
+
+func (autoscaling *AutoScaling) DescribeAutoScalingGroups(options *DescribeAutoScalingGroups) (resp *DescribeAutoScalingGroupsResp, err error) {
+	params := makeParams("DescribeAutoScalingGroups")
+
+	for i, v := range options.Names {
+		params["AutoScalingGroupNames.member."+strconv.Itoa(i+1)] = v
+	}
+
+	resp = &DescribeAutoScalingGroupsResp{}
+
+	err = autoscaling.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DescribeLaunchConfigurations request params
+type DescribeLaunchConfigurations struct {
+	Names []string
+}
+
+type DescribeLaunchConfigurationsResp struct {
+	RequestId            string                `xml:"ResponseMetadata>RequestId"`
+	LaunchConfigurations []LaunchConfiguration `xml:"DescribeLaunchConfigurationsResult>LaunchConfigurations"`
+}
+
+func (autoscaling *AutoScaling) DescribeLaunchConfigurations(options *DescribeLaunchConfigurations) (resp *DescribeLaunchConfigurationsResp, err error) {
+	params := makeParams("DescribeLaunchConfigurations")
+
+	for i, v := range options.Names {
+		params["LaunchConfigurationNames.member."+strconv.Itoa(i+1)] = v
+	}
+
+	resp = &DescribeLaunchConfigurationsResp{}
 
 	err = autoscaling.query(params, resp)
 
