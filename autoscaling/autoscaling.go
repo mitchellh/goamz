@@ -156,12 +156,30 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 	params := makeParams("CreateAutoScalingGroup")
 
 	params["AutoScalingGroupName"] = options.Name
-	params["DefaultCooldown"] = strconv.Itoa(options.DefaultCooldown)
-	params["DesiredCapacity"] = strconv.Itoa(options.DesiredCapacity)
-	params["HealthCheckGracePeriod"] = strconv.Itoa(options.HealthCheckGracePeriod)
-	params["HealthCheckType"] = options.HealthCheckType
-	params["InstanceId"] = options.InstanceId
-	params["LaunchConfigurationName"] = options.LaunchConfigurationName
+
+	if options.DefaultCooldown != 0 {
+		params["DefaultCooldown"] = strconv.Itoa(options.DefaultCooldown)
+	}
+
+	if options.DesiredCapacity != 0 {
+		params["DesiredCapacity"] = strconv.Itoa(options.DesiredCapacity)
+	}
+
+	if options.HealthCheckGracePeriod != 0 {
+		params["HealthCheckGracePeriod"] = strconv.Itoa(options.HealthCheckGracePeriod)
+	}
+
+	if options.HealthCheckType != "" {
+		params["HealthCheckType"] = options.HealthCheckType
+	}
+
+	if options.InstanceId != "" {
+		params["InstanceId"] = options.InstanceId
+	}
+
+	if options.LaunchConfigurationName != "" {
+		params["LaunchConfigurationName"] = options.LaunchConfigurationName
+	}
 
 	for i, v := range options.AvailZone {
 		params["AvailabilityZones.member."+strconv.Itoa(i+1)] = v
@@ -174,14 +192,18 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 	params["MaxSize"] = strconv.Itoa(options.MaxSize)
 	params["MinSize"] = strconv.Itoa(options.MinSize)
 
-	params["PlacementGroup"] = options.PlacementGroup
+	if options.PlacementGroup != "" {
+		params["PlacementGroup"] = options.PlacementGroup
+	}
 
 	for j, tag := range options.Tags {
 		params["Tag.member"+strconv.Itoa(j+1)+".Key"] = tag.Key
 		params["Tag.member"+strconv.Itoa(j+1)+".Value"] = tag.Value
 	}
 
-	params["VPCZoneIdentifier"] = strings.Join(options.VPCZoneIdentifier, ",")
+	if options.VPCZoneIdentifier != nil {
+		params["VPCZoneIdentifier"] = strings.Join(options.VPCZoneIdentifier, ",")
+	}
 
 	resp = &SimpleResp{}
 
