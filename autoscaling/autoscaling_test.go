@@ -69,7 +69,7 @@ func (s *S) Test_CreateLaunchConfiguration(c *C) {
 
 	options := autoscaling.CreateLaunchConfiguration{
 		SecurityGroups: []string{"sg-1111"},
-		ImageId:      gs  "i-141421",
+		ImageId:        "i-141421",
 		InstanceId:     "i-141421",
 		InstanceType:   "m1.small",
 		KeyName:        "foobar",
