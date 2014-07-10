@@ -314,6 +314,53 @@ func (autoscaling *AutoScaling) DescribeLaunchConfigurations(options *DescribeLa
 	return
 }
 
+// ----------------------------------------------------------------------------
+// Destroy
+
+// The DeleteLaunchConfiguration request parameters
+type DeleteLaunchConfiguration struct {
+	Name string
+}
+
+func (autoscaling *AutoScaling) DeleteLaunchConfiguration(options *DeleteLaunchConfiguration) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteLaunchConfiguration")
+
+	params["LaunchConfigurationName"] = options.Name
+
+	resp = &SimpleResp{}
+
+	err = autoscaling.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// The DeleteLaunchConfiguration request parameters
+type DeleteAutoScalingGroup struct {
+	Name        string
+	ForceDelete bool
+}
+
+func (autoscaling *AutoScaling) DeleteAutoScalingGroup(options *DeleteAutoScalingGroup) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteAutoScalingGroup")
+
+	params["AutoScalingGroupName"] = options.Name
+	params["ForceDelete"] = strconv.FormatBool(options.ForceDelete)
+
+	resp = &SimpleResp{}
+
+	err = autoscaling.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Responses
 
 type SimpleResp struct {

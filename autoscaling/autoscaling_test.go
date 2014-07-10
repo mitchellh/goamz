@@ -120,3 +120,37 @@ func (s *S) Test_DescribeLaunchConfigurations(c *C) {
 	c.Assert(resp.RequestId, Equals, "d05a22f8-b690-11e2-bf8e-2113fEXAMPLE")
 	c.Assert(resp.LaunchConfigurations[0].InstanceType, Equals, "m1.small")
 }
+
+func (s *S) TestDeleteAutoScalingGroup(c *C) {
+	testServer.Response(200, nil, DeleteAutoScalingGroupExample)
+
+	options := autoscaling.DeleteAutoScalingGroup{
+		Name:        "foobar",
+		ForceDelete: true,
+	}
+
+	resp, err := s.autoscaling.DeleteAutoScalingGroup(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteAutoScalingGroup"})
+	c.Assert(req.Form["AutoScalingGroupName"], DeepEquals, []string{"foobar"})
+	c.Assert(req.Form["ForceDelete"], DeepEquals, []string{"true"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "70a76d42-9665-11e2-9fdf-211deEXAMPLE")
+}
+
+func (s *S) TestDeleteLaunchConfiguration(c *C) {
+	testServer.Response(200, nil, DeleteLaunchConfigurationExample)
+
+	options := autoscaling.DeleteLaunchConfiguration{
+		Name: "foobar",
+	}
+
+	resp, err := s.autoscaling.DeleteLaunchConfiguration(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteLaunchConfiguration"})
+	c.Assert(req.Form["LaunchConfigurationName"], DeepEquals, []string{"foobar"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7347261f-97df-11e2-8756-35eEXAMPLE")
+}
