@@ -1,11 +1,12 @@
 package ec2_test
 
 import (
+	"testing"
+
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/ec2"
 	"github.com/mitchellh/goamz/testutil"
 	. "github.com/motain/gocheck"
-	"testing"
 )
 
 func Test(t *testing.T) {
@@ -1151,7 +1152,6 @@ func (s *S) TestModifyInstance(c *C) {
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 }
 
-<<<<<<< HEAD
 func (s *S) TestCreateVpc(c *C) {
 	testServer.Response(200, nil, CreateVpcExample)
 
