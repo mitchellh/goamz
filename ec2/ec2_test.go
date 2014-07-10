@@ -1,11 +1,12 @@
 package ec2_test
 
 import (
+	"testing"
+
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/ec2"
 	"github.com/mitchellh/goamz/testutil"
 	. "github.com/motain/gocheck"
-	"testing"
 )
 
 func Test(t *testing.T) {
@@ -1037,7 +1038,7 @@ func (s *S) TestSignatureWithEndpointPath(c *C) {
 	c.Assert(err, IsNil)
 
 	req := testServer.WaitRequest()
-	c.Assert(req.Form["Signature"], DeepEquals, []string{"WaKDWBipeZzpFeqg5PpHw8ayfiqPqB2SX5HsH8+b6+k="})
+	c.Assert(req.Form["Signature"], DeepEquals, []string{"QmvgkYGn19WirCuCz/jRp3RmRgFwWR5WRkKZ5AZnyXQ="})
 }
 
 func (s *S) TestAllocateAddressExample(c *C) {
@@ -1220,4 +1221,17 @@ func (s *S) TestCreateSubnet(c *C) {
 	c.Assert(resp.Subnet.VpcId, Equals, "vpc-1a2b3c4d")
 	c.Assert(resp.Subnet.CidrBlock, Equals, "10.0.1.0/24")
 	c.Assert(resp.Subnet.AvailableIpAddressCount, Equals, 251)
+}
+
+func (s *S) TestResetImageAttribute(c *C) {
+	testServer.Response(200, nil, ResetImageAttributeExample)
+
+	options := ec2.ResetImageAttribute{Attribute: "launchPermission"}
+	resp, err := s.ec2.ResetImageAttribute("i-2ba64342", &options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ResetImageAttribute"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 }
