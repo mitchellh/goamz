@@ -230,9 +230,16 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 	params := makeParams("CreateLaunchConfiguration")
 
 	params["LaunchConfigurationName"] = options.Name
-	params["ImageId"] = options.ImageId
-	params["InstanceType"] = options.InstanceType
-	params["InstanceId"] = options.InstanceId
+
+	if options.ImageId != "" {
+		params["ImageId"] = options.ImageId
+	}
+	if options.InstanceType != "" {
+		params["InstanceType"] = options.InstanceType
+	}
+	if options.InstanceId != "" {
+		params["InstanceId"] = options.InstanceId
+	}
 
 	for i, v := range options.SecurityGroups {
 		params["SecurityGroups.member."+strconv.Itoa(i+1)] = v
