@@ -2084,10 +2084,18 @@ type InternetGatewayAttachment struct {
 
 // Routing Table
 type RouteTable struct {
-	RouteTableId string  `xml:"routeTableId"`
-	VpcId        string  `xml:"vpcId"`
-	Routes       []Route `xml:"routeSet>item"`
-	Tags         []Tag   `xml:"tagSet>item"`
+	RouteTableId string                  `xml:"routeTableId"`
+	VpcId        string                  `xml:"vpcId"`
+	Associations []RouteTableAssociation `xml:"associationSet>item"`
+	Routes       []Route                 `xml:"routeSet>item"`
+	Tags         []Tag                   `xml:"tagSet>item"`
+}
+
+type RouteTableAssociation struct {
+	AssociationId string `xml:"routeTableAssociationId"`
+	RouteTableId  string `xml:"routeTableId"`
+	SubnetId      string `xml:"subnetId"`
+	Main          bool   `xml:"main"`
 }
 
 type Route struct {
