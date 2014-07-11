@@ -2378,7 +2378,7 @@ func (ec2 *EC2) DisassociateRouteTable(id string) (*SimpleResp, error) {
 
 // Re-associate a routing table.
 func (ec2 *EC2) ReassociateRouteTable(id, routeTableId string) (*ReassociateRouteTableResp, error) {
-	params := makeParams("ReassociateRouteTable")
+	params := makeParams("ReplaceRouteTableAssociation")
 	params["AssociationId"] = id
 	params["RouteTableId"] = routeTableId
 
