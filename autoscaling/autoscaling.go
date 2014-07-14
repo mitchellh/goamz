@@ -241,6 +241,10 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 		params["InstanceId"] = options.InstanceId
 	}
 
+	if options.KeyName != "" {
+		params["KeyName"] = options.KeyName
+	}
+
 	for i, v := range options.SecurityGroups {
 		params["SecurityGroups.member."+strconv.Itoa(i+1)] = v
 	}
