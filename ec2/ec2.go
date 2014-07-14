@@ -944,6 +944,20 @@ func (ec2 *EC2) ReleaseAddress(id string) (resp *SimpleResp, err error) {
 	return
 }
 
+// Release an Elastic IP (Public)
+func (ec2 *EC2) ReleasePublicAddress(publicIp string) (resp *SimpleResp, err error) {
+	params := makeParams("ReleaseAddress")
+	params["PublicIp"] = publicIp
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
 // Associate an address with a VPC instance.
 func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddressResp, err error) {
 	params := makeParams("AssociateAddress")
