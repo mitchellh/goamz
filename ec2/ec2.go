@@ -294,6 +294,7 @@ type Instance struct {
 	PublicIpAddress    string        `xml:"ipAddress"`
 	Architecture       string        `xml:"architecture"`
 	LaunchTime         time.Time     `xml:"launchTime"`
+	SourceDestCheck    bool          `xml:"sourceDestCheck"`
 }
 
 // RunInstances starts new instances in EC2.
