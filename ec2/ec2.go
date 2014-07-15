@@ -1908,6 +1908,8 @@ type ModifyInstance struct {
 	SourceDestCheck       bool
 	SriovNetSupport       bool
 	UserData              []byte
+
+	SetSourceDestCheck bool
 }
 
 // Response to a ModifyInstanceAttribute request.
@@ -1952,8 +1954,12 @@ func (ec2 *EC2) ModifyInstance(instId string, options *ModifyInstance) (resp *Mo
 		params["Ramdisk.Value"] = options.RamdiskId
 	}
 
-	if options.SourceDestCheck {
-		params["SourceDestCheck.Value"] = "true"
+	if options.SourceDestCheck || options.SetSourceDestCheck {
+		if options.SourceDestCheck {
+			params["SourceDestCheck.Value"] = "true"
+		} else {
+			params["SourceDestCheck.Value"] = "false"
+		}
 	}
 
 	if options.SriovNetSupport {
