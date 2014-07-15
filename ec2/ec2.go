@@ -225,7 +225,7 @@ func addBlockDeviceParams(prename string, params map[string]string, blockdevices
 			params[prefix+"Ebs.Encrypted"] = "true"
 		}
 		if k.NoDevice {
-			params[prefix+"NoDevice"] = "true"
+			params[prefix+"NoDevice"] = ""
 		}
 	}
 }
