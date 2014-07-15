@@ -150,6 +150,12 @@ type CreateAutoScalingGroup struct {
 	Name                    string
 	Tags                    []Tag
 	VPCZoneIdentifier       []string
+
+	SetDefaultCooldown        bool
+	SetDesiredCapacity        bool
+	SetHealthCheckGracePeriod bool
+	SetMaxSize                bool
+	SetMinSize                bool
 }
 
 func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalingGroup) (resp *SimpleResp, err error) {
@@ -157,15 +163,15 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 
 	params["AutoScalingGroupName"] = options.Name
 
-	if options.DefaultCooldown != 0 {
+	if options.SetDefaultCooldown {
 		params["DefaultCooldown"] = strconv.Itoa(options.DefaultCooldown)
 	}
 
-	if options.DesiredCapacity != 0 {
+	if options.SetDesiredCapacity {
 		params["DesiredCapacity"] = strconv.Itoa(options.DesiredCapacity)
 	}
 
-	if options.HealthCheckGracePeriod != 0 {
+	if options.SetHealthCheckGracePeriod {
 		params["HealthCheckGracePeriod"] = strconv.Itoa(options.HealthCheckGracePeriod)
 	}
 
@@ -189,8 +195,13 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 		params["LoadBalancerNames.member."+strconv.Itoa(i+1)] = v
 	}
 
-	params["MaxSize"] = strconv.Itoa(options.MaxSize)
-	params["MinSize"] = strconv.Itoa(options.MinSize)
+	if options.SetMaxSize {
+		params["MaxSize"] = strconv.Itoa(options.MaxSize)
+	}
+
+	if options.SetMinSize {
+		params["MinSize"] = strconv.Itoa(options.MinSize)
+	}
 
 	if options.PlacementGroup != "" {
 		params["PlacementGroup"] = options.PlacementGroup
@@ -353,6 +364,87 @@ func (autoscaling *AutoScaling) DeleteAutoScalingGroup(options *DeleteAutoScalin
 
 	params["AutoScalingGroupName"] = options.Name
 	params["ForceDelete"] = strconv.FormatBool(options.ForceDelete)
+
+	resp = &SimpleResp{}
+
+	err = autoscaling.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
+// Destroy
+// The UpdateAutoScalingGroup request parameters
+type UpdateAutoScalingGroup struct {
+	AvailZone               []string
+	DefaultCooldown         int
+	DesiredCapacity         int
+	HealthCheckGracePeriod  int
+	HealthCheckType         string
+	LaunchConfigurationName string
+	MaxSize                 int
+	MinSize                 int
+	PlacementGroup          string
+	Name                    string
+	VPCZoneIdentifier       []string
+
+	SetDefaultCooldown        bool
+	SetDesiredCapacity        bool
+	SetHealthCheckGracePeriod bool
+	SetMaxSize                bool
+	SetMinSize                bool
+}
+
+func (autoscaling *AutoScaling) UpdateAutoScalingGroup(options *UpdateAutoScalingGroup) (resp *SimpleResp, err error) {
+	params := makeParams("UpdateAutoScalingGroup")
+
+	if options.Name != "" {
+		params["AutoScalingGroupName"] = options.Name
+	}
+
+	if options.SetDefaultCooldown {
+		params["DefaultCooldown"] = strconv.Itoa(options.DefaultCooldown)
+	}
+
+	if options.SetDesiredCapacity {
+		params["DesiredCapacity"] = strconv.Itoa(options.DesiredCapacity)
+	}
+
+	if options.SetHealthCheckGracePeriod {
+		params["HealthCheckGracePeriod"] = strconv.Itoa(options.HealthCheckGracePeriod)
+	}
+
+	if options.HealthCheckType != "" {
+		params["HealthCheckType"] = options.HealthCheckType
+	}
+
+	if options.LaunchConfigurationName != "" {
+		params["LaunchConfigurationName"] = options.LaunchConfigurationName
+	}
+
+	for i, v := range options.AvailZone {
+		params["AvailabilityZones.member."+strconv.Itoa(i+1)] = v
+	}
+
+	if options.SetMaxSize {
+		params["MaxSize"] = strconv.Itoa(options.MaxSize)
+	}
+
+	if options.SetMinSize {
+		params["MinSize"] = strconv.Itoa(options.MinSize)
+	}
+
+	if options.PlacementGroup != "" {
+		params["PlacementGroup"] = options.PlacementGroup
+	}
+
+	if options.VPCZoneIdentifier != nil {
+		params["VPCZoneIdentifier"] = strings.Join(options.VPCZoneIdentifier, ",")
+	}
 
 	resp = &SimpleResp{}
 

@@ -107,3 +107,11 @@ var DeleteAutoScalingGroupExample = `<DeleteAutoScalingGroupResponse xmlns="http
     <RequestId>70a76d42-9665-11e2-9fdf-211deEXAMPLE</RequestId>
   </ResponseMetadata>
 </DeleteAutoScalingGroupResponse>`
+
+var UpdateAutoScalingGroupExample = `
+<UpdateAutoScalingGroupResponse xmlns="http://autoscaling.amazonaws.com/doc/2011-01-01/">
+  <ResponseMetadata>
+    <RequestId>adafead0-ab8a-11e2-ba13-ab0ccEXAMPLE</RequestId>
+  </ResponseMetadata>
+</UpdateAutoScalingGroupResponse>
+`

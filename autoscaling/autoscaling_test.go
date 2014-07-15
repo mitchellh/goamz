@@ -154,3 +154,26 @@ func (s *S) TestDeleteLaunchConfiguration(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "7347261f-97df-11e2-8756-35eEXAMPLE")
 }
+
+func (s *S) Test_UpdateAutoScalingGroup(c *C) {
+	testServer.Response(200, nil, UpdateAutoScalingGroupExample)
+
+	options := autoscaling.UpdateAutoScalingGroup{
+		AvailZone:       []string{"us-east-1a"},
+		DefaultCooldown: 30,
+		Name:            "bar",
+
+		SetDefaultCooldown: true,
+	}
+
+	resp, err := s.autoscaling.UpdateAutoScalingGroup(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"UpdateAutoScalingGroup"})
+	c.Assert(req.Form["AutoScalingGroupName"], DeepEquals, []string{"bar"})
+	c.Assert(req.Form["DefaultCooldown"], DeepEquals, []string{"30"})
+	c.Assert(req.Form["MinSize"], IsNil)
+	c.Assert(req.Form["MaxSize"], IsNil)
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "adafead0-ab8a-11e2-ba13-ab0ccEXAMPLE")
+}
