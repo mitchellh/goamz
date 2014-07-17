@@ -35,6 +35,21 @@ type Region struct {
 	AutoScalingEndpoint  string
 }
 
+var USGovWest = Region{
+        "us-gov-west-1",
+        "https://ec2.us-gov-west-1.amazonaws.com",
+        "https://s3-fips-us-gov-west-1.amazonaws.com",
+        "",
+        true,
+        true,
+        "",
+        "https://sns.us-gov-west-1.amazonaws.com",
+        "https://sqs.us-gov-west-1.amazonaws.com",
+        "https://iam.us-gov.amazonaws.com",
+        "https://elasticloadbalancing.us-gov-west-1.amazonaws.com",
+        "https://autoscaling.us-gov-west-1.amazonaws.com",
+}
+
 var USEast = Region{
 	"us-east-1",
 	"https://ec2.us-east-1.amazonaws.com",
@@ -164,6 +179,7 @@ var Regions = map[string]Region{
 	USWest.Name:       USWest,
 	USWest2.Name:      USWest2,
 	SAEast.Name:       SAEast,
+        USGovWest.Name:    USGovWest,
 }
 
 type Auth struct {
