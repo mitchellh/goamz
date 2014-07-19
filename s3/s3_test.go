@@ -115,6 +115,21 @@ func (s *S) TestGet(c *C) {
 	c.Assert(string(data), Equals, "content")
 }
 
+func (s *S) TestHead(c *C) {
+	testServer.Response(200, nil, "")
+	b := s.s3.Bucket("bucket")
+	resp, err := b.Head("name")
+	req := testServer.WaitRequest()
+	c.Assert(req.Method, Equals, "HEAD")
+	c.Assert(req.URL.Path, Equals, "/bucket/name")
+	c.Assert(req.Header["Date"], Not(Equals), "")
+
+	c.Assert(err, IsNil)
+	body, err := ioutil.ReadAll(resp.Body)
+	c.Assert(err, IsNil)
+	c.Assert(len(body), Equals, 0)
+}
+
 func (s *S) TestURL(c *C) {
 	testServer.Response(200, nil, "content")
 
