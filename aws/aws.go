@@ -33,21 +33,23 @@ type Region struct {
 	IAMEndpoint          string
 	ELBEndpoint          string
 	AutoScalingEndpoint  string
+	RdsEndpoint          string
 }
 
 var USGovWest = Region{
-        "us-gov-west-1",
-        "https://ec2.us-gov-west-1.amazonaws.com",
-        "https://s3-fips-us-gov-west-1.amazonaws.com",
-        "",
-        true,
-        true,
-        "",
-        "https://sns.us-gov-west-1.amazonaws.com",
-        "https://sqs.us-gov-west-1.amazonaws.com",
-        "https://iam.us-gov.amazonaws.com",
-        "https://elasticloadbalancing.us-gov-west-1.amazonaws.com",
-        "https://autoscaling.us-gov-west-1.amazonaws.com",
+	"us-gov-west-1",
+	"https://ec2.us-gov-west-1.amazonaws.com",
+	"https://s3-fips-us-gov-west-1.amazonaws.com",
+	"",
+	true,
+	true,
+	"",
+	"https://sns.us-gov-west-1.amazonaws.com",
+	"https://sqs.us-gov-west-1.amazonaws.com",
+	"https://iam.us-gov.amazonaws.com",
+	"https://elasticloadbalancing.us-gov-west-1.amazonaws.com",
+	"https://autoscaling.us-gov-west-1.amazonaws.com",
+	"https://rds.us-gov-west-1.amazonaws.com",
 }
 
 var USEast = Region{
@@ -63,6 +65,7 @@ var USEast = Region{
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.us-east-1.amazonaws.com",
 	"https://autoscaling.us-east-1.amazonaws.com",
+	"https://rds.us-east-1.amazonaws.com",
 }
 
 var USWest = Region{
@@ -78,6 +81,7 @@ var USWest = Region{
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.us-west-1.amazonaws.com",
 	"https://autoscaling.us-west-1.amazonaws.com",
+	"https://rds.us-west-1.amazonaws.com",
 }
 
 var USWest2 = Region{
@@ -93,6 +97,7 @@ var USWest2 = Region{
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.us-west-2.amazonaws.com",
 	"https://autoscaling.us-west-2.amazonaws.com",
+	"https://rds.us-west-2.amazonaws.com",
 }
 
 var EUWest = Region{
@@ -108,6 +113,7 @@ var EUWest = Region{
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.eu-west-1.amazonaws.com",
 	"https://autoscaling.eu-west-1.amazonaws.com",
+	"https://rds.eu-west-1.amazonaws.com",
 }
 
 var APSoutheast = Region{
@@ -123,6 +129,7 @@ var APSoutheast = Region{
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.ap-southeast-1.amazonaws.com",
 	"https://autoscaling.ap-southeast-1.amazonaws.com",
+	"https://rds.ap-southeast-1.amazonaws.com",
 }
 
 var APSoutheast2 = Region{
@@ -138,6 +145,7 @@ var APSoutheast2 = Region{
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.ap-southeast-2.amazonaws.com",
 	"https://autoscaling.ap-southeast-2.amazonaws.com",
+	"https://rds.ap-southeast-2.amazonaws.com",
 }
 
 var APNortheast = Region{
@@ -153,6 +161,7 @@ var APNortheast = Region{
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.ap-northeast-1.amazonaws.com",
 	"https://autoscaling.ap-northeast-1.amazonaws.com",
+	"https://rds.ap-northeast-1.amazonaws.com",
 }
 
 var SAEast = Region{
@@ -168,6 +177,7 @@ var SAEast = Region{
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.sa-east-1.amazonaws.com",
 	"https://autoscaling.sa-east-1.amazonaws.com",
+	"https://rds.sa-east-1.amazonaws.com",
 }
 
 var Regions = map[string]Region{
@@ -179,7 +189,7 @@ var Regions = map[string]Region{
 	USWest.Name:       USWest,
 	USWest2.Name:      USWest2,
 	SAEast.Name:       SAEast,
-        USGovWest.Name:    USGovWest,
+	USGovWest.Name:    USGovWest,
 }
 
 type Auth struct {
