@@ -34,6 +34,7 @@ type Region struct {
 	ELBEndpoint          string
 	AutoScalingEndpoint  string
 	RdsEndpoint          string
+	Route53Endpoint      string
 }
 
 var USGovWest = Region{
@@ -50,6 +51,7 @@ var USGovWest = Region{
 	"https://elasticloadbalancing.us-gov-west-1.amazonaws.com",
 	"https://autoscaling.us-gov-west-1.amazonaws.com",
 	"https://rds.us-gov-west-1.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var USEast = Region{
@@ -66,6 +68,7 @@ var USEast = Region{
 	"https://elasticloadbalancing.us-east-1.amazonaws.com",
 	"https://autoscaling.us-east-1.amazonaws.com",
 	"https://rds.us-east-1.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var USWest = Region{
@@ -82,6 +85,7 @@ var USWest = Region{
 	"https://elasticloadbalancing.us-west-1.amazonaws.com",
 	"https://autoscaling.us-west-1.amazonaws.com",
 	"https://rds.us-west-1.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var USWest2 = Region{
@@ -98,6 +102,7 @@ var USWest2 = Region{
 	"https://elasticloadbalancing.us-west-2.amazonaws.com",
 	"https://autoscaling.us-west-2.amazonaws.com",
 	"https://rds.us-west-2.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var EUWest = Region{
@@ -114,6 +119,7 @@ var EUWest = Region{
 	"https://elasticloadbalancing.eu-west-1.amazonaws.com",
 	"https://autoscaling.eu-west-1.amazonaws.com",
 	"https://rds.eu-west-1.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var APSoutheast = Region{
@@ -130,6 +136,7 @@ var APSoutheast = Region{
 	"https://elasticloadbalancing.ap-southeast-1.amazonaws.com",
 	"https://autoscaling.ap-southeast-1.amazonaws.com",
 	"https://rds.ap-southeast-1.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var APSoutheast2 = Region{
@@ -146,6 +153,7 @@ var APSoutheast2 = Region{
 	"https://elasticloadbalancing.ap-southeast-2.amazonaws.com",
 	"https://autoscaling.ap-southeast-2.amazonaws.com",
 	"https://rds.ap-southeast-2.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var APNortheast = Region{
@@ -162,6 +170,7 @@ var APNortheast = Region{
 	"https://elasticloadbalancing.ap-northeast-1.amazonaws.com",
 	"https://autoscaling.ap-northeast-1.amazonaws.com",
 	"https://rds.ap-northeast-1.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var SAEast = Region{
@@ -178,6 +187,7 @@ var SAEast = Region{
 	"https://elasticloadbalancing.sa-east-1.amazonaws.com",
 	"https://autoscaling.sa-east-1.amazonaws.com",
 	"https://rds.sa-east-1.amazonaws.com",
+	"https://route53.amazonaws.com",
 }
 
 var Regions = map[string]Region{
