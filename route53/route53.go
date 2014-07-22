@@ -137,13 +137,19 @@ type DeleteHostedZoneResponse struct {
 
 func (r *Route53) DeleteHostedZone(ID string) (*DeleteHostedZoneResponse, error) {
 	// Remove the hostedzone prefix if given
-	if strings.HasPrefix(ID, "/hostedzone/") {
-		ID = strings.TrimPrefix(ID, "/hostedzone/")
-	}
+	ID = CleanZoneID(ID)
 	out := &DeleteHostedZoneResponse{}
 	err := r.query("DELETE", fmt.Sprintf("/%s/hostedzone/%s", APIVersion, ID), nil, out)
 	if err != nil {
 		return nil, err
 	}
 	return out, err
+}
+
+// CleanZoneID is used to remove the leading /hostedzone/
+func CleanZoneID(ID string) string {
+	if strings.HasPrefix(ID, "/hostedzone/") {
+		ID = strings.TrimPrefix(ID, "/hostedzone/")
+	}
+	return ID
 }
