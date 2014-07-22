@@ -112,6 +112,51 @@ func TestGetChange(t *testing.T) {
 	}
 }
 
+func TestChangeResourceRecordSets(t *testing.T) {
+	testServer := makeTestServer()
+	client := makeClient(testServer)
+	testServer.Response(200, nil, ChangeResourceRecordSetsExample)
+
+	req := &ChangeResourceRecordSetsRequest{
+		Comment: "Test",
+		Changes: []Change{
+			Change{
+				Action: "CREATE",
+				Record: ResourceRecordSet{
+					Name:    "foo.hashicorp.com",
+					Type:    "A",
+					TTL:     300,
+					Records: []string{"127.0.0.1"},
+				},
+			},
+		},
+	}
+
+	resp, err := client.ChangeResourceRecordSets("Z1234", req)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	if resp.ChangeInfo.ID != "/change/asdf" {
+		t.Fatalf("bad: %v", resp)
+	}
+}
+
+func TestListResourceRecordSets(t *testing.T) {
+	testServer := makeTestServer()
+	client := makeClient(testServer)
+	testServer.Response(200, nil, ListResourceRecordSetsExample)
+
+	resp, err := client.ListResourceRecordSets("Z1234", nil)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	if resp.Records[0].Name != "example.com." {
+		t.Fatalf("bad: %v", resp)
+	}
+}
+
 func decode(t *testing.T, r io.Reader, out interface{}) {
 	var buf1 bytes.Buffer
 	var buf2 bytes.Buffer

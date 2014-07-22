@@ -65,3 +65,32 @@ var GetChangeExample = `<?xml version="1.0" encoding="UTF-8"?>
       <SubmittedAt>2011-09-10T01:36:41.958Z</SubmittedAt>
    </ChangeInfo>
 </GetChangeResponse>`
+
+var ChangeResourceRecordSetsExample = `<?xml version="1.0" encoding="UTF-8"?>
+<ChangeResourceRecordSetsResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+   <ChangeInfo>
+      <Id>/change/asdf</Id>
+      <Status>PENDING</Status>
+      <SubmittedAt>2014</SubmittedAt>
+   </ChangeInfo>
+</ChangeResourceRecordSetsResponse>`
+
+var ListResourceRecordSetsExample = `<?xml version="1.0" encoding="UTF-8"?>
+<ListResourceRecordSetsResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+   <ResourceRecordSets>
+      <ResourceRecordSet>
+         <Name>example.com.</Name>
+         <Type>SOA</Type>
+         <TTL>900</TTL>
+         <ResourceRecords>
+            <ResourceRecord>
+               <Value>ns-2048.awsdns-64.net. hostmaster.awsdns.com. 1 7200 900 1209600 86400</Value>
+            </ResourceRecord>
+         </ResourceRecords>
+      </ResourceRecordSet>
+   </ResourceRecordSets>
+   <IsTruncated>true</IsTruncated>
+   <MaxItems>1</MaxItems>
+   <NextRecordName>testdoc2.example.com</NextRecordName>
+   <NextRecordType>NS</NextRecordType>
+</ListResourceRecordSetsResponse>`

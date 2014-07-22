@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -72,6 +73,12 @@ func (r *Route53) query(method, path string, req, resp interface{}) error {
 	}
 	endpoint.Path = path
 	sign(r.Auth, endpoint.Path, params)
+
+	// If they look like url.Values, just encode...
+	if queryArgs, ok := req.(url.Values); ok {
+		endpoint.RawQuery = queryArgs.Encode()
+		req = nil
+	}
 
 	// Encode the body
 	var body io.ReadWriter
@@ -201,4 +208,91 @@ func (r *Route53) GetChange(ID string) (string, error) {
 		return "", err
 	}
 	return out.ChangeInfo.Status, err
+}
+
+type ChangeResourceRecordSetsRequest struct {
+	Comment string   `xml:"ChangeBatch>Comment,omitempty"`
+	Changes []Change `xml:"ChangeBatch>Changes>Change"`
+}
+
+type Change struct {
+	Action string            `xml:"Action"`
+	Record ResourceRecordSet `xml:"ResourceRecordSet"`
+}
+
+type AliasTarget struct {
+	HostedZoneId         string
+	DNSName              string
+	EvaluateTargetHealth bool
+}
+
+type ChangeResourceRecordSetsResponse struct {
+	ChangeInfo ChangeInfo `xml:"ChangeInfo"`
+}
+
+func (r *Route53) ChangeResourceRecordSets(zone string,
+	req *ChangeResourceRecordSetsRequest) (*ChangeResourceRecordSetsResponse, error) {
+	zone = CleanZoneID(zone)
+	out := &ChangeResourceRecordSetsResponse{}
+	if err := r.query("POST", fmt.Sprintf("/%s/hostedzone/%s/rrset", APIVersion,
+		zone), req, out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type ListOpts struct {
+	Name       string
+	Type       string
+	Identifier string
+	MaxItems   int
+}
+
+type ListResourceRecordSetsResponse struct {
+	Records              []ResourceRecordSet `xml:"ResourceRecordSets>ResourceRecordSet"`
+	IsTruncated          bool                `xml:"IsTruncated"`
+	MaxItems             int                 `xml:"MaxItems"`
+	NextRecordName       string              `xml:"NextRecordName"`
+	NextRecordType       string              `xml:"NextRecordType"`
+	NextRecordIdentifier string              `xml:"NextRecordIdentifier"`
+}
+
+type ResourceRecordSet struct {
+	Name          string       `xml:"Name"`
+	Type          string       `xml:"Type"`
+	TTL           int          `xml:"TTL"`
+	Records       []string     `xml:"ResourceRecords>ResourceRecord>Value"`
+	SetIdentifier string       `xml:"SetIdentifier,omitempty"`
+	Weight        int          `xml:"Weight,omitempty"`
+	HealthCheckId string       `xml:"HealthCheckId,omitempty"`
+	Region        string       `xml:"Region,omitempty"`
+	Failover      string       `xml:"Failover,omitempty"`
+	AliasTarget   *AliasTarget `xml:"AliasTarget,omitempty"`
+}
+
+func (r *Route53) ListResourceRecordSets(zone string, lopts *ListOpts) (*ListResourceRecordSetsResponse, error) {
+	if lopts == nil {
+		lopts = &ListOpts{}
+	}
+	params := make(map[string]string)
+	if lopts.Name != "" {
+		params["name"] = lopts.Name
+	}
+	if lopts.Type != "" {
+		params["type"] = lopts.Type
+	}
+	if lopts.Identifier != "" {
+		params["identifier"] = lopts.Identifier
+	}
+	if lopts.MaxItems != 0 {
+		params["maxitems"] = strconv.FormatInt(int64(lopts.MaxItems), 10)
+	}
+
+	req := multimap(params)
+	zone = CleanZoneID(zone)
+	out := &ListResourceRecordSetsResponse{}
+	if err := r.query("GET", fmt.Sprintf("/%s/hostedzone/%s/rrset", APIVersion, zone), req, out); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
