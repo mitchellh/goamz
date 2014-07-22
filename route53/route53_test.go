@@ -82,6 +82,21 @@ func TestDeleteHostedZone(t *testing.T) {
 	}
 }
 
+func TestGetHostedZone(t *testing.T) {
+	testServer := makeTestServer()
+	client := makeClient(testServer)
+	testServer.Response(200, nil, GetHostedZoneExample)
+
+	resp, err := client.GetHostedZone("/hostedzone/foobarbaz")
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	if resp.HostedZone.CallerReference != "myUniqueIdentifier" {
+		t.Fatalf("bad: %v", resp)
+	}
+}
+
 func decode(t *testing.T, r io.Reader, out interface{}) {
 	var buf1 bytes.Buffer
 	var buf2 bytes.Buffer

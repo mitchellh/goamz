@@ -153,3 +153,19 @@ func CleanZoneID(ID string) string {
 	}
 	return ID
 }
+
+type GetHostedZoneResponse struct {
+	HostedZone    HostedZone    `xml:"HostedZone"`
+	DelegationSet DelegationSet `xml:"DelegationSet"`
+}
+
+func (r *Route53) GetHostedZone(ID string) (*GetHostedZoneResponse, error) {
+	// Remove the hostedzone prefix if given
+	ID = CleanZoneID(ID)
+	out := &GetHostedZoneResponse{}
+	err := r.query("GET", fmt.Sprintf("/%s/hostedzone/%s", APIVersion, ID), nil, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, err
+}
