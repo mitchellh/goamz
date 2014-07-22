@@ -82,6 +82,7 @@ func (s *S) Test_DeleteDBInstance(c *C) {
 
 	options := rds.DeleteDBInstance{
 		DBInstanceIdentifier: "foobarbaz",
+		SkipFinalSnapshot:    true,
 	}
 
 	resp, err := s.rds.DeleteDBInstance(&options)
@@ -89,6 +90,7 @@ func (s *S) Test_DeleteDBInstance(c *C) {
 
 	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteDBInstance"})
 	c.Assert(req.Form["DBInstanceIdentifier"], DeepEquals, []string{"foobarbaz"})
+	c.Assert(req.Form["SkipFinalSnapshot"], DeepEquals, []string{"true"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "7369556f-b70d-11c3-faca-6ba18376ea1b")
 }
