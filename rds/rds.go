@@ -99,7 +99,8 @@ type DBInstance struct {
 	PreferredMaintenanceWindow string   `xml:"DBInstance>PreferredMaintenanceWindow"`
 	AvailabilityZone           string   `xml:"DBInstance>AvailabilityZone"`
 	Engine                     string   `xml:"DBInstance>Engine"`
-	Endpoint                   string   `xml:"DBInstance>Endpoint"`
+	Port                       int      `xml:"DBInstance>Endpoint>Port"`
+	Address                    string   `xml:"DBInstance>Endpoint>Address"`
 	EngineVersion              string   `xml:"DBInstance>EngineVersion"`
 	DBName                     string   `xml:"DBInstance>DBName"`
 	AllocatedStorage           int      `xml:"DBInstance>AllocatedStorage"`
