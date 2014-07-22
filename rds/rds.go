@@ -255,12 +255,17 @@ func (rds *Rds) DescribeDBInstances(options *DescribeDBInstances) (resp *Describ
 // DeleteDBInstance request params
 type DeleteDBInstance struct {
 	DBInstanceIdentifier string
+	SkipFinalSnapshot    bool
 }
 
 func (rds *Rds) DeleteDBInstance(options *DeleteDBInstance) (resp *SimpleResp, err error) {
 	params := makeParams("DeleteDBInstance")
 
 	params["DBInstanceIdentifier"] = options.DBInstanceIdentifier
+
+	if options.SkipFinalSnapshot {
+		params["SkipFinalSnapshot"] = "true"
+	}
 
 	resp = &SimpleResp{}
 
