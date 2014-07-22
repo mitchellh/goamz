@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"bytes"
+	"io/ioutil"
 	"math"
 	"net"
 	"net/http"
@@ -75,9 +77,18 @@ func (t *ResilientTransport) RoundTrip(req *http.Request) (*http.Response, error
 // If a wait function is specified, wait that amount of time
 // In between requests.
 func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err error) {
-	for try := 0; try < t.MaxTries; try += 1 {
-		res, err = t.transport.RoundTrip(req)
+	var b []byte
+	// save body for retries
+	if req.Body != nil {
+		b, err = ioutil.ReadAll(req.Body)
+		if err != nil {
+			return
+		}
+	}
 
+	for try := 0; try < t.MaxTries; try++ {
+		req.Body = ioutil.NopCloser(bytes.NewReader((b)))
+		res, err = t.transport.RoundTrip(req)
 		if !t.ShouldRetry(req, res, err) {
 			break
 		}
@@ -88,7 +99,6 @@ func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err e
 			t.Wait(try)
 		}
 	}
-
 	return
 }
 
