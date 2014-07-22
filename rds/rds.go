@@ -109,6 +109,13 @@ type DBInstance struct {
 	DBSecurityGroupNames       []string `xml:"DBSecurityGroups>DBSecurityGroup>DBSecurityGroupName"`
 }
 
+type DBSecurityGroup struct {
+	Description              string   `xml:"DBSecurityGroupDescription"`
+	Name                     string   `xml:"DBSecurityGroupName"`
+	EC2SecurityGroupIds      []string `xml:"EC2SecurityGroups>EC2SecurityGroup>EC2SecurityGroupId"`
+	EC2SecurityGroupOwnerIds []string `xml:"EC2SecurityGroups>EC2SecurityGroup>EC2SecurityGroupOwnerId"`
+}
+
 // ----------------------------------------------------------------------------
 // Create
 
@@ -230,6 +237,29 @@ func (rds *Rds) CreateDBInstance(options *CreateDBInstance) (resp *SimpleResp, e
 	return
 }
 
+// The CreateDBSecurityGroup request parameters
+type CreateDBSecurityGroup struct {
+	DBSecurityGroupName        string
+	DBSecurityGroupDescription string
+}
+
+func (rds *Rds) CreateDBSecurityGroup(options *CreateDBSecurityGroup) (resp *SimpleResp, err error) {
+	params := makeParams("CreateDBSecurityGroup")
+
+	params["DBSecurityGroupName"] = options.DBSecurityGroupName
+	params["DBSecurityGroupDescription"] = options.DBSecurityGroupDescription
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Describe
 
 // DescribeDBInstances request params
@@ -258,6 +288,32 @@ func (rds *Rds) DescribeDBInstances(options *DescribeDBInstances) (resp *Describ
 	return
 }
 
+// DescribeDBSecurityGroups request params
+type DescribeDBSecurityGroups struct {
+	DBSecurityGroupName string
+}
+
+type DescribeDBSecurityGroupsResp struct {
+	RequestId        string            `xml:"ResponseMetadata>RequestId"`
+	DBSecurityGroups []DBSecurityGroup `xml:"DescribeDBSecurityGroupsResult>DBSecurityGroups>DBSecurityGroup"`
+}
+
+func (rds *Rds) DescribeDBSecurityGroups(options *DescribeDBSecurityGroups) (resp *DescribeDBSecurityGroupsResp, err error) {
+	params := makeParams("DescribeDBSecurityGroups")
+
+	params["DBSecurityGroupName"] = options.DBSecurityGroupName
+
+	resp = &DescribeDBSecurityGroupsResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // DeleteDBInstance request params
 type DeleteDBInstance struct {
 	DBInstanceIdentifier string
@@ -272,6 +328,27 @@ func (rds *Rds) DeleteDBInstance(options *DeleteDBInstance) (resp *SimpleResp, e
 	if options.SkipFinalSnapshot {
 		params["SkipFinalSnapshot"] = "true"
 	}
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DeleteDBSecurityGroup request params
+type DeleteDBSecurityGroup struct {
+	DBSecurityGroupName string
+}
+
+func (rds *Rds) DeleteDBSecurityGroup(options *DeleteDBSecurityGroup) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteDBSecurityGroup")
+
+	params["DBSecurityGroupName"] = options.DBSecurityGroupName
 
 	resp = &SimpleResp{}
 

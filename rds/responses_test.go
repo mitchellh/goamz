@@ -213,3 +213,76 @@ var DeleteDBInstanceExample = `
     <RequestId>7369556f-b70d-11c3-faca-6ba18376ea1b</RequestId>
   </ResponseMetadata>
 </DeleteDBInstanceResponse>`
+
+var DescribeDBSecurityGroupsExample = `
+<DescribeDBSecurityGroupsResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <DescribeDBSecurityGroupsResult>
+    <DBSecurityGroups>
+      <DBSecurityGroup>
+        <EC2SecurityGroups>
+          <EC2SecurityGroup>
+            <Status>authorized</Status>
+            <EC2SecurityGroupName>elasticbeanstalk-windows</EC2SecurityGroupName>
+            <EC2SecurityGroupOwnerId>803#########</EC2SecurityGroupOwnerId>
+            <EC2SecurityGroupId>sg-7f476617</EC2SecurityGroupId>
+          </EC2SecurityGroup>
+        </EC2SecurityGroups>
+        <DBSecurityGroupDescription>My security group</DBSecurityGroupDescription>
+        <IPRanges>
+          <IPRange>
+            <CIDRIP>192.0.0.0/24</CIDRIP>
+            <Status>authorized</Status>
+          </IPRange>
+          <IPRange>
+            <CIDRIP>190.0.1.0/29</CIDRIP>
+            <Status>authorized</Status>
+          </IPRange>
+          <IPRange>
+            <CIDRIP>190.0.2.0/29</CIDRIP>
+            <Status>authorized</Status>
+          </IPRange>
+          <IPRange>
+            <CIDRIP>10.0.0.0/8</CIDRIP>
+            <Status>authorized</Status>
+          </IPRange>
+        </IPRanges>
+        <OwnerId>803#########</OwnerId>
+        <DBSecurityGroupName>my-secgrp</DBSecurityGroupName>
+      </DBSecurityGroup>
+      <DBSecurityGroup>
+        <EC2SecurityGroups/>
+        <DBSecurityGroupDescription>default</DBSecurityGroupDescription>
+        <IPRanges/>
+        <OwnerId>803#########</OwnerId>
+        <DBSecurityGroupName>default</DBSecurityGroupName>
+      </DBSecurityGroup>
+   </DBSecurityGroups>
+  </DescribeDBSecurityGroupsResult>
+  <ResponseMetadata>
+    <RequestId>b76e692c-b98c-11d3-a907-5a2c468b9cb0</RequestId>
+  </ResponseMetadata>
+</DescribeDBSecurityGroupsResponse>`
+
+var DeleteDBSecurityGroupExample = `
+<DeleteDBSecurityGroupResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <ResponseMetadata>
+    <RequestId>7aec7454-ba25-11d3-855b-576787000e19</RequestId>
+  </ResponseMetadata>
+</DeleteDBSecurityGroupResponse>
+`
+var CreateDBSecurityGroupExample = `
+<CreateDBSecurityGroupResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <CreateDBSecurityGroupResult>
+    <DBSecurityGroup>
+      <EC2SecurityGroups/>
+      <DBSecurityGroupDescription>My new DB Security Group</DBSecurityGroupDescription>
+      <IPRanges/>
+      <OwnerId>803#########</OwnerId>
+      <DBSecurityGroupName>mydbsecuritygroup00</DBSecurityGroupName>
+    </DBSecurityGroup>
+  </CreateDBSecurityGroupResult>
+  <ResponseMetadata>
+    <RequestId>e68ef6fa-afc1-11c3-845a-476777009d19</RequestId>
+  </ResponseMetadata>
+</CreateDBSecurityGroupResponse>
+`

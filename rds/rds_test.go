@@ -62,6 +62,24 @@ func (s *S) Test_CreateDBInstance(c *C) {
 	c.Assert(resp.RequestId, Equals, "523e3218-afc7-11c3-90f5-f90431260ab4")
 }
 
+func (s *S) Test_CreateDBSecurityGroup(c *C) {
+	testServer.Response(200, nil, CreateDBSecurityGroupExample)
+
+	options := rds.CreateDBSecurityGroup{
+		DBSecurityGroupName:        "foobarbaz",
+		DBSecurityGroupDescription: "test description",
+	}
+
+	resp, err := s.rds.CreateDBSecurityGroup(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateDBSecurityGroup"})
+	c.Assert(req.Form["DBSecurityGroupName"], DeepEquals, []string{"foobarbaz"})
+	c.Assert(req.Form["DBSecurityGroupDescription"], DeepEquals, []string{"test description"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "e68ef6fa-afc1-11c3-845a-476777009d19")
+}
+
 func (s *S) Test_DescribeDBInstances(c *C) {
 	testServer.Response(200, nil, DescribeDBInstancesExample)
 
@@ -80,6 +98,24 @@ func (s *S) Test_DescribeDBInstances(c *C) {
 	c.Assert(resp.DBInstances[0].DBSecurityGroupNames, DeepEquals, []string{"my-db-secgroup"})
 }
 
+func (s *S) Test_DescribeDBSecurityGroups(c *C) {
+	testServer.Response(200, nil, DescribeDBSecurityGroupsExample)
+
+	options := rds.DescribeDBSecurityGroups{
+		DBSecurityGroupName: "foobarbaz",
+	}
+
+	resp, err := s.rds.DescribeDBSecurityGroups(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeDBSecurityGroups"})
+	c.Assert(req.Form["DBSecurityGroupName"], DeepEquals, []string{"foobarbaz"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "b76e692c-b98c-11d3-a907-5a2c468b9cb0")
+	c.Assert(resp.DBSecurityGroups[0].EC2SecurityGroupIds, DeepEquals, []string{"sg-7f476617"})
+	c.Assert(resp.DBSecurityGroups[0].EC2SecurityGroupOwnerIds, DeepEquals, []string{"803#########"})
+}
+
 func (s *S) Test_DeleteDBInstance(c *C) {
 	testServer.Response(200, nil, DeleteDBInstanceExample)
 
@@ -96,4 +132,20 @@ func (s *S) Test_DeleteDBInstance(c *C) {
 	c.Assert(req.Form["SkipFinalSnapshot"], DeepEquals, []string{"true"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "7369556f-b70d-11c3-faca-6ba18376ea1b")
+}
+
+func (s *S) Test_DeleteDBSecurityGroup(c *C) {
+	testServer.Response(200, nil, DeleteDBSecurityGroupExample)
+
+	options := rds.DeleteDBSecurityGroup{
+		DBSecurityGroupName: "foobarbaz",
+	}
+
+	resp, err := s.rds.DeleteDBSecurityGroup(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteDBSecurityGroup"})
+	c.Assert(req.Form["DBSecurityGroupName"], DeepEquals, []string{"foobarbaz"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7aec7454-ba25-11d3-855b-576787000e19")
 }
