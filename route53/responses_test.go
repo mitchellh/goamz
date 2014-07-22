@@ -26,3 +26,12 @@ var CreateHostedZoneExample = `<?xml version="1.0" encoding="UTF-8"?>
       </NameServers>
    </DelegationSet>
 </CreateHostedZoneResponse>`
+
+var DeleteHostedZoneExample = `<?xml version="1.0" encoding="UTF-8"?>
+<DeleteHostedZoneResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+   <ChangeInfo>
+      <Id>/change/C1PA6795UKMFR9</Id>
+      <Status>PENDING</Status>
+      <SubmittedAt>2012-03-10T01:36:41.958Z</SubmittedAt>
+   </ChangeInfo>
+</DeleteHostedZoneResponse>`

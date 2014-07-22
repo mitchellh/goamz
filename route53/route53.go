@@ -6,8 +6,10 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/mitchellh/goamz/aws"
@@ -69,19 +71,24 @@ func (r *Route53) query(method, path string, req, resp interface{}) error {
 	}
 	endpoint.Path = path
 	sign(r.Auth, endpoint.Path, params)
-	endpoint.RawQuery = multimap(params).Encode()
 
 	// Encode the body
-	body := bytes.NewBuffer(nil)
-	enc := xml.NewEncoder(body)
-	if err := enc.Encode(req); err != nil {
-		return err
+	var body io.ReadWriter
+	if req != nil {
+		body = bytes.NewBuffer(nil)
+		enc := xml.NewEncoder(body)
+		if err := enc.Encode(req); err != nil {
+			return err
+		}
 	}
 
 	// Make the http request
 	hReq, err := http.NewRequest(method, endpoint.String(), body)
 	if err != nil {
 		return err
+	}
+	for k, v := range params {
+		hReq.Header.Set(k, v)
 	}
 	re, err := r.httpClient.Do(hReq)
 	if err != nil {
@@ -122,4 +129,21 @@ func (r *Route53) CreateHostedZone(req *CreateHostedZoneRequest) (*CreateHostedZ
 		return nil, err
 	}
 	return out, nil
+}
+
+type DeleteHostedZoneResponse struct {
+	ChangeInfo ChangeInfo `xml:"ChangeInfo"`
+}
+
+func (r *Route53) DeleteHostedZone(ID string) (*DeleteHostedZoneResponse, error) {
+	// Remove the hostedzone prefix if given
+	if strings.HasPrefix(ID, "/hostedzone/") {
+		ID = strings.TrimPrefix(ID, "/hostedzone/")
+	}
+	out := &DeleteHostedZoneResponse{}
+	err := r.query("DELETE", fmt.Sprintf("/%s/hostedzone/%s", APIVersion, ID), nil, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, err
 }
