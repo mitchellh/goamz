@@ -90,22 +90,22 @@ func makeParams(action string) map[string]string {
 // Rds objects
 
 type DBInstance struct {
+	Address                    string   `xml:"DBInstance>Endpoint>Address"`
+	AllocatedStorage           int      `xml:"DBInstance>AllocatedStorage"`
+	AvailabilityZone           string   `xml:"DBInstance>AvailabilityZone"`
 	BackupRetentionPeriod      int      `xml:"DBInstance>BackupRetentionPeriod"`
-	MultiAZ                    bool     `xml:"DBInstance>MultiAZ"`
-	DBInstanceStatus           string   `xml:"DBInstance>DBInstanceStatus"`
-	VpcSecurityGroupIds        []string `xml:"DBInstance>VpcSecurityGroups"`
+	DBInstanceClass            string   `xml:"DBInstance>DBInstanceClass"`
 	DBInstanceIdentifier       string   `xml:"DBInstance>DBInstanceIdentifier"`
+	DBInstanceStatus           string   `xml:"DBInstance>DBInstanceStatus"`
+	DBName                     string   `xml:"DBInstance>DBName"`
+	Engine                     string   `xml:"DBInstance>Engine"`
+	EngineVersion              string   `xml:"DBInstance>EngineVersion"`
+	MasterUsername             string   `xml:"DBInstance>MasterUsername"`
+	MultiAZ                    bool     `xml:"DBInstance>MultiAZ"`
+	Port                       int      `xml:"DBInstance>Endpoint>Port"`
 	PreferredBackupWindow      string   `xml:"DBInstance>PreferredBackupWindow"`
 	PreferredMaintenanceWindow string   `xml:"DBInstance>PreferredMaintenanceWindow"`
-	AvailabilityZone           string   `xml:"DBInstance>AvailabilityZone"`
-	Engine                     string   `xml:"DBInstance>Engine"`
-	Port                       int      `xml:"DBInstance>Endpoint>Port"`
-	Address                    string   `xml:"DBInstance>Endpoint>Address"`
-	EngineVersion              string   `xml:"DBInstance>EngineVersion"`
-	DBName                     string   `xml:"DBInstance>DBName"`
-	AllocatedStorage           int      `xml:"DBInstance>AllocatedStorage"`
-	MasterUsername             string   `xml:"DBInstance>MasterUsername"`
-	DBInstanceClass            string   `xml:"DBInstance>DBInstanceClass"`
+	VpcSecurityGroupIds        []string `xml:"DBInstance>VpcSecurityGroups"`
 }
 
 // ----------------------------------------------------------------------------
