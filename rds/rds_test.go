@@ -47,6 +47,7 @@ func (s *S) Test_CreateDBInstance(c *C) {
 		MasterUsername:             "foobar",
 		MasterUserPassword:         "bazbarbaz",
 		DBInstanceClass:            "db.m1.small",
+		DBSecurityGroupNames:       []string{"foo", "bar"},
 
 		SetBackupRetentionPeriod: true,
 	}
@@ -56,6 +57,7 @@ func (s *S) Test_CreateDBInstance(c *C) {
 
 	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateDBInstance"})
 	c.Assert(req.Form["Engine"], DeepEquals, []string{"mysql"})
+	c.Assert(req.Form["DBSecurityGroups.member.1"], DeepEquals, []string{"foo"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "523e3218-afc7-11c3-90f5-f90431260ab4")
 }
@@ -75,6 +77,7 @@ func (s *S) Test_DescribeDBInstances(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "01b2685a-b978-11d3-f272-7cd6cce12cc5")
 	c.Assert(resp.DBInstances[0].DBName, Equals, "mysampledb")
+	c.Assert(resp.DBInstances[0].DBSecurityGroupNames, DeepEquals, []string{"my-db-secgroup"})
 }
 
 func (s *S) Test_DeleteDBInstance(c *C) {

@@ -208,8 +208,8 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 	}
 
 	for j, tag := range options.Tags {
-		params["Tag.member"+strconv.Itoa(j+1)+".Key"] = tag.Key
-		params["Tag.member"+strconv.Itoa(j+1)+".Value"] = tag.Value
+		params["Tag.member."+strconv.Itoa(j+1)+".Key"] = tag.Key
+		params["Tag.member."+strconv.Itoa(j+1)+".Value"] = tag.Value
 	}
 
 	if options.VPCZoneIdentifier != nil {

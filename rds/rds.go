@@ -90,22 +90,23 @@ func makeParams(action string) map[string]string {
 // Rds objects
 
 type DBInstance struct {
-	Address                    string   `xml:"DBInstance>Endpoint>Address"`
-	AllocatedStorage           int      `xml:"DBInstance>AllocatedStorage"`
-	AvailabilityZone           string   `xml:"DBInstance>AvailabilityZone"`
-	BackupRetentionPeriod      int      `xml:"DBInstance>BackupRetentionPeriod"`
-	DBInstanceClass            string   `xml:"DBInstance>DBInstanceClass"`
-	DBInstanceIdentifier       string   `xml:"DBInstance>DBInstanceIdentifier"`
-	DBInstanceStatus           string   `xml:"DBInstance>DBInstanceStatus"`
-	DBName                     string   `xml:"DBInstance>DBName"`
-	Engine                     string   `xml:"DBInstance>Engine"`
-	EngineVersion              string   `xml:"DBInstance>EngineVersion"`
-	MasterUsername             string   `xml:"DBInstance>MasterUsername"`
-	MultiAZ                    bool     `xml:"DBInstance>MultiAZ"`
-	Port                       int      `xml:"DBInstance>Endpoint>Port"`
-	PreferredBackupWindow      string   `xml:"DBInstance>PreferredBackupWindow"`
-	PreferredMaintenanceWindow string   `xml:"DBInstance>PreferredMaintenanceWindow"`
-	VpcSecurityGroupIds        []string `xml:"DBInstance>VpcSecurityGroups"`
+	Address                    string   `xml:"Endpoint>Address"`
+	AllocatedStorage           int      `xml:"AllocatedStorage"`
+	AvailabilityZone           string   `xml:"AvailabilityZone"`
+	BackupRetentionPeriod      int      `xml:"BackupRetentionPeriod"`
+	DBInstanceClass            string   `xml:"DBInstanceClass"`
+	DBInstanceIdentifier       string   `xml:"DBInstanceIdentifier"`
+	DBInstanceStatus           string   `xml:"DBInstanceStatus"`
+	DBName                     string   `xml:"DBName"`
+	Engine                     string   `xml:"Engine"`
+	EngineVersion              string   `xml:"EngineVersion"`
+	MasterUsername             string   `xml:"MasterUsername"`
+	MultiAZ                    bool     `xml:"MultiAZ"`
+	Port                       int      `xml:"Endpoint>Port"`
+	PreferredBackupWindow      string   `xml:"PreferredBackupWindow"`
+	PreferredMaintenanceWindow string   `xml:"PreferredMaintenanceWindow"`
+	VpcSecurityGroupIds        []string `xml:"VpcSecurityGroups"`
+	DBSecurityGroupNames       []string `xml:"DBSecurityGroups>DBSecurityGroup>DBSecurityGroupName"`
 }
 
 // ----------------------------------------------------------------------------
@@ -131,6 +132,7 @@ type CreateDBInstance struct {
 	PreferredMaintenanceWindow string // ddd:hh24:mi-ddd:hh24:mi
 	PubliclyAccessible         bool
 	VpcSecurityGroupIds        []string
+	DBSecurityGroupNames       []string
 
 	SetAllocatedStorage      bool
 	SetBackupRetentionPeriod bool
@@ -210,7 +212,11 @@ func (rds *Rds) CreateDBInstance(options *CreateDBInstance) (resp *SimpleResp, e
 	}
 
 	for j, group := range options.VpcSecurityGroupIds {
-		params["VpcSecurityGroupIds.member"+strconv.Itoa(j+1)] = group
+		params["VpcSecurityGroupIds.member."+strconv.Itoa(j+1)] = group
+	}
+
+	for j, group := range options.DBSecurityGroupNames {
+		params["DBSecurityGroups.member."+strconv.Itoa(j+1)] = group
 	}
 
 	resp = &SimpleResp{}
@@ -233,7 +239,7 @@ type DescribeDBInstances struct {
 
 type DescribeDBInstancesResp struct {
 	RequestId   string       `xml:"ResponseMetadata>RequestId"`
-	DBInstances []DBInstance `xml:"DescribeDBInstancesResult>DBInstances"`
+	DBInstances []DBInstance `xml:"DescribeDBInstancesResult>DBInstances>DBInstance"`
 }
 
 func (rds *Rds) DescribeDBInstances(options *DescribeDBInstances) (resp *DescribeDBInstancesResp, err error) {
