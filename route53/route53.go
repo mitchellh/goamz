@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 
@@ -75,11 +76,19 @@ func (r *Route53) query(method, path string, req, resp interface{}) error {
 	// Encode the body
 	var body io.ReadWriter
 	if req != nil {
-		body = bytes.NewBuffer(nil)
-		enc := xml.NewEncoder(body)
-		if err := enc.Encode(req); err != nil {
+		bodyBuf := bytes.NewBuffer(nil)
+		enc := xml.NewEncoder(bodyBuf)
+		start := xml.StartElement{
+			Name: xml.Name{
+				Space: "",
+				Local: reflect.Indirect(reflect.ValueOf(req)).Type().Name(),
+			},
+			Attr: []xml.Attr{{xml.Name{"", "xmlns"}, "https://route53.amazonaws.com/doc/2013-04-01/"}},
+		}
+		if err := enc.EncodeElement(req, start); err != nil {
 			return err
 		}
+		body = bodyBuf
 	}
 
 	// Make the http request
@@ -101,8 +110,10 @@ func (r *Route53) query(method, path string, req, resp interface{}) error {
 	case 200:
 	case 201:
 	default:
-		return fmt.Errorf("Request failed, got status code: %d",
-			re.StatusCode)
+		var body bytes.Buffer
+		io.Copy(&body, re.Body)
+		return fmt.Errorf("Request failed, got status code: %d. Response: %s",
+			re.StatusCode, body.Bytes())
 	}
 
 	// Decode the response
