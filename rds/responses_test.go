@@ -286,3 +286,44 @@ var CreateDBSecurityGroupExample = `
   </ResponseMetadata>
 </CreateDBSecurityGroupResponse>
 `
+
+var AuthorizeDBSecurityGroupIngressExample = `
+<AuthorizeDBSecurityGroupIngressResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <AuthorizeDBSecurityGroupIngressResult>
+    <DBSecurityGroup>
+      <EC2SecurityGroups>
+        <EC2SecurityGroup>
+          <Status>authorized</Status>
+          <EC2SecurityGroupName>elasticbeanstalk-windows</EC2SecurityGroupName>
+          <EC2SecurityGroupOwnerId>803#########</EC2SecurityGroupOwnerId>
+          <EC2SecurityGroupId>sg-7f476617</EC2SecurityGroupId>
+        </EC2SecurityGroup>
+      </EC2SecurityGroups>
+      <DBSecurityGroupDescription>default</DBSecurityGroupDescription>
+      <IPRanges>
+        <IPRange>
+          <CIDRIP>192.0.0.0/24</CIDRIP>
+          <Status>authorized</Status>
+        </IPRange>
+        <IPRange>
+          <CIDRIP>190.0.1.0/29</CIDRIP>
+          <Status>authorized</Status>
+        </IPRange>
+        <IPRange>
+          <CIDRIP>190.0.2.0/29</CIDRIP>
+          <Status>authorized</Status>
+        </IPRange>
+        <IPRange>
+          <CIDRIP>10.0.0.0/8</CIDRIP>
+          <Status>authorized</Status>
+        </IPRange>
+      </IPRanges>
+      <OwnerId>803#########</OwnerId>
+      <DBSecurityGroupName>default</DBSecurityGroupName>
+    </DBSecurityGroup>
+  </AuthorizeDBSecurityGroupIngressResult>
+  <ResponseMetadata>
+    <RequestId>6176b5f8-bfed-11d3-f92b-31fa5e8dbc99</RequestId>
+  </ResponseMetadata>
+</AuthorizeDBSecurityGroupIngressResponse>
+`

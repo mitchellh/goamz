@@ -149,3 +149,21 @@ func (s *S) Test_DeleteDBSecurityGroup(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "7aec7454-ba25-11d3-855b-576787000e19")
 }
+
+func (s *S) Test_AuthorizeDBSecurityGroupIngress(c *C) {
+	testServer.Response(200, nil, AuthorizeDBSecurityGroupIngressExample)
+
+	options := rds.AuthorizeDBSecurityGroupIngress{
+		DBSecurityGroupName:     "foobarbaz",
+		EC2SecurityGroupOwnerId: "bar",
+	}
+
+	resp, err := s.rds.AuthorizeDBSecurityGroupIngress(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"AuthorizeDBSecurityGroupIngress"})
+	c.Assert(req.Form["DBSecurityGroupName"], DeepEquals, []string{"foobarbaz"})
+	c.Assert(req.Form["EC2SecurityGroupOwnerId"], DeepEquals, []string{"bar"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "6176b5f8-bfed-11d3-f92b-31fa5e8dbc99")
+}

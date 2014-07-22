@@ -260,6 +260,47 @@ func (rds *Rds) CreateDBSecurityGroup(options *CreateDBSecurityGroup) (resp *Sim
 	return
 }
 
+// The CreateDBSecurityGroup request parameters
+type AuthorizeDBSecurityGroupIngress struct {
+	Cidr                    string
+	DBSecurityGroupName     string
+	EC2SecurityGroupId      string
+	EC2SecurityGroupName    string
+	EC2SecurityGroupOwnerId string
+}
+
+func (rds *Rds) AuthorizeDBSecurityGroupIngress(options *AuthorizeDBSecurityGroupIngress) (resp *SimpleResp, err error) {
+	params := makeParams("AuthorizeDBSecurityGroupIngress")
+
+	if attr := options.Cidr; attr != "" {
+		params["CIDRIP"] = attr
+	}
+
+	if attr := options.EC2SecurityGroupId; attr != "" {
+		params["EC2SecurityGroupId"] = attr
+	}
+
+	if attr := options.EC2SecurityGroupOwnerId; attr != "" {
+		params["EC2SecurityGroupOwnerId"] = attr
+	}
+
+	if attr := options.EC2SecurityGroupName; attr != "" {
+		params["EC2SecurityGroupName"] = attr
+	}
+
+	params["DBSecurityGroupName"] = options.DBSecurityGroupName
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Describe
 
 // DescribeDBInstances request params
