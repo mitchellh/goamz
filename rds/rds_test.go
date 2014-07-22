@@ -114,6 +114,9 @@ func (s *S) Test_DescribeDBSecurityGroups(c *C) {
 	c.Assert(resp.RequestId, Equals, "b76e692c-b98c-11d3-a907-5a2c468b9cb0")
 	c.Assert(resp.DBSecurityGroups[0].EC2SecurityGroupIds, DeepEquals, []string{"sg-7f476617"})
 	c.Assert(resp.DBSecurityGroups[0].EC2SecurityGroupOwnerIds, DeepEquals, []string{"803#########"})
+	c.Assert(resp.DBSecurityGroups[0].EC2SecurityGroupStatuses, DeepEquals, []string{"authorized"})
+	c.Assert(resp.DBSecurityGroups[0].CidrIps, DeepEquals, []string{"192.0.0.0/24", "190.0.1.0/29", "190.0.2.0/29", "10.0.0.0/8"})
+	c.Assert(resp.DBSecurityGroups[0].CidrStatuses, DeepEquals, []string{"authorized", "authorized", "authorized", "authorized"})
 }
 
 func (s *S) Test_DeleteDBInstance(c *C) {

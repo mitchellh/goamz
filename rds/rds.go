@@ -114,6 +114,9 @@ type DBSecurityGroup struct {
 	Name                     string   `xml:"DBSecurityGroupName"`
 	EC2SecurityGroupIds      []string `xml:"EC2SecurityGroups>EC2SecurityGroup>EC2SecurityGroupId"`
 	EC2SecurityGroupOwnerIds []string `xml:"EC2SecurityGroups>EC2SecurityGroup>EC2SecurityGroupOwnerId"`
+	EC2SecurityGroupStatuses []string `xml:"EC2SecurityGroups>EC2SecurityGroup>Status"`
+	CidrIps                  []string `xml:"IPRanges>IPRange>CIDRIP"`
+	CidrStatuses             []string `xml:"IPRanges>IPRange>Status"`
 }
 
 // ----------------------------------------------------------------------------
