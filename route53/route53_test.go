@@ -97,6 +97,21 @@ func TestGetHostedZone(t *testing.T) {
 	}
 }
 
+func TestGetChange(t *testing.T) {
+	testServer := makeTestServer()
+	client := makeClient(testServer)
+	testServer.Response(200, nil, GetChangeExample)
+
+	status, err := client.GetChange("/change/abcd")
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	if status != "INSYNC" {
+		t.Fatalf("bad: %v", status)
+	}
+}
+
 func decode(t *testing.T, r io.Reader, out interface{}) {
 	var buf1 bytes.Buffer
 	var buf2 bytes.Buffer

@@ -154,6 +154,14 @@ func CleanZoneID(ID string) string {
 	return ID
 }
 
+// CleanChangeID is used to remove the leading /change/
+func CleanChangeID(ID string) string {
+	if strings.HasPrefix(ID, "/change/") {
+		ID = strings.TrimPrefix(ID, "/change/")
+	}
+	return ID
+}
+
 type GetHostedZoneResponse struct {
 	HostedZone    HostedZone    `xml:"HostedZone"`
 	DelegationSet DelegationSet `xml:"DelegationSet"`
@@ -168,4 +176,18 @@ func (r *Route53) GetHostedZone(ID string) (*GetHostedZoneResponse, error) {
 		return nil, err
 	}
 	return out, err
+}
+
+type GetChangeResponse struct {
+	ChangeInfo ChangeInfo `xml:"ChangeInfo"`
+}
+
+func (r *Route53) GetChange(ID string) (string, error) {
+	ID = CleanChangeID(ID)
+	out := &GetChangeResponse{}
+	err := r.query("GET", fmt.Sprintf("/%s/change/%s", APIVersion, ID), nil, out)
+	if err != nil {
+		return "", err
+	}
+	return out.ChangeInfo.Status, err
 }

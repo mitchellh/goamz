@@ -56,3 +56,12 @@ var GetHostedZoneExample = `<?xml version="1.0" encoding="UTF-8"?>
       </NameServers>
    </DelegationSet>
 </GetHostedZoneResponse>`
+
+var GetChangeExample = `<?xml version="1.0" encoding="UTF-8"?>
+<GetChangeResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+   <ChangeInfo>
+      <Id>C2682N5HXP0BZ4</Id>
+      <Status>INSYNC</Status>
+      <SubmittedAt>2011-09-10T01:36:41.958Z</SubmittedAt>
+   </ChangeInfo>
+</GetChangeResponse>`
