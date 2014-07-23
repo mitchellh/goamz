@@ -296,3 +296,12 @@ func (r *Route53) ListResourceRecordSets(zone string, lopts *ListOpts) (*ListRes
 	}
 	return out, nil
 }
+
+func FQDN(name string) string {
+	n := len(name)
+	if n == 0 || name[n-1] == '.' {
+		return name
+	} else {
+		return name + "."
+	}
+}
