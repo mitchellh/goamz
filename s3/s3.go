@@ -586,7 +586,7 @@ func (req *request) url() (*url.URL, error) {
 		return nil, fmt.Errorf("bad S3 endpoint URL %q: %v", req.baseurl, err)
 	}
 	u.RawQuery = req.params.Encode()
-	u.Path = req.path
+	u.Opaque = req.path
 	return u, nil
 }
 
