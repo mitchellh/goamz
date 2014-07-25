@@ -295,6 +295,42 @@ func (b *Bucket) PutReaderHeader(path string, r io.Reader, length int64, customH
 	return b.S3.query(req, nil)
 }
 
+/*
+Copy - copy objects inside bucket
+*/
+func (b *Bucket) Copy(oldPath, newPath string, perm ACL) error {
+	if !strings.HasPrefix(oldPath, "/") {
+		oldPath = "/" + oldPath
+	}
+
+	req := &request{
+		method: "PUT",
+		bucket: b.Name,
+		path:   newPath,
+		headers: map[string][]string{
+			"x-amz-copy-source": {(&url.URL{Path: "/" + b.Name + oldPath}).String()},
+			"x-amz-acl":         {string(perm)},
+		},
+	}
+
+	err := b.S3.prepare(req)
+	if err != nil {
+		return err
+	}
+
+	for attempt := attempts.Start(); attempt.Next(); {
+		_, err = b.S3.run(req, nil)
+		if shouldRetry(err) && attempt.HasNext() {
+			continue
+		}
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	panic("unreachable")
+}
+
 // Del removes an object from the S3 bucket.
 //
 // See http://goo.gl/APeTt for details.
