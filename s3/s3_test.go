@@ -290,6 +290,24 @@ func (s *S) TestCopy(c *C) {
 	c.Assert(req.Header["X-Amz-Acl"], DeepEquals, []string{"private"})
 }
 
+func (s *S) TestPlusInURL(c *C) {
+	testServer.Response(200, nil, "")
+
+	b := s.s3.Bucket("bucket")
+	err := b.Copy(
+		"dir/old+f?le",
+		"dir/new+f?le",
+		s3.Private,
+	)
+	c.Assert(err, IsNil)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Method, Equals, "PUT")
+	c.Assert(req.RequestURI, Equals, "/bucket/dir/new%2Bf%3Fle")
+	c.Assert(req.Header["X-Amz-Copy-Source"], DeepEquals, []string{"/bucket/dir/old%2Bf%3Fle"})
+	c.Assert(req.Header["X-Amz-Acl"], DeepEquals, []string{"private"})
+}
+
 // DelObject docs: http://goo.gl/APeTt
 
 func (s *S) TestDelObject(c *C) {
