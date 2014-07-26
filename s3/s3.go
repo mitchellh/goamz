@@ -308,7 +308,7 @@ func (b *Bucket) Copy(oldPath, newPath string, perm ACL) error {
 		bucket: b.Name,
 		path:   newPath,
 		headers: map[string][]string{
-			"x-amz-copy-source": {(&url.URL{Path: "/" + b.Name + oldPath}).String()},
+			"x-amz-copy-source": {strings.Replace((&url.URL{Path: "/" + b.Name + oldPath}).RequestURI(), "+", "%2B", -1)},
 			"x-amz-acl":         {string(perm)},
 		},
 	}
@@ -621,8 +621,11 @@ func (req *request) url() (*url.URL, error) {
 	if err != nil {
 		return nil, fmt.Errorf("bad S3 endpoint URL %q: %v", req.baseurl, err)
 	}
+
+	// Amazon treats '+' in URI as space, so it should be escaped
+	u.Opaque = strings.Replace((&url.URL{Path: req.path}).RequestURI(), "+", "%2B", -1)
 	u.RawQuery = req.params.Encode()
-	u.Path = req.path
+
 	return u, nil
 }
 
