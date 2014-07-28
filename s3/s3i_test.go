@@ -225,21 +225,21 @@ func (s *ClientTests) TestCopy(c *C) {
 	b := testBucket(s.s3)
 	err := b.PutBucket(s3.PublicRead)
 
-	err = b.Put("name", []byte("yo!"), "text/plain", s3.PublicRead)
+	err = b.Put("name+1", []byte("yo!"), "text/plain", s3.PublicRead)
 	c.Assert(err, IsNil)
-	defer b.Del("name")
+	defer b.Del("name+1")
 
-	err = b.Copy("name", "name2", s3.PublicRead)
+	err = b.Copy("name+1", "name+2", s3.PublicRead)
 	c.Assert(err, IsNil)
-	defer b.Del("name2")
+	defer b.Del("name+2")
 
-	data, err := b.Get("name2")
+	data, err := b.Get("name+2")
 	c.Assert(err, IsNil)
 	c.Assert(string(data), Equals, "yo!")
 
-	err = b.Del("name")
+	err = b.Del("name+1")
 	c.Assert(err, IsNil)
-	err = b.Del("name2")
+	err = b.Del("name+2")
 	c.Assert(err, IsNil)
 
 	err = b.DelBucket()

@@ -308,7 +308,7 @@ func (b *Bucket) Copy(oldPath, newPath string, perm ACL) error {
 		bucket: b.Name,
 		path:   newPath,
 		headers: map[string][]string{
-			"x-amz-copy-source": {strings.Replace((&url.URL{Path: "/" + b.Name + oldPath}).RequestURI(), "+", "%2B", -1)},
+			"x-amz-copy-source": {amazonEscape("/" + b.Name + oldPath)},
 			"x-amz-acl":         {string(perm)},
 		},
 	}
@@ -577,7 +577,7 @@ func (b *Bucket) URL(path string) string {
 	if err != nil {
 		panic(err)
 	}
-	u, err := req.url()
+	u, err := req.url(true)
 	if err != nil {
 		panic(err)
 	}
@@ -597,7 +597,7 @@ func (b *Bucket) SignedURL(path string, expires time.Time) string {
 	if err != nil {
 		panic(err)
 	}
-	u, err := req.url()
+	u, err := req.url(true)
 	if err != nil {
 		panic(err)
 	}
@@ -616,14 +616,54 @@ type request struct {
 	prepared bool
 }
 
-func (req *request) url() (*url.URL, error) {
+// amazonShouldEscape returns true if byte should be escaped
+func amazonShouldEscape(c byte) bool {
+	return !((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+		(c >= '0' && c <= '9') || c == '_' || c == '-' || c == '~' || c == '.' || c == '/')
+}
+
+// amazonEscape does uri escaping exactly as Amazon does
+func amazonEscape(s string) string {
+	hexCount := 0
+
+	for i := 0; i < len(s); i++ {
+		if amazonShouldEscape(s[i]) {
+			hexCount++
+		}
+	}
+
+	if hexCount == 0 {
+		return s
+	}
+
+	t := make([]byte, len(s)+2*hexCount)
+	j := 0
+	for i := 0; i < len(s); i++ {
+		if c := s[i]; amazonShouldEscape(c) {
+			t[j] = '%'
+			t[j+1] = "0123456789ABCDEF"[c>>4]
+			t[j+2] = "0123456789ABCDEF"[c&15]
+			j += 3
+		} else {
+			t[j] = s[i]
+			j++
+		}
+	}
+	return string(t)
+}
+
+// url returns url to resource, either full (with host/scheme) or
+// partial for HTTP request
+func (req *request) url(full bool) (*url.URL, error) {
 	u, err := url.Parse(req.baseurl)
 	if err != nil {
 		return nil, fmt.Errorf("bad S3 endpoint URL %q: %v", req.baseurl, err)
 	}
 
-	// Amazon treats '+' in URI as space, so it should be escaped
-	u.Opaque = strings.Replace((&url.URL{Path: req.path}).RequestURI(), "+", "%2B", -1)
+	u.Opaque = amazonEscape(req.path)
+	if full {
+		u.Opaque = "//" + u.Host + u.Opaque
+	}
 	u.RawQuery = req.params.Encode()
 
 	return u, nil
@@ -710,7 +750,7 @@ func (s3 *S3) prepare(req *request) error {
 	}
 	req.headers["Host"] = []string{u.Host}
 	req.headers["Date"] = []string{time.Now().In(time.UTC).Format(time.RFC1123)}
-	sign(s3.Auth, req.method, req.signpath, req.params, req.headers)
+	sign(s3.Auth, req.method, amazonEscape(req.signpath), req.params, req.headers)
 	return nil
 }
 
@@ -722,7 +762,7 @@ func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
 		log.Printf("Running S3 request: %#v", req)
 	}
 
-	u, err := req.url()
+	u, err := req.url(false)
 	if err != nil {
 		return nil, err
 	}
