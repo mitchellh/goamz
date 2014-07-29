@@ -114,6 +114,7 @@ type LaunchConfiguration struct {
 	KeyName        string          `xml:"member>KeyName"`
 	Name           string          `xml:"member>LaunchConfigurationName"`
 	SecurityGroups []SecurityGroup `xml:"member>SecurityGroups"`
+	UserData       string          `xml:"member>UserData"`
 }
 
 type AutoScalingGroup struct {
