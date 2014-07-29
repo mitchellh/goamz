@@ -114,6 +114,7 @@ type LaunchConfiguration struct {
 	KeyName        string          `xml:"member>KeyName"`
 	Name           string          `xml:"member>LaunchConfigurationName"`
 	SecurityGroups []SecurityGroup `xml:"member>SecurityGroups"`
+	UserData       []byte          `xml:"member>UserData"`
 }
 
 type AutoScalingGroup struct {
@@ -235,6 +236,7 @@ type CreateLaunchConfiguration struct {
 	KeyName        string
 	Name           string
 	SecurityGroups []string
+	UserData       string
 }
 
 func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchConfiguration) (resp *SimpleResp, err error) {
@@ -258,6 +260,12 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 
 	for i, v := range options.SecurityGroups {
 		params["SecurityGroups.member."+strconv.Itoa(i+1)] = v
+	}
+
+	if options.UserData != "" {
+		userData := make([]byte, b64.EncodedLen(len(options.UserData)))
+		b64.Encode(userData, []byte(options.UserData))
+		params["UserData"] = string(userData)
 	}
 
 	resp = &SimpleResp{}
