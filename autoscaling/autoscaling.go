@@ -235,6 +235,7 @@ type CreateLaunchConfiguration struct {
 	KeyName        string
 	Name           string
 	SecurityGroups []string
+	UserData       string
 }
 
 func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchConfiguration) (resp *SimpleResp, err error) {
@@ -258,6 +259,10 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 
 	for i, v := range options.SecurityGroups {
 		params["SecurityGroups.member."+strconv.Itoa(i+1)] = v
+	}
+
+	if options.UserData != "" {
+		params["UserData"] = options.UserData
 	}
 
 	resp = &SimpleResp{}
