@@ -136,6 +136,35 @@ func (s *S) TestDeregisterInstancesFromLoadBalancer(c *C) {
 	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
 }
 
+func (s *S) TestConfigureHealthCheck(c *C) {
+	testServer.Response(200, nil, ConfigureHealthCheckExample)
+
+	options := elb.ConfigureHealthCheck{
+		LoadBalancerName: "foobar",
+		Check: elb.HealthCheck{
+			HealthyThreshold: 2,
+			UnhealthyThreshold: 2,
+			Interval: 30,
+			Target: "HTTP:80/ping",
+			Timeout: 3,
+		},
+	}
+
+	resp, err := s.elb.ConfigureHealthCheck(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ConfigureHealthCheck"})
+	c.Assert(req.Form["LoadBalancerName"], DeepEquals, []string{"foobar"})
+	c.Assert(err, IsNil)
+
+	c.Assert(resp.Check.HealthyThreshold, Equals, 2)
+	c.Assert(resp.Check.UnhealthyThreshold, Equals, 2)
+	c.Assert(resp.Check.Interval, Equals, 30)
+	c.Assert(resp.Check.Target, Equals, "HTTP:80/ping")
+	c.Assert(resp.Check.Timeout, Equals, 3)
+	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
+}
+
 func (s *S) TestDescribeInstanceHealth(c *C) {
 	testServer.Response(200, nil, DescribeInstanceHealthExample)
 
