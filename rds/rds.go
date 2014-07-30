@@ -194,7 +194,7 @@ func (rds *Rds) CreateDBInstance(options *CreateDBInstance) (resp *SimpleResp, e
 	}
 
 	if options.EngineVersion != "" {
-		params["Engine"] = options.EngineVersion
+		params["EngineVersion"] = options.EngineVersion
 	}
 
 	if options.MasterUsername != "" {
