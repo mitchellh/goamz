@@ -92,6 +92,11 @@ func (s *S) TestDescribeLoadBalancers(c *C) {
 	c.Assert(resp.LoadBalancers[0].AvailabilityZones[0].AvailabilityZone, Equals, "us-east-1a")
 	c.Assert(resp.LoadBalancers[0].Scheme, Equals, "internet-facing")
 	c.Assert(resp.LoadBalancers[0].DNSName, Equals, "MyLoadBalancer-123456789.us-east-1.elb.amazonaws.com")
+	c.Assert(resp.LoadBalancers[0].HealthCheck.HealthyThreshold, Equals, int64(2))
+	c.Assert(resp.LoadBalancers[0].HealthCheck.UnhealthyThreshold, Equals, int64(10))
+	c.Assert(resp.LoadBalancers[0].HealthCheck.Interval, Equals, int64(90))
+	c.Assert(resp.LoadBalancers[0].HealthCheck.Target, Equals, "HTTP:80/")
+	c.Assert(resp.LoadBalancers[0].HealthCheck.Timeout, Equals, int64(60))
 }
 
 func (s *S) TestRegisterInstancesWithLoadBalancer(c *C) {
@@ -142,11 +147,11 @@ func (s *S) TestConfigureHealthCheck(c *C) {
 	options := elb.ConfigureHealthCheck{
 		LoadBalancerName: "foobar",
 		Check: elb.HealthCheck{
-			HealthyThreshold: 2,
+			HealthyThreshold:   2,
 			UnhealthyThreshold: 2,
-			Interval: 30,
-			Target: "HTTP:80/ping",
-			Timeout: 3,
+			Interval:           30,
+			Target:             "HTTP:80/ping",
+			Timeout:            3,
 		},
 	}
 
@@ -157,11 +162,11 @@ func (s *S) TestConfigureHealthCheck(c *C) {
 	c.Assert(req.Form["LoadBalancerName"], DeepEquals, []string{"foobar"})
 	c.Assert(err, IsNil)
 
-	c.Assert(resp.Check.HealthyThreshold, Equals, 2)
-	c.Assert(resp.Check.UnhealthyThreshold, Equals, 2)
-	c.Assert(resp.Check.Interval, Equals, 30)
+	c.Assert(resp.Check.HealthyThreshold, Equals, int64(2))
+	c.Assert(resp.Check.UnhealthyThreshold, Equals, int64(2))
+	c.Assert(resp.Check.Interval, Equals, int64(30))
 	c.Assert(resp.Check.Target, Equals, "HTTP:80/ping")
-	c.Assert(resp.Check.Timeout, Equals, 3)
+	c.Assert(resp.Check.Timeout, Equals, int64(3))
 	c.Assert(resp.RequestId, Equals, "83c88b9d-12b7-11e3-8b82-87b12EXAMPLE")
 }
 

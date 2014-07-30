@@ -204,6 +204,7 @@ type LoadBalancer struct {
 	LoadBalancerName  string             `xml:"member>LoadBalancerName"`
 	Listeners         []Listener         `xml:"member>ListenerDescriptions"`
 	Instances         []Instance         `xml:"member>Instances"`
+	HealthCheck       HealthCheck        `xml:"member>HealthCheck"`
 	AvailabilityZones []AvailabilityZone `xml:"member>AvailabilityZones"`
 	Scheme            string             `xml:"member>Scheme"`
 	DNSName           string             `xml:"member>DNSName"`
@@ -306,21 +307,21 @@ func (elb *ELB) DeregisterInstancesFromLoadBalancer(options *DeregisterInstances
 // Health Checks
 
 type HealthCheck struct {
-	HealthyThreshold  	int64
-	UnhealthyThreshold 	int64
-	Interval						int64
-	Target 							string
-	Timeout 						int64
+	HealthyThreshold   int64  `xml:"HealthyThreshold"`
+	UnhealthyThreshold int64  `xml:"UnhealthyThreshold"`
+	Interval           int64  `xml:"Interval"`
+	Target             string `xml:"Target"`
+	Timeout            int64  `xml:"Timeout"`
 }
 
 type ConfigureHealthCheck struct {
-	LoadBalancerName 	string
-	Check 						HealthCheck
+	LoadBalancerName string
+	Check            HealthCheck
 }
 
 type ConfigureHealthCheckResp struct {
-	Check 			HealthCheck 		`xml:"ConfigureHealthCheckResult>HealthCheck"`
-	RequestId   string          `xml:"ResponseMetadata>RequestId"`
+	Check     HealthCheck `xml:"ConfigureHealthCheckResult>HealthCheck"`
+	RequestId string      `xml:"ResponseMetadata>RequestId"`
 }
 
 func (elb *ELB) ConfigureHealthCheck(options *ConfigureHealthCheck) (resp *ConfigureHealthCheckResp, err error) {
