@@ -306,11 +306,11 @@ func (elb *ELB) DeregisterInstancesFromLoadBalancer(options *DeregisterInstances
 // Health Checks
 
 type HealthCheck struct {
-	HealthyThreshold  	int
-	UnhealthyThreshold 	int
-	Interval						int
+	HealthyThreshold  	int64
+	UnhealthyThreshold 	int64
+	Interval						int64
 	Target 							string
-	Timeout 						int
+	Timeout 						int64
 }
 
 type ConfigureHealthCheck struct {
@@ -327,11 +327,11 @@ func (elb *ELB) ConfigureHealthCheck(options *ConfigureHealthCheck) (resp *Confi
 	params := makeParams("ConfigureHealthCheck")
 
 	params["LoadBalancerName"] = options.LoadBalancerName
-	params["HealthCheck.HealthyThreshold"] = strconv.Itoa(options.Check.HealthyThreshold)
-	params["HealthCheck.UnhealthyThreshold"] = strconv.Itoa(options.Check.UnhealthyThreshold)
-	params["HealthCheck.Interval"] = strconv.Itoa(options.Check.Interval)
+	params["HealthCheck.HealthyThreshold"] = strconv.Itoa(int(options.Check.HealthyThreshold))
+	params["HealthCheck.UnhealthyThreshold"] = strconv.Itoa(int(options.Check.UnhealthyThreshold))
+	params["HealthCheck.Interval"] = strconv.Itoa(int(options.Check.Interval))
 	params["HealthCheck.Target"] = options.Check.Target
-	params["HealthCheck.Timeout"] = strconv.Itoa(options.Check.Timeout)
+	params["HealthCheck.Timeout"] = strconv.Itoa(int(options.Check.Timeout))
 
 	resp = &ConfigureHealthCheckResp{}
 
