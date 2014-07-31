@@ -360,8 +360,9 @@ func (rds *Rds) DescribeDBSecurityGroups(options *DescribeDBSecurityGroups) (res
 
 // DeleteDBInstance request params
 type DeleteDBInstance struct {
-	DBInstanceIdentifier string
-	SkipFinalSnapshot    bool
+	FinalDBSnapshotIdentifier string
+	DBInstanceIdentifier      string
+	SkipFinalSnapshot         bool
 }
 
 func (rds *Rds) DeleteDBInstance(options *DeleteDBInstance) (resp *SimpleResp, err error) {
@@ -369,8 +370,12 @@ func (rds *Rds) DeleteDBInstance(options *DeleteDBInstance) (resp *SimpleResp, e
 
 	params["DBInstanceIdentifier"] = options.DBInstanceIdentifier
 
+	// If we don't skip the final snapshot, we need to specify a final
+	// snapshot identifier
 	if options.SkipFinalSnapshot {
 		params["SkipFinalSnapshot"] = "true"
+	} else {
+		params["FinalDBSnapshotIdentifier"] = options.FinalDBSnapshotIdentifier
 	}
 
 	resp = &SimpleResp{}

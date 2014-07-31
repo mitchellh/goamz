@@ -137,6 +137,26 @@ func (s *S) Test_DeleteDBInstance(c *C) {
 	c.Assert(resp.RequestId, Equals, "7369556f-b70d-11c3-faca-6ba18376ea1b")
 }
 
+func (s *S) Test_DeleteDBInstance_SnapshotIdentifier(c *C) {
+	testServer.Response(200, nil, DeleteDBInstanceExample)
+
+	options := rds.DeleteDBInstance{
+		DBInstanceIdentifier:      "foobarbaz",
+		SkipFinalSnapshot:         false,
+		FinalDBSnapshotIdentifier: "bar",
+	}
+
+	resp, err := s.rds.DeleteDBInstance(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteDBInstance"})
+	c.Assert(req.Form["DBInstanceIdentifier"], DeepEquals, []string{"foobarbaz"})
+	c.Assert(req.Form["FinalDBSnapshotIdentifier"], DeepEquals, []string{"bar"})
+	c.Assert(req.Form["SkipFinalSnapshot"], IsNil)
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7369556f-b70d-11c3-faca-6ba18376ea1b")
+}
+
 func (s *S) Test_DeleteDBSecurityGroup(c *C) {
 	testServer.Response(200, nil, DeleteDBSecurityGroupExample)
 
