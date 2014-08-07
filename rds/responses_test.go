@@ -327,3 +327,113 @@ var AuthorizeDBSecurityGroupIngressExample = `
   </ResponseMetadata>
 </AuthorizeDBSecurityGroupIngressResponse>
 `
+
+var DescribeDBSubnetGroupsExample = `
+<DescribeDBSubnetGroupsResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <DescribeDBSubnetGroupsResult>
+    <DBSubnetGroups>
+      <DBSubnetGroup>
+        <VpcId>vpc-e7abbdce</VpcId>
+        <SubnetGroupStatus>Complete</SubnetGroupStatus>
+        <DBSubnetGroupDescription>DB subnet group 1</DBSubnetGroupDescription>
+        <DBSubnetGroupName>mydbsubnetgroup1</DBSubnetGroupName>
+        <Subnets>
+          <Subnet>
+            <SubnetStatus>Active</SubnetStatus>
+            <SubnetIdentifier>subnet-e8b3e5b1</SubnetIdentifier>
+            <SubnetAvailabilityZone>
+              <Name>us-west-2a</Name>
+              <ProvisionedIopsCapable>false</ProvisionedIopsCapable>
+            </SubnetAvailabilityZone>
+          </Subnet>
+          <Subnet>
+            <SubnetStatus>Active</SubnetStatus>
+            <SubnetIdentifier>subnet-44b2f22e</SubnetIdentifier>
+            <SubnetAvailabilityZone>
+              <Name>us-west-2b</Name>
+              <ProvisionedIopsCapable>false</ProvisionedIopsCapable>
+            </SubnetAvailabilityZone>
+          </Subnet>
+        </Subnets>
+      </DBSubnetGroup>
+      <DBSubnetGroup>
+        <VpcId>vpc-c1e17bb8</VpcId>
+        <SubnetGroupStatus>Complete</SubnetGroupStatus>
+        <DBSubnetGroupDescription>My DB Subnet Group 2</DBSubnetGroupDescription>
+        <DBSubnetGroupName>sub-grp-2</DBSubnetGroupName>
+        <Subnets>
+          <Subnet>
+            <SubnetStatus>Active</SubnetStatus>
+            <SubnetIdentifier>subnet-d281ef8a</SubnetIdentifier>
+            <SubnetAvailabilityZone>
+              <Name>us-west-2a</Name>
+              <ProvisionedIopsCapable>false</ProvisionedIopsCapable>
+            </SubnetAvailabilityZone>
+          </Subnet>
+          <Subnet>
+            <SubnetStatus>Active</SubnetStatus>
+            <SubnetIdentifier>subnet-b381ef9f</SubnetIdentifier>
+            <SubnetAvailabilityZone>
+              <Name>us-west-2c</Name>
+              <ProvisionedIopsCapable>false</ProvisionedIopsCapable>
+            </SubnetAvailabilityZone>
+          </Subnet>
+          <Subnet>
+            <SubnetStatus>Active</SubnetStatus>
+            <SubnetIdentifier>subnet-e1e17ebd</SubnetIdentifier>
+            <SubnetAvailabilityZone>
+              <Name>us-west-2b</Name>
+              <ProvisionedIopsCapable>false</ProvisionedIopsCapable>
+            </SubnetAvailabilityZone>
+          </Subnet>
+        </Subnets>
+      </DBSubnetGroup>
+    </DBSubnetGroups>
+  </DescribeDBSubnetGroupsResult>
+  <ResponseMetadata>
+    <RequestId>b783db3b-b98c-11d3-fbc7-5c0aad74da7c</RequestId>
+  </ResponseMetadata>
+</DescribeDBSubnetGroupsResponse>
+`
+
+var DeleteDBSubnetGroupExample = `
+<DeleteDBSubnetGroupResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <ResponseMetadata>
+    <RequestId>6295e5ab-bbf3-11d3-f4c6-37db295f7674</RequestId>
+  </ResponseMetadata>
+</DeleteDBSubnetGroupResponse>
+`
+
+var CreateDBSubnetGroupExample = `
+<CreateDBSubnetGroupResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <CreateDBSubnetGroupResult>
+    <DBSubnetGroup>
+      <VpcId>vpc-33dc97ea</VpcId>
+      <SubnetGroupStatus>Complete</SubnetGroupStatus>
+      <DBSubnetGroupDescription>My new DB Subnet Group</DBSubnetGroupDescription>
+      <DBSubnetGroupName>myawsuser-dbsubnetgroup</DBSubnetGroupName>
+      <Subnets>
+        <Subnet>
+          <SubnetStatus>Active</SubnetStatus>
+          <SubnetIdentifier>subnet-e4d398a1</SubnetIdentifier>
+          <SubnetAvailabilityZone>
+            <Name>us-east-1b</Name>
+            <ProvisionedIopsCapable>false</ProvisionedIopsCapable>
+          </SubnetAvailabilityZone>
+        </Subnet>
+        <Subnet>
+          <SubnetStatus>Active</SubnetStatus>
+          <SubnetIdentifier>subnet-c2bdb6ba</SubnetIdentifier>
+          <SubnetAvailabilityZone>
+            <Name>us-east-1c</Name>
+            <ProvisionedIopsCapable>false</ProvisionedIopsCapable>
+          </SubnetAvailabilityZone>
+        </Subnet>
+      </Subnets>
+    </DBSubnetGroup>
+  </CreateDBSubnetGroupResult>
+  <ResponseMetadata>
+    <RequestId>3a401b3f-bb9e-11d3-f4c6-37db295f7674</RequestId>
+  </ResponseMetadata>
+</CreateDBSubnetGroupResponse>
+`
