@@ -478,6 +478,12 @@ type SpotLaunchSpec struct {
 	BlockDevices       []BlockDeviceMapping `xml:"blockDeviceMapping>item"`
 }
 
+type SpotStatus struct {
+	Code       string `xml:"code"`
+	UpdateTime string `xml:"updateTime"`
+	Message    string `xml:"message"`
+}
+
 type SpotRequestResult struct {
 	SpotRequestId  string         `xml:"spotInstanceRequestId"`
 	SpotPrice      string         `xml:"spotPrice"`
@@ -485,6 +491,7 @@ type SpotRequestResult struct {
 	AvailZone      string         `xml:"launchedAvailabilityZone"`
 	InstanceId     string         `xml:"instanceId"`
 	State          string         `xml:"state"`
+	Status         SpotStatus     `xml:"status"`
 	SpotLaunchSpec SpotLaunchSpec `xml:"launchSpecification"`
 	CreateTime     string         `xml:"createTime"`
 	Tags           []Tag          `xml:"tagSet>item"`
