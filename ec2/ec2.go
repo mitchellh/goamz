@@ -2006,6 +2006,27 @@ type CreateVpcResp struct {
 	VPC       VPC    `xml:"vpc"`
 }
 
+// The ModifyVpcAttribute request parameters.
+//
+// See http://docs.amazonwebservices.com/AWSEC2/latest/APIReference/index.html?ApiReference-query-DescribeVpcAttribute.html for more details.
+type ModifyVpcAttribute struct {
+	EnableDnsSupport   bool
+	EnableDnsHostnames bool
+
+	SetEnableDnsSupport   bool
+	SetEnableDnsHostnames bool
+}
+
+// Response to a DescribeVpcAttribute request.
+//
+// See http://docs.amazonwebservices.com/AWSEC2/latest/APIReference/index.html?ApiReference-query-DescribeVpcAttribute.html for more details.
+type VpcAttributeResp struct {
+	RequestId          string `xml:"requestId"`
+	VpcId              string `xml:"vpcId"`
+	EnableDnsSupport   bool   `xml:"enableDnsSupport>value"`
+	EnableDnsHostnames bool   `xml:"enableDnsHostnames>value"`
+}
+
 // CreateInternetGateway request parameters.
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateInternetGateway.html
@@ -2206,6 +2227,49 @@ func (ec2 *EC2) DescribeVpcs(ids []string, filter *Filter) (resp *VpcsResp, err 
 	}
 
 	return
+}
+
+// VpcAttribute describes an attribute of a VPC.
+// You can specify only one attribute at a time.
+// Valid attributes are:
+//    enableDnsSupport | enableDnsHostnames
+//
+// See http://docs.amazonwebservices.com/AWSEC2/latest/APIReference/index.html?ApiReference-query-DescribeVpcAttribute.html for more details.
+func (ec2 *EC2) VpcAttribute(vpcId, attribute string) (resp *VpcAttributeResp, err error) {
+	params := makeParams("DescribeVpcAttribute")
+	params["VpcId"] = vpcId
+	params["Attribute"] = attribute
+
+	resp = &VpcAttributeResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// ModifyVpcAttribute modifies the specified attribute of the specified VPC.
+//
+// See http://docs.amazonwebservices.com/AWSEC2/latest/APIReference/index.html?ApiReference-query-ModifyVpcAttribute.html for more details.
+func (ec2 *EC2) ModifyVpcAttribute(vpcId string, options *ModifyVpcAttribute) (*SimpleResp, error) {
+	params := makeParams("ModifyVpcAttribute")
+
+	params["VpcId"] = vpcId
+
+	if options.SetEnableDnsSupport {
+		params["EnableDnsSupport.Value"] = strconv.FormatBool(options.EnableDnsSupport)
+	}
+
+	if options.SetEnableDnsHostnames {
+		params["EnableDnsHostnames.Value"] = strconv.FormatBool(options.EnableDnsHostnames)
+	}
+
+	resp := &SimpleResp{}
+	if err := ec2.query(params, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 // Create a new subnet.
