@@ -93,6 +93,7 @@ func makeParams(action string) map[string]string {
 type Listener struct {
 	InstancePort     int64  `xml:"member>Listener>InstancePort"`
 	InstanceProtocol string `xml:"member>Listener>InstanceProtocol"`
+	SSLCertificateId string `xml:"member>Listener>SSLCertificateId"`
 	LoadBalancerPort int64  `xml:"member>Listener>LoadBalancerPort"`
 	Protocol         string `xml:"member>Listener>Protocol"`
 }
@@ -155,6 +156,7 @@ func (elb *ELB) CreateLoadBalancer(options *CreateLoadBalancer) (resp *CreateLoa
 		params["Listeners.member."+strconv.Itoa(i+1)+".InstancePort"] = strconv.FormatInt(v.InstancePort, 10)
 		params["Listeners.member."+strconv.Itoa(i+1)+".Protocol"] = v.Protocol
 		params["Listeners.member."+strconv.Itoa(i+1)+".InstanceProtocol"] = v.InstanceProtocol
+		params["Listeners.member."+strconv.Itoa(i+1)+".SSLCertificateId"] = v.SSLCertificateId
 	}
 
 	if options.Internal {
