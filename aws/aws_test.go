@@ -53,13 +53,13 @@ func (s *S) TestEnvAuth(c *C) {
 }
 
 func (s *S) TestEnvAuthWithToken(c *C) {
-  os.Clearenv()
-  os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
-  os.Setenv("AWS_ACCESS_KEY_ID", "access")
-  os.Setenv("AWS_SECURITY_TOKEN", "token")
-  auth, err := aws.EnvAuth()
-  c.Assert(err, IsNil)
-  c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
+	os.Clearenv()
+	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
+	os.Setenv("AWS_ACCESS_KEY_ID", "access")
+	os.Setenv("AWS_SECURITY_TOKEN", "token")
+	auth, err := aws.EnvAuth()
+	c.Assert(err, IsNil)
+	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
 }
 
 func (s *S) TestEnvAuthAlt(c *C) {
