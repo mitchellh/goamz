@@ -327,3 +327,66 @@ var AuthorizeDBSecurityGroupIngressExample = `
   </ResponseMetadata>
 </AuthorizeDBSecurityGroupIngressResponse>
 `
+
+var DescribeDBSnapshotsExample = `
+<DescribeDBSnapshotsResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <DescribeDBSnapshotsResult>
+    <DBSnapshots>
+      <DBSnapshot>
+        <Port>3306</Port>
+        <OptionGroupName>default:mysql-5-6</OptionGroupName>
+        <Engine>mysql</Engine>
+        <Status>available</Status>
+        <SnapshotType>manual</SnapshotType>
+        <LicenseModel>general-public-license</LicenseModel>
+        <EngineVersion>5.6.13</EngineVersion>
+        <DBInstanceIdentifier>my-mysqlexampledb</DBInstanceIdentifier>
+        <DBSnapshotIdentifier>my-test-restore-snapshot</DBSnapshotIdentifier>
+        <SnapshotCreateTime>2014-03-28T19:57:16.707Z</SnapshotCreateTime>
+        <AvailabilityZone>us-west-2b</AvailabilityZone>
+        <InstanceCreateTime>2014-01-29T22:58:24.231Z</InstanceCreateTime>
+        <PercentProgress>100</PercentProgress>
+        <AllocatedStorage>5</AllocatedStorage>
+        <MasterUsername>awsmyuser</MasterUsername>
+      </DBSnapshot>
+      <DBSnapshot>
+        <Port>3306</Port>
+        <OptionGroupName>default:mysql-5-6</OptionGroupName>
+        <Engine>mysql</Engine>
+        <Status>available</Status>
+        <SnapshotType>automated</SnapshotType>
+        <LicenseModel>general-public-license</LicenseModel>
+        <EngineVersion>5.6.13</EngineVersion>
+        <DBInstanceIdentifier>my-mysqlexampledb</DBInstanceIdentifier>
+        <DBSnapshotIdentifier>rds:my-mysqlexampledb-2014-04-19-10-08</DBSnapshotIdentifier>
+        <SnapshotCreateTime>2014-04-19T10:09:09.790Z</SnapshotCreateTime>
+        <AvailabilityZone>us-west-2b</AvailabilityZone>
+        <InstanceCreateTime>2014-01-29T22:58:24.231Z</InstanceCreateTime>
+        <PercentProgress>100</PercentProgress>
+        <AllocatedStorage>5</AllocatedStorage>
+        <MasterUsername>awsmyuser</MasterUsername>
+      </DBSnapshot>
+      <DBSnapshot>
+        <Port>3306</Port>
+        <OptionGroupName>default:mysql-5-6</OptionGroupName>
+        <Engine>mysql</Engine>
+        <Status>available</Status>
+        <SnapshotType>automated</SnapshotType>
+        <LicenseModel>general-public-license</LicenseModel>
+        <EngineVersion>5.6.13</EngineVersion>
+        <DBInstanceIdentifier>my-mysqlexampledb</DBInstanceIdentifier>
+        <DBSnapshotIdentifier>rds:my-mysqlexampledb-2014-04-20-10-09</DBSnapshotIdentifier>
+        <SnapshotCreateTime>2014-04-20T10:09:15.446Z</SnapshotCreateTime>
+        <AvailabilityZone>us-west-2b</AvailabilityZone>
+        <InstanceCreateTime>2014-01-29T22:58:24.231Z</InstanceCreateTime>
+        <PercentProgress>100</PercentProgress>
+        <AllocatedStorage>5</AllocatedStorage>
+        <MasterUsername>awsmyuser</MasterUsername>
+      </DBSnapshot>
+    </DBSnapshots>
+  </DescribeDBSnapshotsResult>
+  <ResponseMetadata>
+    <RequestId>b7769930-b98c-11d3-f272-7cd6cce12cc5</RequestId>
+  </ResponseMetadata>
+</DescribeDBSnapshotsResponse>
+`

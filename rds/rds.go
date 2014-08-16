@@ -119,6 +119,27 @@ type DBSecurityGroup struct {
 	CidrStatuses             []string `xml:"IPRanges>IPRange>Status"`
 }
 
+type DBSnapshot struct {
+	AllocatedStorage     int    `xml:"AllocatedStorage"`
+	AvailabilityZone     string `xml:"AvailabilityZone"`
+	DBInstanceIdentifier string `xml:"DBInstanceIdentifier"`
+	DBSnapshotIdentifier string `xml:"DBSnapshotIdentifier"`
+	Engine               string `xml:"Engine"`
+	EngineVersion        string `xml:"EngineVersion"`
+	InstanceCreateTime   string `xml:"InstanceCreateTime"`
+	Iops                 int    `xml:"Iops"`
+	LicenseModel         string `xml:"LicenseModel"`
+	MasterUsername       string `xml:"MasterUsername"`
+	OptionGroupName      string `xml:"OptionGroupName"`
+	PercentProgress      int    `xml:"PercentProgress"`
+	Port                 int    `xml:"Port"`
+	SnapshotCreateTime   string `xml:"SnapshotCreateTime"`
+	SnapshotType         string `xml:"SnapshotType"`
+	SourceRegion         string `xml:"SourceRegion"`
+	Status               string `xml:"Status"`
+	VpcId                string `xml:"VpcId"`
+}
+
 // ----------------------------------------------------------------------------
 // Create
 
@@ -348,6 +369,44 @@ func (rds *Rds) DescribeDBSecurityGroups(options *DescribeDBSecurityGroups) (res
 	params["DBSecurityGroupName"] = options.DBSecurityGroupName
 
 	resp = &DescribeDBSecurityGroupsResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DescribeDBSnapshots request params
+type DescribeDBSnapshots struct {
+	DBInstanceIdentifier string
+	DBSnapshotIdentifier string
+	SnapshotType         string
+}
+
+type DescribeDBSnapshotsResp struct {
+	RequestId   string       `xml:"ResponseMetadata>RequestId"`
+	DBSnapshots []DBSnapshot `xml:"DescribeDBSnapshotsResult>DBSnapshots>DBSnapshot"`
+}
+
+func (rds *Rds) DescribeDBSnapshots(options *DescribeDBSnapshots) (resp *DescribeDBSnapshotsResp, err error) {
+	params := makeParams("DescribeDBSnapshots")
+
+	if options.DBInstanceIdentifier != "" {
+		params["DBInstanceIdentifier"] = options.DBInstanceIdentifier
+	}
+
+	if options.DBSnapshotIdentifier != "" {
+		params["DBSnapshotIdentifier"] = options.DBSnapshotIdentifier
+	}
+
+	if options.SnapshotType != "" {
+		params["SnapshotType"] = options.SnapshotType
+	}
+
+	resp = &DescribeDBSnapshotsResp{}
 
 	err = rds.query(params, resp)
 

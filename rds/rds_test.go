@@ -190,3 +190,26 @@ func (s *S) Test_AuthorizeDBSecurityGroupIngress(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "6176b5f8-bfed-11d3-f92b-31fa5e8dbc99")
 }
+
+func (s *S) Test_DescribeDBSnapshots(c *C) {
+	testServer.Response(200, nil, DescribeDBSnapshotsExample)
+
+	options := rds.DescribeDBSnapshots{
+		DBInstanceIdentifier: "foobar",
+		DBSnapshotIdentifier: "baz",
+		SnapshotType:         "manual",
+	}
+
+	resp, err := s.rds.DescribeDBSnapshots(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeDBSnapshots"})
+	c.Assert(req.Form["DBInstanceIdentifier"], DeepEquals, []string{"foobar"})
+	c.Assert(req.Form["DBSnapshotIdentifier"], DeepEquals, []string{"baz"})
+	c.Assert(req.Form["SnapshotType"], DeepEquals, []string{"manual"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "b7769930-b98c-11d3-f272-7cd6cce12cc5")
+	c.Assert(resp.DBSnapshots[0].OptionGroupName, Equals, "default:mysql-5-6")
+	c.Assert(resp.DBSnapshots[0].Engine, Equals, "mysql")
+	c.Assert(resp.DBSnapshots[0].SnapshotType, Equals, "manual")
+}
