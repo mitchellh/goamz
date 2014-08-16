@@ -469,6 +469,91 @@ func (rds *Rds) DeleteDBSecurityGroup(options *DeleteDBSecurityGroup) (resp *Sim
 	return
 }
 
+type RestoreDBInstanceFromDBSnapshot struct {
+	DBInstanceIdentifier    string
+	DBSnapshotIdentifier    string
+	AutoMinorVersionUpgrade bool
+	AvailabilityZone        string
+	DBInstanceClass         string
+	DBName                  string
+	DBSubnetGroupName       string
+	Engine                  string
+	Iops                    int
+	LicenseModel            string
+	MultiAZ                 bool
+	OptionGroupName         string
+	Port                    int
+	PubliclyAccessible      bool
+
+	SetIops bool
+	SetPort bool
+}
+
+func (rds *Rds) RestoreDBInstanceFromDBSnapshot(options *RestoreDBInstanceFromDBSnapshot) (resp *SimpleResp, err error) {
+	params := makeParams("RestoreDBInstanceFromDBSnapshot")
+
+	params["DBInstanceIdentifier"] = options.DBInstanceIdentifier
+	params["DBSnapshotIdentifier"] = options.DBSnapshotIdentifier
+
+	if options.AutoMinorVersionUpgrade {
+		params["AutoMinorVersionUpgrade"] = "true"
+	}
+
+	if options.AvailabilityZone != "" {
+		params["AvailabilityZone"] = options.AvailabilityZone
+	}
+
+	if options.DBInstanceClass != "" {
+		params["DBInstanceClass"] = options.DBInstanceClass
+	}
+
+	if options.DBName != "" {
+		params["DBName"] = options.DBName
+	}
+
+	if options.DBSubnetGroupName != "" {
+		params["DBSubnetGroupName"] = options.DBSubnetGroupName
+	}
+
+	if options.Engine != "" {
+		params["Engine"] = options.Engine
+	}
+
+	if options.SetIops {
+		params["Iops"] = strconv.Itoa(options.Iops)
+	}
+
+	if options.LicenseModel != "" {
+		params["LicenseModel"] = options.LicenseModel
+	}
+
+	if options.MultiAZ {
+		params["MultiAZ"] = "true"
+	}
+
+	if options.OptionGroupName != "" {
+		params["OptionGroupName"] = options.OptionGroupName
+	}
+
+	if options.SetPort {
+		params["Port"] = strconv.Itoa(options.Port)
+	}
+
+	if options.PubliclyAccessible {
+		params["PubliclyAccessible"] = "true"
+	}
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Responses
 
 type SimpleResp struct {

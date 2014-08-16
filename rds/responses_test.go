@@ -390,3 +390,51 @@ var DescribeDBSnapshotsExample = `
   </ResponseMetadata>
 </DescribeDBSnapshotsResponse>
 `
+
+var RestoreDBInstanceFromDBSnapshotExample = `
+<RestoreDBInstanceFromDBSnapshotResponse xmlns="http://rds.amazonaws.com/doc/2013-09-09/">
+  <RestoreDBInstanceFromDBSnapshotResult>
+    <DBInstance>
+      <BackupRetentionPeriod>2</BackupRetentionPeriod>
+      <MultiAZ>false</MultiAZ>
+      <DBInstanceStatus>creating</DBInstanceStatus>
+      <VpcSecurityGroups/>
+      <DBInstanceIdentifier>mysqldb-restored</DBInstanceIdentifier>
+      <PreferredBackupWindow>08:14-08:44</PreferredBackupWindow>
+      <PreferredMaintenanceWindow>fri:04:50-fri:05:20</PreferredMaintenanceWindow>
+      <ReadReplicaDBInstanceIdentifiers/>
+      <Engine>mysql</Engine>
+      <PendingModifiedValues/>
+      <LicenseModel>general-public-license</LicenseModel>
+      <EngineVersion>5.6.13</EngineVersion>
+      <DBParameterGroups>
+        <DBParameterGroup>
+          <ParameterApplyStatus>in-sync</ParameterApplyStatus>
+          <DBParameterGroupName>default.mysql5.6</DBParameterGroupName>
+        </DBParameterGroup>
+      </DBParameterGroups>
+      <OptionGroupMemberships>
+        <OptionGroupMembership>
+          <OptionGroupName>default:mysql-5-6</OptionGroupName>
+          <Status>pending-apply</Status>
+        </OptionGroupMembership>
+      </OptionGroupMemberships>
+      <PubliclyAccessible>true</PubliclyAccessible>
+      <DBSecurityGroups>
+        <DBSecurityGroup>
+          <Status>active</Status>
+          <DBSecurityGroupName>default</DBSecurityGroupName>
+        </DBSecurityGroup>
+      </DBSecurityGroups>
+      <DBName>mysqldb</DBName>
+      <AutoMinorVersionUpgrade>true</AutoMinorVersionUpgrade>
+      <AllocatedStorage>100</AllocatedStorage>
+      <MasterUsername>myawsuser</MasterUsername>
+      <DBInstanceClass>db.m1.medium</DBInstanceClass>
+    </DBInstance>
+  </RestoreDBInstanceFromDBSnapshotResult>
+  <ResponseMetadata>
+    <RequestId>863fd73e-be2b-11d3-855b-576787000e19</RequestId>
+  </ResponseMetadata>
+</RestoreDBInstanceFromDBSnapshotResponse>
+`

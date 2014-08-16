@@ -213,3 +213,21 @@ func (s *S) Test_DescribeDBSnapshots(c *C) {
 	c.Assert(resp.DBSnapshots[0].Engine, Equals, "mysql")
 	c.Assert(resp.DBSnapshots[0].SnapshotType, Equals, "manual")
 }
+
+func (s *S) Test_RestoreDBInstanceFromDBSnapshot(c *C) {
+	testServer.Response(200, nil, RestoreDBInstanceFromDBSnapshotExample)
+
+	options := rds.RestoreDBInstanceFromDBSnapshot{
+		DBInstanceIdentifier: "foo",
+		DBSnapshotIdentifier: "bar",
+	}
+
+	resp, err := s.rds.RestoreDBInstanceFromDBSnapshot(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"RestoreDBInstanceFromDBSnapshot"})
+	c.Assert(req.Form["DBInstanceIdentifier"], DeepEquals, []string{"foo"})
+	c.Assert(req.Form["DBSnapshotIdentifier"], DeepEquals, []string{"bar"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "863fd73e-be2b-11d3-855b-576787000e19")
+}
