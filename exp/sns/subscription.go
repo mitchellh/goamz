@@ -79,7 +79,7 @@ func (sns *SNS) Publish(options *PublishOpt) (resp *PublishResp, err error) {
 		params["TopicArn"] = options.TopicArn
 	}
 
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -94,7 +94,7 @@ func (sns *SNS) Subscribe(Endpoint, Protocol, TopicArn string) (resp *SubscribeR
 	params["Protocol"] = Protocol
 	params["TopicArn"] = TopicArn
 
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -107,7 +107,7 @@ func (sns *SNS) Unsubscribe(SubscriptionArn string) (resp *UnsubscribeResponse, 
 
 	params["SubscriptionArn"] = SubscriptionArn
 
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -125,7 +125,7 @@ func (sns *SNS) ConfirmSubscription(options *ConfirmSubscriptionOpt) (resp *Conf
 	params["Token"] = options.Token
 	params["TopicArn"] = options.TopicArn
 
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -138,7 +138,7 @@ func (sns *SNS) ListSubscriptions(NextToken *string) (resp *ListSubscriptionsRes
 	if NextToken != nil {
 		params["NextToken"] = *NextToken
 	}
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -155,6 +155,6 @@ func (sns *SNS) ListSubscriptionByTopic(options *ListSubscriptionByTopicOpt) (re
 
 	params["TopicArn"] = options.TopicArn
 
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }

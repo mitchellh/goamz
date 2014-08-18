@@ -28,7 +28,7 @@ func (sns *SNS) AddPermission(permissions []Permission, Label, TopicArn string) 
 	params["Label"] = Label
 	params["TopicArn"] = TopicArn
 
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -46,6 +46,6 @@ func (sns *SNS) RemovePermission(Label, TopicArn string) (resp *RemovePermission
 	params["Label"] = Label
 	params["TopicArn"] = TopicArn
 
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }

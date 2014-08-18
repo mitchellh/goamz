@@ -46,7 +46,7 @@ func (sns *SNS) ListTopics(NextToken *string) (resp *ListTopicsResp, err error) 
 	if NextToken != nil {
 		params["NextToken"] = *NextToken
 	}
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -57,7 +57,7 @@ func (sns *SNS) CreateTopic(Name string) (resp *CreateTopicResp, err error) {
 	resp = &CreateTopicResp{}
 	params := makeParams("CreateTopic")
 	params["Name"] = Name
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -68,7 +68,7 @@ func (sns *SNS) DeleteTopic(topic Topic) (resp *DeleteTopicResp, err error) {
 	resp = &DeleteTopicResp{}
 	params := makeParams("DeleteTopic")
 	params["TopicArn"] = topic.TopicArn
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -86,7 +86,7 @@ func (sns *SNS) GetTopicAttributes(TopicArn string) (resp *GetTopicAttributesRes
 	resp = &GetTopicAttributesResp{}
 	params := makeParams("GetTopicAttributes")
 	params["TopicArn"] = TopicArn
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }
 
@@ -105,6 +105,6 @@ func (sns *SNS) SetTopicAttributes(AttributeName, AttributeValue, TopicArn strin
 	params["AttributeValue"] = AttributeValue
 	params["TopicArn"] = TopicArn
 
-	err = sns.query(nil, nil, params, resp)
+	err = sns.query(params, resp)
 	return
 }

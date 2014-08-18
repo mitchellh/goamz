@@ -73,7 +73,7 @@ type xmlErrors struct {
 	Errors    []Error `xml:"Errors>Error"`
 }
 
-func (sns *SNS) query(topic *Topic, message *Message, params map[string]string, resp interface{}) error {
+func (sns *SNS) query(params map[string]string, resp interface{}) error {
 	params["Timestamp"] = time.Now().UTC().Format(time.RFC3339)
 	u, err := url.Parse(sns.Region.SNSEndpoint)
 	if err != nil {
