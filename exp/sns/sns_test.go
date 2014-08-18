@@ -54,6 +54,7 @@ func (s *S) TestCreateTopic(c *C) {
 	c.Assert(req.URL.Path, Equals, "/")
 	c.Assert(req.Header["Date"], Not(Equals), "")
 
+	c.Assert(resp.Topic.SNS, Equals, s.sns)
 	c.Assert(resp.Topic.TopicArn, Equals, "arn:aws:sns:us-east-1:123456789012:My-Topic")
 	c.Assert(resp.ResponseMetadata.RequestId, Equals, "a8dec8b3-33a4-11df-8963-01868b7c937a")
 	c.Assert(err, IsNil)

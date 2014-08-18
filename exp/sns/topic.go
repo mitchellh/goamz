@@ -58,6 +58,7 @@ func (sns *SNS) CreateTopic(Name string) (resp *CreateTopicResp, err error) {
 	params := makeParams("CreateTopic")
 	params["Name"] = Name
 	err = sns.query(params, resp)
+	resp.Topic.SNS = sns
 	return
 }
 
