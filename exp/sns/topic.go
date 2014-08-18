@@ -10,7 +10,7 @@ type Topic struct {
 }
 
 func (topic *Topic) Message(message [8192]byte, subject string) *Message {
-	return &Message{topic.SNS, topic, message, subject}
+	return &Message{topic, message, subject}
 }
 
 type ListTopicsResp struct {
