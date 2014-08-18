@@ -68,7 +68,7 @@ func (topic *Topic) Delete() (resp *DeleteTopicResp, err error) {
 	resp = &DeleteTopicResp{}
   params := makeParams("DeleteTopic")
   params["TopicArn"] = topic.TopicArn
-  err = sns.query(params, resp)
+  err = topic.SNS.query(params, resp)
   return
 }
 
