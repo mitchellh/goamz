@@ -70,10 +70,10 @@ func (sns *SNS) CreateTopic(Name string) (resp *CreateTopicResp, err error) {
 // Helper function for deleting a topic
 func (topic *Topic) Delete() (resp *DeleteTopicResp, err error) {
 	resp = &DeleteTopicResp{}
-  params := makeParams("DeleteTopic")
-  params["TopicArn"] = topic.TopicArn
-  err = topic.SNS.query(params, resp)
-  return
+	params := makeParams("DeleteTopic")
+	params["TopicArn"] = topic.TopicArn
+	err = topic.SNS.query(params, resp)
+	return
 }
 
 // GetTopicAttributes
