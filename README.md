@@ -3,7 +3,12 @@
 This is a fork of [https://launchpad.net/goamz](https://launchpad.net/goamz)
 that adds some missing API calls to certain packages.
 
-This library is *incomplete*, but is used in such projects as [Terraform](https://github.com/hashicorp/terraform). If you find anything missing from this library, please [file an issue](https://github.com/mitchellh/goamz).
+This library is *incomplete*, but implements a large amount of the AWS API.
+It is heavily used in projects such as
+[Terraform](https://github.com/hashicorp/terraform) and
+[Packer](https://github.com/mitchellh/packer). 
+If you find anything missing from this library, 
+please [file an issue](https://github.com/mitchellh/goamz).
 
 ## Example Usage
 
