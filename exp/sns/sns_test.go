@@ -117,7 +117,14 @@ func (s *S) TestGetTopicAttributes(c *C) {
 func (s *S) TestPublish(c *C) {
 	testServer.Response(200, nil, TestPublishXmlOK)
 
-	pubOpt := &sns.PublishOpt{"foobar", "", "subject", "arn:aws:sns:us-east-1:123456789012:My-Topic"}
+	pubOpt := &sns.PublishOpt{
+		Message:          "foobar",
+		MessageStructure: "",
+		Subject:          "subject",
+		TopicArn:         "arn:aws:sns:us-east-1:123456789012:My-Topic",
+		TargetArn:        "arn:aws:sns:us-east-1:123456789012:My-Other-Topic",
+	}
+
 	resp, err := s.sns.Publish(pubOpt)
 	req := testServer.WaitRequest()
 
