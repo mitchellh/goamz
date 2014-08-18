@@ -47,6 +47,9 @@ func (sns *SNS) ListTopics(NextToken *string) (resp *ListTopicsResp, err error) 
 		params["NextToken"] = *NextToken
 	}
 	err = sns.query(params, resp)
+	for i, _ := range resp.Topics {
+		resp.Topics[i].SNS = sns
+	}
 	return
 }
 
