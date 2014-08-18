@@ -88,10 +88,6 @@ func (sns *SNS) query(topic *Topic, message *Message, params map[string]string, 
 	}
 	defer r.Body.Close()
 
-	//dump, _ := http.DumpResponse(r, true)
-	//println("DUMP:\n", string(dump))
-	//return nil
-
 	if r.StatusCode != 200 {
 		return buildError(r)
 	}
