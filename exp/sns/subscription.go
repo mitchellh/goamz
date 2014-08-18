@@ -19,6 +19,7 @@ type PublishOpt struct {
 	MessageStructure string
 	Subject          string
 	TopicArn         string
+	TargetArn        string
 }
 
 type PublishResp struct {
