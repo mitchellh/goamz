@@ -9,10 +9,6 @@ type Topic struct {
 	TopicArn string
 }
 
-func (topic *Topic) Message(message string, subject string) *Message {
-	return &Message{topic, message, subject}
-}
-
 type ListTopicsResp struct {
 	Topics    []Topic `xml:"ListTopicsResult>Topics>member"`
 	NextToken string
