@@ -9,10 +9,6 @@ type Topic struct {
 	TopicArn string
 }
 
-func (topic *Topic) Message(message [8192]byte, subject string) *Message {
-	return &Message{topic.SNS, topic, message, subject}
-}
-
 type ListTopicsResp struct {
 	Topics    []Topic `xml:"ListTopicsResult>Topics>member"`
 	NextToken string
@@ -47,6 +43,9 @@ func (sns *SNS) ListTopics(NextToken *string) (resp *ListTopicsResp, err error) 
 		params["NextToken"] = *NextToken
 	}
 	err = sns.query(params, resp)
+	for i, _ := range resp.Topics {
+		resp.Topics[i].SNS = sns
+	}
 	return
 }
 
@@ -58,6 +57,7 @@ func (sns *SNS) CreateTopic(Name string) (resp *CreateTopicResp, err error) {
 	params := makeParams("CreateTopic")
 	params["Name"] = Name
 	err = sns.query(params, resp)
+	resp.Topic.SNS = sns
 	return
 }
 
@@ -66,10 +66,10 @@ func (sns *SNS) CreateTopic(Name string) (resp *CreateTopicResp, err error) {
 // Helper function for deleting a topic
 func (topic *Topic) Delete() (resp *DeleteTopicResp, err error) {
 	resp = &DeleteTopicResp{}
-  params := makeParams("DeleteTopic")
-  params["TopicArn"] = topic.TopicArn
-  err = sns.query(params, resp)
-  return
+	params := makeParams("DeleteTopic")
+	params["TopicArn"] = topic.TopicArn
+	err = topic.SNS.query(params, resp)
+	return
 }
 
 // GetTopicAttributes
