@@ -18,8 +18,6 @@ package sns
 
 // BUG(niemeyer): Package needs documentation.
 
-// BUG(niemeyer): Message.Message should be "Payload []byte"
-
 import (
 	"encoding/xml"
 	"github.com/mitchellh/goamz/aws"

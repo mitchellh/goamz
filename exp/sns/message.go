@@ -2,6 +2,6 @@ package sns
 
 type Message struct {
 	Topic   *Topic
-	Message [8192]byte
+	Message string
 	Subject string
 }

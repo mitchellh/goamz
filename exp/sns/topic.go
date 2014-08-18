@@ -9,7 +9,7 @@ type Topic struct {
 	TopicArn string
 }
 
-func (topic *Topic) Message(message [8192]byte, subject string) *Message {
+func (topic *Topic) Message(message string, subject string) *Message {
 	return &Message{topic, message, subject}
 }
 
