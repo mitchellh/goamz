@@ -619,7 +619,7 @@ type request struct {
 // amazonShouldEscape returns true if byte should be escaped
 func amazonShouldEscape(c byte) bool {
 	return !((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-		(c >= '0' && c <= '9') || c == '_' || c == '-' || c == '~' || c == '.' || c == '/')
+		(c >= '0' && c <= '9') || c == '_' || c == '-' || c == '~' || c == '.' || c == '/' || c == ':')
 }
 
 // amazonEscape does uri escaping exactly as Amazon does
