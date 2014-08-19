@@ -427,3 +427,9 @@ func (s *S) TestGetKey(c *C) {
 	c.Assert(key.Size, Equals, int64(434234))
 	c.Assert(key.ETag, Equals, GetKeyHeaderDump["ETag"])
 }
+
+func (s *S) TestUnescapedColon(c *C) {
+	b := s.s3.Bucket("bucket")
+	u := b.URL("foo:bar")
+	c.Assert(u, Equals, "http://localhost:4444/bucket/foo:bar")
+}
