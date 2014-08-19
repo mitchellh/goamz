@@ -208,6 +208,8 @@ type LoadBalancer struct {
 	AvailabilityZones []AvailabilityZone `xml:"member>AvailabilityZones"`
 	Scheme            string             `xml:"member>Scheme"`
 	DNSName           string             `xml:"member>DNSName"`
+	SecurityGroups    []string           `xml:"member>SecurityGroups>member"`
+	Subnets           []string           `xml:"member>Subnets>member"`
 }
 
 // DescribeLoadBalancer request params
