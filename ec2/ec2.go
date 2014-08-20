@@ -1841,6 +1841,29 @@ func (ec2 *EC2) CreateTags(resourceIds []string, tags []Tag) (resp *SimpleResp, 
 	return resp, nil
 }
 
+type TagsResp struct {
+	RequestId string        `xml:"requestId"`
+	Tags      []ResourceTag `xml:"tagSet>item"`
+}
+
+type ResourceTag struct {
+	Tag
+	ResourceId   string `xml:"resourceId"`
+	ResourceType string `xml:"resourceType"`
+}
+
+func (ec2 *EC2) Tags(filter *Filter) (*TagsResp, error) {
+	params := makeParams("DescribeTags")
+	filter.addParams(params)
+
+	resp := &TagsResp{}
+	if err := ec2.query(params, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 // Response to a StartInstances request.
 //
 // See http://goo.gl/awKeF for more details.
