@@ -121,11 +121,32 @@ type DBSecurityGroup struct {
 }
 
 type DBSubnetGroup struct {
-	Description              string   `xml:"DBSubnetGroupDescription"`
-	Name                     string   `xml:"DBSubnetGroupName"`
-	Status                   string   `xml:"SubnetGroupStatus"`
-	SubnetIds                []string `xml:"Subnets>Subnet>SubnetIdentifier"`
-	VpcId                    string   `xml:"VpcId"`
+	Description string   `xml:"DBSubnetGroupDescription"`
+	Name        string   `xml:"DBSubnetGroupName"`
+	Status      string   `xml:"SubnetGroupStatus"`
+	SubnetIds   []string `xml:"Subnets>Subnet>SubnetIdentifier"`
+	VpcId       string   `xml:"VpcId"`
+}
+
+type DBSnapshot struct {
+	AllocatedStorage     int    `xml:"AllocatedStorage"`
+	AvailabilityZone     string `xml:"AvailabilityZone"`
+	DBInstanceIdentifier string `xml:"DBInstanceIdentifier"`
+	DBSnapshotIdentifier string `xml:"DBSnapshotIdentifier"`
+	Engine               string `xml:"Engine"`
+	EngineVersion        string `xml:"EngineVersion"`
+	InstanceCreateTime   string `xml:"InstanceCreateTime"`
+	Iops                 int    `xml:"Iops"`
+	LicenseModel         string `xml:"LicenseModel"`
+	MasterUsername       string `xml:"MasterUsername"`
+	OptionGroupName      string `xml:"OptionGroupName"`
+	PercentProgress      int    `xml:"PercentProgress"`
+	Port                 int    `xml:"Port"`
+	SnapshotCreateTime   string `xml:"SnapshotCreateTime"`
+	SnapshotType         string `xml:"SnapshotType"`
+	SourceRegion         string `xml:"SourceRegion"`
+	Status               string `xml:"Status"`
+	VpcId                string `xml:"VpcId"`
 }
 
 // ----------------------------------------------------------------------------
@@ -421,6 +442,44 @@ func (rds *Rds) DescribeDBSubnetGroups(options *DescribeDBSubnetGroups) (resp *D
 	return
 }
 
+// DescribeDBSnapshots request params
+type DescribeDBSnapshots struct {
+	DBInstanceIdentifier string
+	DBSnapshotIdentifier string
+	SnapshotType         string
+}
+
+type DescribeDBSnapshotsResp struct {
+	RequestId   string       `xml:"ResponseMetadata>RequestId"`
+	DBSnapshots []DBSnapshot `xml:"DescribeDBSnapshotsResult>DBSnapshots>DBSnapshot"`
+}
+
+func (rds *Rds) DescribeDBSnapshots(options *DescribeDBSnapshots) (resp *DescribeDBSnapshotsResp, err error) {
+	params := makeParams("DescribeDBSnapshots")
+
+	if options.DBInstanceIdentifier != "" {
+		params["DBInstanceIdentifier"] = options.DBInstanceIdentifier
+	}
+
+	if options.DBSnapshotIdentifier != "" {
+		params["DBSnapshotIdentifier"] = options.DBSnapshotIdentifier
+	}
+
+	if options.SnapshotType != "" {
+		params["SnapshotType"] = options.SnapshotType
+	}
+
+	resp = &DescribeDBSnapshotsResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // DeleteDBInstance request params
 type DeleteDBInstance struct {
 	FinalDBSnapshotIdentifier string
@@ -482,6 +541,91 @@ func (rds *Rds) DeleteDBSubnetGroup(options *DeleteDBSubnetGroup) (resp *SimpleR
 	params := makeParams("DeleteDBSubnetGroup")
 
 	params["DBSubnetGroupName"] = options.DBSubnetGroupName
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+type RestoreDBInstanceFromDBSnapshot struct {
+	DBInstanceIdentifier    string
+	DBSnapshotIdentifier    string
+	AutoMinorVersionUpgrade bool
+	AvailabilityZone        string
+	DBInstanceClass         string
+	DBName                  string
+	DBSubnetGroupName       string
+	Engine                  string
+	Iops                    int
+	LicenseModel            string
+	MultiAZ                 bool
+	OptionGroupName         string
+	Port                    int
+	PubliclyAccessible      bool
+
+	SetIops bool
+	SetPort bool
+}
+
+func (rds *Rds) RestoreDBInstanceFromDBSnapshot(options *RestoreDBInstanceFromDBSnapshot) (resp *SimpleResp, err error) {
+	params := makeParams("RestoreDBInstanceFromDBSnapshot")
+
+	params["DBInstanceIdentifier"] = options.DBInstanceIdentifier
+	params["DBSnapshotIdentifier"] = options.DBSnapshotIdentifier
+
+	if options.AutoMinorVersionUpgrade {
+		params["AutoMinorVersionUpgrade"] = "true"
+	}
+
+	if options.AvailabilityZone != "" {
+		params["AvailabilityZone"] = options.AvailabilityZone
+	}
+
+	if options.DBInstanceClass != "" {
+		params["DBInstanceClass"] = options.DBInstanceClass
+	}
+
+	if options.DBName != "" {
+		params["DBName"] = options.DBName
+	}
+
+	if options.DBSubnetGroupName != "" {
+		params["DBSubnetGroupName"] = options.DBSubnetGroupName
+	}
+
+	if options.Engine != "" {
+		params["Engine"] = options.Engine
+	}
+
+	if options.SetIops {
+		params["Iops"] = strconv.Itoa(options.Iops)
+	}
+
+	if options.LicenseModel != "" {
+		params["LicenseModel"] = options.LicenseModel
+	}
+
+	if options.MultiAZ {
+		params["MultiAZ"] = "true"
+	}
+
+	if options.OptionGroupName != "" {
+		params["OptionGroupName"] = options.OptionGroupName
+	}
+
+	if options.SetPort {
+		params["Port"] = strconv.Itoa(options.Port)
+	}
+
+	if options.PubliclyAccessible {
+		params["PubliclyAccessible"] = "true"
+	}
 
 	resp = &SimpleResp{}
 
