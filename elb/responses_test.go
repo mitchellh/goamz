@@ -51,6 +51,7 @@ var DescribeLoadBalancersExample = `
                 <Protocol>HTTP</Protocol>
                 <LoadBalancerPort>80</LoadBalancerPort>
                 <InstanceProtocol>HTTP</InstanceProtocol>
+                <SSLCertificateId>needToAddASSLCertToYourAWSAccount</SSLCertificateId>
                 <InstancePort>80</InstancePort>
               </Listener>
             </member>

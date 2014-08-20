@@ -38,6 +38,7 @@ func (s *S) TestCreateLoadBalancer(c *C) {
 		Listeners: []elb.Listener{elb.Listener{
 			InstancePort:     80,
 			InstanceProtocol: "http",
+			SSLCertificateId: "needToAddASSLCertToYourAWSAccount",
 			LoadBalancerPort: 80,
 			Protocol:         "http",
 		},
