@@ -196,6 +196,33 @@ func (r *Route53) GetHostedZone(ID string) (*GetHostedZoneResponse, error) {
 	return out, err
 }
 
+type ListHostedZonesResponse struct {
+	HostedZones []HostedZone `xml:"HostedZones>HostedZone"`
+	Marker      string       `xml:"Marker"`
+	IsTruncated bool         `xml:"IsTruncated"`
+	NextMarker  string       `xml:"NextMarker"`
+	MaxItems    int          `xml:"MaxItems"`
+}
+
+func (r *Route53) ListHostedZones(marker string, maxItems int) (*ListHostedZonesResponse, error) {
+	values := url.Values{}
+
+	if marker != "" {
+		values.Add("marker", marker)
+	}
+
+	if maxItems != 0 {
+		values.Add("maxItems", strconv.Itoa(maxItems))
+	}
+
+	out := &ListHostedZonesResponse{}
+	err := r.query("GET", fmt.Sprintf("/%s/hostedzone/", APIVersion), values, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, err
+}
+
 type GetChangeResponse struct {
 	ChangeInfo ChangeInfo `xml:"ChangeInfo"`
 }
