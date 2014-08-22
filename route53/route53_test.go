@@ -157,6 +157,25 @@ func TestListResourceRecordSets(t *testing.T) {
 	}
 }
 
+func TestListHostedZones(t *testing.T) {
+	testServer := makeTestServer()
+	client := makeClient(testServer)
+	testServer.Response(200, nil, ListHostedZonesExample)
+
+	resp, err := client.ListHostedZones("", 0)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	if resp.HostedZones[0].Name != "example.com." {
+		t.Fatalf("bad: %v", resp)
+	}
+
+	if resp.HostedZones[1].Name != "sub.example.com." {
+		t.Fatalf("bad: %v", resp)
+	}
+}
+
 func decode(t *testing.T, r io.Reader, out interface{}) {
 	var buf1 bytes.Buffer
 	var buf2 bytes.Buffer

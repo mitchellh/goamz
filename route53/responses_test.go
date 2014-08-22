@@ -94,3 +94,29 @@ var ListResourceRecordSetsExample = `<?xml version="1.0" encoding="UTF-8"?>
    <NextRecordName>testdoc2.example.com</NextRecordName>
    <NextRecordType>NS</NextRecordType>
 </ListResourceRecordSetsResponse>`
+
+var ListHostedZonesExample = `<?xml version="1.0" encoding="utf-8"?>
+<ListHostedZonesResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+    <HostedZones>
+        <HostedZone>
+            <Id>/hostedzone/Z2K123214213123</Id>
+            <Name>example.com.</Name>
+            <CallerReference>D2224C5B-684A-DB4A-BB9A-E09E3BAFEA7A</CallerReference>
+            <Config>
+                <Comment>Test comment</Comment>
+            </Config>
+            <ResourceRecordSetCount>10</ResourceRecordSetCount>
+        </HostedZone>
+        <HostedZone>
+            <Id>/hostedzone/ZLT12321321124</Id>
+            <Name>sub.example.com.</Name>
+            <CallerReference>A970F076-FCB1-D959-B395-96474CC84EB8</CallerReference>
+            <Config>
+                <Comment>Test comment for subdomain host</Comment>
+            </Config>
+            <ResourceRecordSetCount>4</ResourceRecordSetCount>
+        </HostedZone>
+    </HostedZones>
+    <IsTruncated>false</IsTruncated>
+    <MaxItems>100</MaxItems>
+</ListHostedZonesResponse>`
