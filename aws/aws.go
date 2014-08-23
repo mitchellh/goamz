@@ -13,9 +13,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/vaughan0/go-ini"
 	"io/ioutil"
 	"os"
-	"github.com/vaughan0/go-ini"
 )
 
 // Region defines the URLs where AWS services may be accessed.

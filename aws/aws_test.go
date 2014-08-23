@@ -51,13 +51,17 @@ func (s *S) TestSharedAuthNoProfileInFile(c *C) {
 	os.Setenv("AWS_PROFILE", "foo")
 
 	d, err := ioutil.TempDir("", "")
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 	defer os.RemoveAll(d)
 
-	err = os.Mkdir(d + "/.aws", 0755)
-	if err != nil { panic(err) }
+	err = os.Mkdir(d+"/.aws", 0755)
+	if err != nil {
+		panic(err)
+	}
 
-	ioutil.WriteFile(d + "/.aws/credentials", []byte("[bar]\n"), 0644)
+	ioutil.WriteFile(d+"/.aws/credentials", []byte("[bar]\n"), 0644)
 	os.Setenv("HOME", d)
 
 	_, err = aws.SharedAuth()
@@ -69,13 +73,17 @@ func (s *S) TestSharedAuthNoKeysInProfile(c *C) {
 	os.Setenv("AWS_PROFILE", "bar")
 
 	d, err := ioutil.TempDir("", "")
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 	defer os.RemoveAll(d)
 
-	err = os.Mkdir(d + "/.aws", 0755)
-	if err != nil { panic(err) }
+	err = os.Mkdir(d+"/.aws", 0755)
+	if err != nil {
+		panic(err)
+	}
 
-	ioutil.WriteFile(d + "/.aws/credentials", []byte("[bar]\nawsaccesskeyid = AK.."), 0644)
+	ioutil.WriteFile(d+"/.aws/credentials", []byte("[bar]\nawsaccesskeyid = AK.."), 0644)
 	os.Setenv("HOME", d)
 
 	_, err = aws.SharedAuth()
@@ -86,13 +94,17 @@ func (s *S) TestSharedAuthDefaultCredentials(c *C) {
 	os.Clearenv()
 
 	d, err := ioutil.TempDir("", "")
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 	defer os.RemoveAll(d)
 
-	err = os.Mkdir(d + "/.aws", 0755)
-	if err != nil { panic(err) }
+	err = os.Mkdir(d+"/.aws", 0755)
+	if err != nil {
+		panic(err)
+	}
 
-	ioutil.WriteFile(d + "/.aws/credentials", []byte("[default]\naws_access_key_id = access\naws_secret_access_key = secret\n"), 0644)
+	ioutil.WriteFile(d+"/.aws/credentials", []byte("[default]\naws_access_key_id = access\naws_secret_access_key = secret\n"), 0644)
 	os.Setenv("HOME", d)
 
 	auth, err := aws.SharedAuth()
@@ -105,13 +117,17 @@ func (s *S) TestSharedAuth(c *C) {
 	os.Setenv("AWS_PROFILE", "bar")
 
 	d, err := ioutil.TempDir("", "")
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 	defer os.RemoveAll(d)
 
-	err = os.Mkdir(d + "/.aws", 0755)
-	if err != nil { panic(err) }
+	err = os.Mkdir(d+"/.aws", 0755)
+	if err != nil {
+		panic(err)
+	}
 
-	ioutil.WriteFile(d + "/.aws/credentials", []byte("[bar]\naws_access_key_id = access\naws_secret_access_key = secret\n"), 0644)
+	ioutil.WriteFile(d+"/.aws/credentials", []byte("[bar]\naws_access_key_id = access\naws_secret_access_key = secret\n"), 0644)
 	os.Setenv("HOME", d)
 
 	auth, err := aws.SharedAuth()
