@@ -191,6 +191,23 @@ var SAEast = Region{
 	"https://route53.amazonaws.com",
 }
 
+var Eucalyptus = Region{
+	"eucalyptus",
+	os.Getenv("EC2_URL"),
+	os.Getenv("S3_URL"),
+	"",
+	true,
+	true,
+	"",
+	"",
+	"",
+	os.Getenv("EUARE_URL"),
+	os.Getenv("AWS_ELB_URL"),
+	os.Getenv("AWS_AUTOSCALING_URL"),
+	"",
+	"",
+}
+
 var Regions = map[string]Region{
 	APNortheast.Name:  APNortheast,
 	APSoutheast.Name:  APSoutheast,
@@ -201,6 +218,7 @@ var Regions = map[string]Region{
 	USWest2.Name:      USWest2,
 	SAEast.Name:       SAEast,
 	USGovWest.Name:    USGovWest,
+        Eucalyptus.Name:   Eucalyptus,
 }
 
 type Auth struct {
