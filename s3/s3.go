@@ -13,6 +13,8 @@ package s3
 import (
 	"bytes"
 	"crypto/md5"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/xml"
 	"fmt"
@@ -36,6 +38,7 @@ type S3 struct {
 	aws.Auth
 	aws.Region
 	private byte // Reserve the right of using private data.
+	ssl_ca  *x509.CertPool
 }
 
 // The Bucket type encapsulates operations with an S3 bucket.
@@ -58,7 +61,21 @@ var attempts = aws.AttemptStrategy{
 
 // New creates a new S3.
 func New(auth aws.Auth, region aws.Region) *S3 {
-	return &S3{auth, region, 0}
+	return &S3{auth, region, 0, nil}
+}
+
+// Set the trusted CA certificate file for the HTTP client
+func (s3 *S3) SetSSLCACertificate(ca_file string) {
+	s3.ssl_ca = x509.NewCertPool()
+	ca_cert, err := ioutil.ReadFile(ca_file)
+	if err != nil {
+		log.Panicf("Error reading CA file: %s", err)
+	}
+
+	ok := s3.ssl_ca.AppendCertsFromPEM(ca_cert)
+	if !ok {
+		log.Panic("Failed to parse CA certificate")
+	}
 }
 
 // Bucket returns a Bucket with the given name.
@@ -758,8 +775,16 @@ func (s3 *S3) prepare(req *request) error {
 // If resp is not nil, the XML data contained in the response
 // body will be unmarshalled on it.
 func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
+	var client *http.Client
 	if debug {
 		log.Printf("Running S3 request: %#v", req)
+	}
+
+	if s3.ssl_ca != nil {
+		ssl_conn := &http.Transport{TLSClientConfig: &tls.Config{RootCAs: s3.ssl_ca}}
+		client = &http.Client{Transport: ssl_conn}
+	} else {
+		client = http.DefaultClient
 	}
 
 	u, err := req.url(false)
@@ -784,7 +809,7 @@ func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
 		hreq.Body = ioutil.NopCloser(req.payload)
 	}
 
-	hresp, err := http.DefaultClient.Do(&hreq)
+	hresp, err := client.Do(&hreq)
 	if err != nil {
 		return nil, err
 	}
