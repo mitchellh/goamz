@@ -140,6 +140,7 @@ func (s *S) TestRunInstancesExample(c *C) {
 		Monitoring:            true,
 		SubnetId:              "subnet-id",
 		DisableAPITermination: true,
+		EbsOptimized:          true,
 		ShutdownBehavior:      "terminate",
 		PrivateIPAddress:      "10.0.0.25",
 		BlockDevices: []ec2.BlockDeviceMapping{
@@ -168,6 +169,7 @@ func (s *S) TestRunInstancesExample(c *C) {
 	c.Assert(req.Form["Monitoring.Enabled"], DeepEquals, []string{"true"})
 	c.Assert(req.Form["SubnetId"], DeepEquals, []string{"subnet-id"})
 	c.Assert(req.Form["DisableApiTermination"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["EbsOptimized"], DeepEquals, []string{"true"})
 	c.Assert(req.Form["InstanceInitiatedShutdownBehavior"], DeepEquals, []string{"terminate"})
 	c.Assert(req.Form["PrivateIpAddress"], DeepEquals, []string{"10.0.0.25"})
 	c.Assert(req.Form["BlockDeviceMapping.1.DeviceName"], DeepEquals, []string{"/dev/sdb"})
@@ -304,6 +306,7 @@ func (s *S) TestTerminateInstancesExample(c *C) {
 	c.Assert(req.Form["Monitoring.Enabled"], IsNil)
 	c.Assert(req.Form["SubnetId"], IsNil)
 	c.Assert(req.Form["DisableApiTermination"], IsNil)
+	c.Assert(req.Form["EbsOptimized"], IsNil)
 	c.Assert(req.Form["InstanceInitiatedShutdownBehavior"], IsNil)
 	c.Assert(req.Form["PrivateIpAddress"], IsNil)
 
