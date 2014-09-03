@@ -253,6 +253,7 @@ type RunInstances struct {
 	SubnetId                 string
 	AssociatePublicIpAddress bool
 	DisableAPITermination    bool
+	EbsOptimized             bool
 	ShutdownBehavior         string
 	PrivateIPAddress         string
 	BlockDevices             []BlockDeviceMapping
@@ -296,6 +297,7 @@ type Instance struct {
 	LaunchTime         time.Time       `xml:"launchTime"`
 	SourceDestCheck    bool            `xml:"sourceDestCheck"`
 	SecurityGroups     []SecurityGroup `xml:"groupSet>item"`
+	EbsOptimized       string          `xml:"ebsOptimized"`
 }
 
 // RunInstances starts new instances in EC2.
@@ -391,6 +393,9 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	}
 	if options.DisableAPITermination {
 		params["DisableApiTermination"] = "true"
+	}
+	if options.EbsOptimized {
+		params["EbsOptimized"] = "true"
 	}
 	if options.ShutdownBehavior != "" {
 		params["InstanceInitiatedShutdownBehavior"] = options.ShutdownBehavior
