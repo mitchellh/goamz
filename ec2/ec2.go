@@ -297,6 +297,7 @@ type Instance struct {
 	LaunchTime         time.Time       `xml:"launchTime"`
 	SourceDestCheck    bool            `xml:"sourceDestCheck"`
 	SecurityGroups     []SecurityGroup `xml:"groupSet>item"`
+	EbsOptimized       string          `xml:"ebsOptimized"`
 }
 
 // RunInstances starts new instances in EC2.
