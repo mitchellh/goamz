@@ -178,7 +178,7 @@ func buildError(r *http.Response) error {
 	err.RequestId = errors.RequestId
 	err.StatusCode = r.StatusCode
 	if err.Message == "" {
-		err.Message = r.Status
+		err.Message = err.Code
 	}
 	return &err
 }

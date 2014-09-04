@@ -95,13 +95,13 @@ func (s *S) TestRunInstancesErrorWithoutXML(c *C) {
 	testServer.WaitRequest()
 
 	c.Assert(resp, IsNil)
-	c.Assert(err, ErrorMatches, "500 Internal Server Error")
+	c.Assert(err, ErrorMatches, "")
 
 	ec2err, ok := err.(*ec2.Error)
 	c.Assert(ok, Equals, true)
 	c.Assert(ec2err.StatusCode, Equals, 500)
 	c.Assert(ec2err.Code, Equals, "")
-	c.Assert(ec2err.Message, Equals, "500 Internal Server Error")
+	c.Assert(ec2err.Message, Equals, "")
 	c.Assert(ec2err.RequestId, Equals, "")
 }
 
@@ -114,13 +114,13 @@ func (s *S) TestRequestSpotInstancesErrorWithoutXML(c *C) {
 	testServer.WaitRequest()
 
 	c.Assert(resp, IsNil)
-	c.Assert(err, ErrorMatches, "500 Internal Server Error")
+	c.Assert(err, ErrorMatches, "")
 
 	ec2err, ok := err.(*ec2.Error)
 	c.Assert(ok, Equals, true)
 	c.Assert(ec2err.StatusCode, Equals, 500)
 	c.Assert(ec2err.Code, Equals, "")
-	c.Assert(ec2err.Message, Equals, "500 Internal Server Error")
+	c.Assert(ec2err.Message, Equals, "")
 	c.Assert(ec2err.RequestId, Equals, "")
 }
 
