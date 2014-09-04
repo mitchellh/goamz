@@ -2125,6 +2125,19 @@ type CreateSubnetResp struct {
 	Subnet    Subnet `xml:"subnet"`
 }
 
+// The ModifySubnetAttribute request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-ModifySubnetAttribute.html
+type ModifySubnetAttribute struct {
+	SubnetId            string
+	MapPublicIpOnLaunch bool
+}
+
+type ModifySubnetAttributeResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
 // Response to a DescribeInternetGateways request.
 type InternetGatewaysResp struct {
 	RequestId        string            `xml:"requestId"`
@@ -2322,6 +2335,22 @@ func (ec2 *EC2) CreateSubnet(options *CreateSubnet) (resp *CreateSubnetResp, err
 func (ec2 *EC2) DeleteSubnet(id string) (resp *SimpleResp, err error) {
 	params := makeParams("DeleteSubnet")
 	params["SubnetId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// ModifySubnetAttribute
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-ModifySubnetAttribute.html
+func (ec2 *EC2) ModifySubnetAttribute(options *ModifySubnetAttribute) (resp *ModifySubnetAttributeResp, err error) {
+	params := makeParams("ModifySubnetAttribute")
+	params["SubnetId"] = options.SubnetId
+	params["MapPublicIpOnLaunch.Value"] = options.MapPublicIpOnLaunch
 
 	resp = &SimpleResp{}
 	err = ec2.query(params, resp)

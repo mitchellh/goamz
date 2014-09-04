@@ -1229,6 +1229,24 @@ func (s *S) TestCreateSubnet(c *C) {
 	c.Assert(resp.Subnet.AvailableIpAddressCount, Equals, 251)
 }
 
+func (s *S) TestModifySubnetAttribute(c *C) {
+	testServer.Response(200, nil, ModifySubnetAttributeExample)
+
+	options := &ec2.ModifySubnetAttribute{
+		SubnetId:            "foo",
+		MapPublicIpOnLaunch: true
+	}
+
+	resp, err := s.ec2.ModifySubnetAttribute(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["SubnetId"], DeepEquals, []string{"foo"})
+	c.Assert(req.Form["MapPublicIpOnLaunch"], Equals, true)
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
 func (s *S) TestResetImageAttribute(c *C) {
 	testServer.Response(200, nil, ResetImageAttributeExample)
 
