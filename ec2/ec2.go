@@ -220,6 +220,8 @@ func addBlockDeviceParams(prename string, params map[string]string, blockdevices
 		}
 		if k.DeleteOnTermination {
 			params[prefix+"Ebs.DeleteOnTermination"] = "true"
+		} else {
+			params[prefix+"Ebs.DeleteOnTermination"] = "false"
 		}
 		if k.Encrypted {
 			params[prefix+"Ebs.Encrypted"] = "true"
