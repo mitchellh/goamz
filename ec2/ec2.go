@@ -2357,9 +2357,13 @@ func (ec2 *EC2) DeleteSubnet(id string) (resp *SimpleResp, err error) {
 func (ec2 *EC2) ModifySubnetAttribute(options *ModifySubnetAttribute) (resp *ModifySubnetAttributeResp, err error) {
 	params := makeParams("ModifySubnetAttribute")
 	params["SubnetId"] = options.SubnetId
-	params["MapPublicIpOnLaunch.Value"] = options.MapPublicIpOnLaunch
+	if options.MapPublicIpOnLaunch {
+		params["MapPublicIpOnLaunch.Value"] = "true"
+	} else {
+		params["MapPublicIpOnLaunch.Value"] = "false"
+	}
 
-	resp = &SimpleResp{}
+	resp = &ModifySubnetAttributeResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err

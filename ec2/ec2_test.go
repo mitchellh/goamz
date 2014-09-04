@@ -1237,14 +1237,14 @@ func (s *S) TestModifySubnetAttribute(c *C) {
 
 	options := &ec2.ModifySubnetAttribute{
 		SubnetId:            "foo",
-		MapPublicIpOnLaunch: true
+		MapPublicIpOnLaunch: true,
 	}
 
 	resp, err := s.ec2.ModifySubnetAttribute(options)
 
 	req := testServer.WaitRequest()
 	c.Assert(req.Form["SubnetId"], DeepEquals, []string{"foo"})
-	c.Assert(req.Form["MapPublicIpOnLaunch"], Equals, true)
+	c.Assert(req.Form["MapPublicIpOnLaunch.Value"], DeepEquals, []string{"true"})
 
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
