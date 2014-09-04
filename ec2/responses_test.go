@@ -845,6 +845,14 @@ var CreateSubnetExample = `
 </CreateSubnetResponse>
 `
 
+// http://goo.gl/tu2Kxm
+var ModifySubnetAttributeExample = `
+<ModifySubnetAttributeResponse xmlns="http://ec2.amazonaws.com/doc/2014-06-15/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+   <return>true</return>
+</ModifySubnetAttributeResponse>
+`
+
 // http://goo.gl/r6ZCPm
 var ResetImageAttributeExample = `
 <ResetImageAttributeResponse xmlns="http://ec2.amazonaws.com/doc/2014-06-15/">
