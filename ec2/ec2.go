@@ -654,6 +654,7 @@ type DescribeSpotPriceHistory struct {
 	InstanceType       []string
 	ProductDescription []string
 	AvailabilityZone   string
+	StartTime, EndTime time.Time
 }
 
 // Response to a DescribeSpotPriceHisotyr request.
@@ -680,8 +681,16 @@ func (ec2 *EC2) DescribeSpotPriceHistory(o *DescribeSpotPriceHistory) (resp *Des
 	if o.AvailabilityZone != "" {
 		params["AvailabilityZone"] = o.AvailabilityZone
 	}
+
+	if !o.StartTime.IsZero() {
+		params["StartTime"] = o.StartTime.In(time.UTC).Format(time.RFC3339)
+	}
+	if !o.EndTime.IsZero() {
+		params["EndTime"] = o.EndTime.In(time.UTC).Format(time.RFC3339)
+	}
+
 	if len(o.InstanceType) > 0 {
-		addParamsList(params, "InstanceTypes", o.InstanceType)
+		addParamsList(params, "InstanceType", o.InstanceType)
 	}
 	if len(o.ProductDescription) > 0 {
 		addParamsList(params, "ProductDescription", o.ProductDescription)
