@@ -650,6 +650,52 @@ func (ec2 *EC2) CancelSpotRequests(spotrequestIds []string) (resp *CancelSpotReq
 	return
 }
 
+type DescribeSpotPriceHistory struct {
+	InstanceType       []string
+	ProductDescription []string
+	AvailabilityZone   string
+}
+
+// Response to a DescribeSpotPriceHisotyr request.
+//
+// See http://goo.gl/3BKHj for more details.
+type DescribeSpotPriceHistoryResp struct {
+	RequestId string             `xml:"requestId"`
+	History   []SpotPriceHistory `xml:"spotPriceHistorySet>item"`
+}
+
+type SpotPriceHistory struct {
+	InstanceType       string    `xml:"instanceType"`
+	ProductDescription string    `xml:"productDescription"`
+	SpotPrice          string    `xml:"spotPrice"`
+	Timestamp          time.Time `xml:"timestamp"`
+	AvailabilityZone   string    `xml:"availabilityZone"`
+}
+
+// DescribeSpotPriceHistory gets the spot pricing history.
+//
+// See http://goo.gl/3BKHj for more details.
+func (ec2 *EC2) DescribeSpotPriceHistory(o *DescribeSpotPriceHistory) (resp *DescribeSpotPriceHistoryResp, err error) {
+	params := makeParams("DescribeSpotPriceHistory")
+	if o.AvailabilityZone != "" {
+		params["AvailabilityZone"] = o.AvailabilityZone
+	}
+	if len(o.InstanceType) > 0 {
+		addParamsList(params, "InstanceTypes", o.InstanceType)
+	}
+	if len(o.ProductDescription) > 0 {
+		addParamsList(params, "ProductDescription", o.ProductDescription)
+	}
+
+	resp = &DescribeSpotPriceHistoryResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
 // Response to a TerminateInstances request.
 //
 // See http://goo.gl/3BKHj for more details.
