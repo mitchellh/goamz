@@ -133,6 +133,7 @@ type CreateLoadBalancer struct {
 	Internal         bool // true for vpc elbs
 	SecurityGroups   []string
 	Subnets          []string
+	Tags             []Tag
 }
 
 type CreateLoadBalancerResp struct {
@@ -163,6 +164,11 @@ func (elb *ELB) CreateLoadBalancer(options *CreateLoadBalancer) (resp *CreateLoa
 		params["Listeners.member."+strconv.Itoa(i+1)+".Protocol"] = v.Protocol
 		params["Listeners.member."+strconv.Itoa(i+1)+".InstanceProtocol"] = v.InstanceProtocol
 		params["Listeners.member."+strconv.Itoa(i+1)+".SSLCertificateId"] = v.SSLCertificateId
+	}
+
+	for i, v := range options.Tags {
+		params["Tags.member."+strconv.Itoa(i+1)+".Key"] = v.Key
+		params["Tags.member."+strconv.Itoa(i+1)+".Value"] = v.Value
 	}
 
 	if options.Internal {
