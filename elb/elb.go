@@ -103,6 +103,12 @@ type Instance struct {
 	InstanceId string `xml:"member>InstanceId"`
 }
 
+// A tag attached to an elb
+type Tag struct {
+	Key   string `xml:"Key"`
+	Value string `xml:"Value"`
+}
+
 // An InstanceState from an elb health query
 type InstanceState struct {
 	InstanceId  string `xml:"InstanceId"`
@@ -297,6 +303,42 @@ func (elb *ELB) DeregisterInstancesFromLoadBalancer(options *DeregisterInstances
 	}
 
 	resp = &DeregisterInstancesFromLoadBalancerResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
+// Tags
+
+type DescribeTags struct {
+	LoadBalancerNames []string
+}
+
+type LoadBalancerTag struct {
+	Tags             []Tag  `xml:"Tags>member"`
+	LoadBalancerName string `xml:"LoadBalancerName"`
+}
+
+type DescribeTagsResp struct {
+	LoadBalancerTags []LoadBalancerTag `xml:"DescribeTagsResult>TagDescriptions>member"`
+	NextToken        string            `xml:"DescribeTagsResult>NextToken"`
+	RequestId        string            `xml:"ResponseMetadata>RequestId"`
+}
+
+func (elb *ELB) DescribeTags(options *DescribeTags) (resp *DescribeTagsResp, err error) {
+	params := makeParams("DescribeTags")
+
+	for i, v := range options.LoadBalancerNames {
+		params["LoadBalancerNames.member."+strconv.Itoa(i+1)] = v
+	}
+
+	resp = &DescribeTagsResp{}
 
 	err = elb.query(params, resp)
 
