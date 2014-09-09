@@ -272,6 +272,15 @@ type RunInstancesResp struct {
 	Instances      []Instance      `xml:"instancesSet>item"`
 }
 
+// BlockDevice represents the association of a block device with an instance.
+type BlockDevice struct {
+	DeviceName          string `xml:"deviceName"`
+	VolumeId            string `xml:"ebs>volumeId"`
+	Status              string `xml:"ebs>status"`
+	AttachTime          string `xml:"ebs>attachTime"`
+	DeleteOnTermination bool   `xml:"ebs>deleteOnTermination"`
+}
+
 // Instance encapsulates a running instance in EC2.
 //
 // See http://goo.gl/OCH8a for more details.
@@ -300,6 +309,7 @@ type Instance struct {
 	SourceDestCheck    bool            `xml:"sourceDestCheck"`
 	SecurityGroups     []SecurityGroup `xml:"groupSet>item"`
 	EbsOptimized       string          `xml:"ebsOptimized"`
+	BlockDevices       []BlockDevice   `xml:"blockDeviceMapping>item"`
 }
 
 // RunInstances starts new instances in EC2.

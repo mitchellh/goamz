@@ -375,6 +375,13 @@ func (s *S) TestDescribeInstancesExample1(c *C) {
 	c.Assert(r0i.PrivateDNSName, Equals, "domU-12-31-39-10-56-34.compute-1.internal")
 	c.Assert(r0i.DNSName, Equals, "ec2-174-129-165-232.compute-1.amazonaws.com")
 	c.Assert(r0i.AvailZone, Equals, "us-east-1b")
+
+	b0 := r0i.BlockDevices[0]
+	c.Assert(b0.DeviceName, Equals, "/dev/sda1")
+	c.Assert(b0.VolumeId, Equals, "vol-a082c1c9")
+	c.Assert(b0.Status, Equals, "attached")
+	c.Assert(b0.AttachTime, Equals, "2010-08-17T01:15:21.000Z")
+	c.Assert(b0.DeleteOnTermination, Equals, false)
 }
 
 func (s *S) TestDescribeInstancesExample2(c *C) {
