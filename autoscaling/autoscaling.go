@@ -4,12 +4,13 @@ package autoscaling
 
 import (
 	"encoding/xml"
-	"github.com/mitchellh/goamz/aws"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/goamz/aws"
 )
 
 // The AutoScaling type encapsulates operations operations with the autoscaling endpoint.
@@ -148,6 +149,7 @@ type CreateAutoScalingGroup struct {
 	MaxSize                 int
 	MinSize                 int
 	PlacementGroup          string
+	TerminationPolicies     []string
 	Name                    string
 	Tags                    []Tag
 	VPCZoneIdentifier       []string
@@ -211,6 +213,10 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 	for j, tag := range options.Tags {
 		params["Tag.member."+strconv.Itoa(j+1)+".Key"] = tag.Key
 		params["Tag.member."+strconv.Itoa(j+1)+".Value"] = tag.Value
+	}
+
+	if options.TerminationPolicies != nil {
+		params["TerminationPolicies"] = strings.Join(options.TerminationPolicies, ",")
 	}
 
 	if options.VPCZoneIdentifier != nil {
@@ -397,6 +403,7 @@ type UpdateAutoScalingGroup struct {
 	MaxSize                 int
 	MinSize                 int
 	PlacementGroup          string
+	TerminationPolicies     []string
 	Name                    string
 	VPCZoneIdentifier       []string
 
@@ -448,6 +455,9 @@ func (autoscaling *AutoScaling) UpdateAutoScalingGroup(options *UpdateAutoScalin
 
 	if options.PlacementGroup != "" {
 		params["PlacementGroup"] = options.PlacementGroup
+	}
+	for i, v := range options.TerminationPolicies {
+		params["TerminationPolicies.member."+strconv.Itoa(i+1)] = v
 	}
 
 	if options.VPCZoneIdentifier != nil {
