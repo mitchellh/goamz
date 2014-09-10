@@ -215,8 +215,8 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 		params["Tag.member."+strconv.Itoa(j+1)+".Value"] = tag.Value
 	}
 
-	if options.TerminationPolicies != nil {
-		params["TerminationPolicies"] = strings.Join(options.TerminationPolicies, ",")
+	for i, v := range options.TerminationPolicies {
+		params["TerminationPolicies.member."+strconv.Itoa(i+1)] = v
 	}
 
 	if options.VPCZoneIdentifier != nil {
