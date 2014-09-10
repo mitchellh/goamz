@@ -74,7 +74,7 @@ func (s *S) Test_CreateLaunchConfiguration(c *C) {
 		InstanceType:   "m1.small",
 		KeyName:        "foobar",
 		Name:           "i-141421",
-		UserData:       "IyEvYmluL2Jhc2gKZWNobyBIZWxsbwo=", // echo '#!/bin/bash\necho Hello' | base64
+		UserData:       "#!/bin/bash\necho Hello\n",
 	}
 
 	resp, err := s.autoscaling.CreateLaunchConfiguration(&options)
