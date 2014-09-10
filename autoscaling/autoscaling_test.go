@@ -62,7 +62,8 @@ func (s *S) Test_CreateAutoScalingGroup(c *C) {
 	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateAutoScalingGroup"})
 	c.Assert(req.Form["InstanceId"], DeepEquals, []string{"i-foo"})
 	c.Assert(req.Form["VPCZoneIdentifier"], DeepEquals, []string{"foo,bar"})
-	c.Assert(req.Form["TerminationPolicies"], DeepEquals, []string{"ClosestToNextInstanceHour,OldestInstance"})
+	c.Assert(req.Form["TerminationPolicies.member.1"], DeepEquals, []string{"ClosestToNextInstanceHour"})
+	c.Assert(req.Form["TerminationPolicies.member.2"], DeepEquals, []string{"OldestInstance"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "8d798a29-f083-11e1-bdfb-cb223EXAMPLE")
 }
