@@ -100,7 +100,7 @@ type Listener struct {
 
 // An Instance attaches to an elb
 type Instance struct {
-	InstanceId string `xml:"member>InstanceId"`
+	InstanceId string `xml:"InstanceId"`
 }
 
 // A tag attached to an elb
@@ -217,7 +217,7 @@ func (elb *ELB) DeleteLoadBalancer(options *DeleteLoadBalancer) (resp *SimpleRes
 type LoadBalancer struct {
 	LoadBalancerName  string             `xml:"member>LoadBalancerName"`
 	Listeners         []Listener         `xml:"member>ListenerDescriptions"`
-	Instances         []Instance         `xml:"member>Instances"`
+	Instances         []Instance         `xml:"member>Instances>member"`
 	HealthCheck       HealthCheck        `xml:"member>HealthCheck"`
 	AvailabilityZones []AvailabilityZone `xml:"member>AvailabilityZones"`
 	Scheme            string             `xml:"member>Scheme"`
