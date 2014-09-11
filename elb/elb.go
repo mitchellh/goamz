@@ -123,6 +123,67 @@ type AvailabilityZone struct {
 }
 
 // ----------------------------------------------------------------------------
+// AddTags
+
+type AddTags struct {
+	LoadBalancerNames []string
+	Tags              []Tag
+}
+
+type AddTagsResp struct {
+	RequestId string `xml:"ResponseMetadata>RequestId"`
+}
+
+func (elb *ELB) AddTags(options *AddTags) (resp *AddTagsResp, err error) {
+	params := makeParams("AddTags")
+
+	for i, v := range options.LoadBalancerNames {
+		params["LoadBalancerNames.member."+strconv.Itoa(i+1)] = v
+	}
+
+	for i, v := range options.Tags {
+		params["Tags.member."+strconv.Itoa(i+1)+".Key"] = v.Key
+		params["Tags.member."+strconv.Itoa(i+1)+".Value"] = v.Value
+	}
+
+	resp = &AddTagsResp{}
+
+	err = elb.query(params, resp)
+
+	return resp, err
+}
+
+// ----------------------------------------------------------------------------
+// RemoveTags
+
+type RemoveTags struct {
+	LoadBalancerNames []string
+	TagKeys           []string
+}
+
+type RemoveTagsResp struct {
+	RequestId string `xml:"ResponseMetadata>RequestId"`
+}
+
+func (elb *ELB) RemoveTags(options *RemoveTags) (resp *RemoveTagsResp, err error) {
+	params := makeParams("RemoveTags")
+
+	for i, v := range options.LoadBalancerNames {
+		params["LoadBalancerNames.member."+strconv.Itoa(i+1)] = v
+	}
+
+	for i, v := range options.TagKeys {
+		params["Tags.member."+strconv.Itoa(i+1)+".Key"] = v
+	}
+
+	resp = &RemoveTagsResp{}
+
+	err = elb.query(params, resp)
+
+	return resp, err
+}
+
+// ----------------------------------------------------------------------------
 // Create
 
 // The CreateLoadBalancer request parameters
@@ -320,7 +381,7 @@ func (elb *ELB) DeregisterInstancesFromLoadBalancer(options *DeregisterInstances
 }
 
 // ----------------------------------------------------------------------------
-// Tags
+// DescribeTags
 
 type DescribeTags struct {
 	LoadBalancerNames []string
