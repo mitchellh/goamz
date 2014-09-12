@@ -94,7 +94,7 @@ func makeParams(action string) map[string]string {
 type Tag struct {
 	Key               string `xml:"Key"`
 	Value             string `xml:"Value"`
-	PropogateAtLaunch string `xml:"PropogateAtLaunch"`
+	PropagateAtLaunch bool   `xml:"PropagateAtLaunch"`
 }
 
 type SecurityGroup struct {
@@ -211,8 +211,9 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 	}
 
 	for j, tag := range options.Tags {
-		params["Tag.member."+strconv.Itoa(j+1)+".Key"] = tag.Key
-		params["Tag.member."+strconv.Itoa(j+1)+".Value"] = tag.Value
+		params["Tags.member."+strconv.Itoa(j+1)+".Key"] = tag.Key
+		params["Tags.member."+strconv.Itoa(j+1)+".Value"] = tag.Value
+		params["Tags.member."+strconv.Itoa(j+1)+".PropagateAtLaunch"] = strconv.FormatBool(tag.PropagateAtLaunch)
 	}
 
 	for i, v := range options.TerminationPolicies {
