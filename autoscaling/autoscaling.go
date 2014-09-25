@@ -110,12 +110,13 @@ type LoadBalancerName struct {
 }
 
 type LaunchConfiguration struct {
-	ImageId        string          `xml:"member>ImageId"`
-	InstanceType   string          `xml:"member>InstanceType"`
-	KeyName        string          `xml:"member>KeyName"`
-	Name           string          `xml:"member>LaunchConfigurationName"`
-	SecurityGroups []SecurityGroup `xml:"member>SecurityGroups"`
-	UserData       []byte          `xml:"member>UserData"`
+	IamInstanceProfile string          `xml:"member>IamInstanceProfile"`
+	ImageId            string          `xml:"member>ImageId"`
+	InstanceType       string          `xml:"member>InstanceType"`
+	KeyName            string          `xml:"member>KeyName"`
+	Name               string          `xml:"member>LaunchConfigurationName"`
+	SecurityGroups     []SecurityGroup `xml:"member>SecurityGroups"`
+	UserData           []byte          `xml:"member>UserData"`
 }
 
 type AutoScalingGroup struct {
