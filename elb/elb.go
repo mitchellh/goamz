@@ -284,6 +284,7 @@ type LoadBalancer struct {
 	Scheme            string             `xml:"member>Scheme"`
 	DNSName           string             `xml:"member>DNSName"`
 	SecurityGroups    []string           `xml:"member>SecurityGroups>member"`
+	Scheme            string             `xml:member>Scheme`
 	Subnets           []string           `xml:"member>Subnets>member"`
 }
 
