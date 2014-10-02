@@ -108,16 +108,7 @@ func (r *CloudsearchDocument) SubmitBatch(batch Batch) (*BatchResult, error) {
 func (r *CloudsearchDocument) query(method string, path string, request interface{}, resp interface{}) error {
 	endpoint, err := url.Parse(r.endpoint)
 	endpoint.Path = path
-	//	query := endpoint.Query()
-	//	query.Set("Version", apiVersion)
-	//	query.Set("Action", action)
-	//	for k, v := range params {
-	//		query.Set(k, v)
-	//	}
-	//	endpoint.RawQuery = query.Encode()
-
 	xmlBytes, _ := xml.Marshal(request)
-	println(string(xmlBytes))
 	xmlReader := bytes.NewReader(xmlBytes)
 	hReq, err := http.NewRequest(method, endpoint.String(), xmlReader)
 	hReq.Header.Set("Content-Type", "application/xml")
