@@ -119,13 +119,38 @@ type LaunchConfiguration struct {
 	UserData           []byte          `xml:"member>UserData"`
 }
 
+
+const (
+	Pending = "Pending"
+	PendingWait = "Pending:Wait"
+	PendingProceed = "Pending:Proceed"
+	Quarantined = "Quarantined"
+	InService = "InService"
+	Terminating = "Terminating"
+	TerminatingWait = "Terminating:Wait"
+	TerminatingProceed = "Terminating:Proceed"
+	Terminated = "Terminated"
+	Detaching = "Detaching"
+	Detached = "Detached"
+	EnteringStandby = "EnteringStandby"
+	Standby = "Standby"
+)
+
+type Instance struct {
+	AvailabilityZone 	    	string 		`xml:"member>AvailabilityZone"`
+	HealthStatus			 	string 		`xml:"member>HealthStatus"`
+	InstanceId			 		string 		`xml:"member>InstanceId"`
+	LaunchConfigurationName 	string      `xml:"member>LaunchConfigurationName"`
+	LifecycleState				string  	`xml:"member>LifecycleState"`
+}
+
 type AutoScalingGroup struct {
 	AvailabilityZones       []AvailabilityZone `xml:"member>AvailabilityZones"`
 	DefaultCooldown         int                `xml:"member>DefaultCooldown"`
 	DesiredCapacity         int                `xml:"member>DesiredCapacity"`
 	HealthCheckGracePeriod  int                `xml:"member>HealthCheckGracePeriod"`
 	HealthCheckType         string             `xml:"member>HealthCheckType"`
-	InstanceId              string             `xml:"member>InstanceId"`
+	Instances               []Instance         `xml:"member>Instances"`
 	LaunchConfigurationName string             `xml:"member>LaunchConfigurationName"`
 	LoadBalancerNames       []LoadBalancerName `xml:"member>LoadBalancerNames"`
 	MaxSize                 int                `xml:"member>MaxSize"`
