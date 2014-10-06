@@ -501,7 +501,50 @@ func (autoscaling *AutoScaling) UpdateAutoScalingGroup(options *UpdateAutoScalin
 	return
 }
 
+// ----------------------------------------------------------------------------
+// Destroy
+// The TerminateInstanceInAutoScalingGroup request parameters
+type TerminateInstanceInAutoScalingGroup struct {
+	InstanceId              		string
+	ShouldDecrementDesiredCapacity 	string
+}
+
+func (autoscaling *AutoScaling) TerminateInstanceInAutoScalingGroup(options *TerminateInstanceInAutoScalingGroup) (resp *TerminateInstanceResp, err error) {
+	params := makeParams("TerminateInstanceInAutoScalingGroup")
+	params["InstanceId"] = options.InstanceId
+	params["ShouldDecrementDesiredCapacity"] = options.ShouldDecrementDesiredCapacity
+
+	resp = &TerminateInstanceResp{}
+
+	err = autoscaling.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+
 // Responses
+
+type Activity struct{
+	ActivityId 				string  `xml:"member"`
+	AutoScalingGroupName 	string 	`xml:"member"`
+	Cause 					string 	`xml:"member"`
+	Description 			string 	`xml:"member"`
+	Details 				string 	`xml:"member"`
+	EndTime 				string 	`xml:"member"`
+	Progress 				string 	`xml:"member"`
+	StartTime 				string 	`xml:"member"`
+	StatusCode 				string 	`xml:"member"`
+	StatusMessage 			string 	`xml:"member"`
+}
+
+type TerminateInstanceResp struct {
+	RequestId         string             `xml:"ResponseMetadata>RequestId"`
+	Activity 		  Activity 			 `xml:"DescribeAutoScalingGroupsResult>Activity`
+}
 
 type SimpleResp struct {
 	RequestId string `xml:"ResponseMetadata>RequestId"`
