@@ -237,20 +237,24 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 
 // The CreateLaunchConfiguration request parameters
 type CreateLaunchConfiguration struct {
-	ImageId        string
-	InstanceId     string
-	InstanceType   string
-	KeyName        string
-	Name           string
-	SecurityGroups []string
-	UserData       string
+    IamInstanceProfile  string
+	ImageId             string
+	InstanceId          string
+	InstanceType        string
+	KeyName             string
+	Name                string
+	SecurityGroups      []string
+	UserData            string
 }
 
 func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchConfiguration) (resp *SimpleResp, err error) {
 	params := makeParams("CreateLaunchConfiguration")
 
 	params["LaunchConfigurationName"] = options.Name
-
+    
+	if options.IamInstanceProfile != "" {
+		params["IamInstanceProfile"] = options.IamInstanceProfile
+	}
 	if options.ImageId != "" {
 		params["ImageId"] = options.ImageId
 	}
