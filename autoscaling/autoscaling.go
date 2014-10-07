@@ -237,7 +237,7 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 
 // The CreateLaunchConfiguration request parameters
 type CreateLaunchConfiguration struct {
-    IamInstanceProfile  string
+	IamInstanceProfile  string
 	ImageId             string
 	InstanceId          string
 	InstanceType        string
