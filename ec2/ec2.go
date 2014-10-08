@@ -1985,6 +1985,28 @@ func (ec2 *EC2) CreateTags(resourceIds []string, tags []Tag) (resp *SimpleResp, 
 	return resp, nil
 }
 
+// DeleteTags deletes tags.
+func (ec2 *EC2) DeleteTags(resourceIds []string, tags []Tag) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteTags")
+	addParamsList(params, "ResourceId", resourceIds)
+
+	for j, tag := range tags {
+		params["Tag."+strconv.Itoa(j+1)+".Key"] = tag.Key
+
+		if tag.Value != "" {
+			params["Tag."+strconv.Itoa(j+1)+".Value"] = tag.Value
+		}
+	}
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 type TagsResp struct {
 	RequestId string        `xml:"requestId"`
 	Tags      []ResourceTag `xml:"tagSet>item"`
