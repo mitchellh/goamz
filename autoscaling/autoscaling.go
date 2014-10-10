@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 	"github.com/mitchellh/goamz/aws"
 )
 
@@ -51,10 +50,8 @@ func (autoscaling *AutoScaling) query(params map[string]string, resp interface{}
 	if r.StatusCode > 200 {
 		return buildError(r)
 	}
-
 	decoder := xml.NewDecoder(r.Body)
 	decodedBody := decoder.Decode(resp)
-
 	return decodedBody
 }
 
@@ -137,11 +134,11 @@ const (
 )
 
 type Instance struct {
-	AvailabilityZone 	    	string 		`xml:"member>AvailabilityZone"`
-	HealthStatus			 	string 		`xml:"member>HealthStatus"`
-	InstanceId			 		string 		`xml:"member>InstanceId"`
-	LaunchConfigurationName 	string      `xml:"member>LaunchConfigurationName"`
-	LifecycleState				string  	`xml:"member>LifecycleState"`
+	AvailabilityZone 	    	string 		`xml:"AvailabilityZone"`
+	HealthStatus			 	string 		`xml:"HealthStatus"`
+	InstanceId			 		string 		`xml:"InstanceId"`
+	LaunchConfigurationName 	string      `xml:"LaunchConfigurationName"`
+	LifecycleState				string  	`xml:"LifecycleState"`
 }
 
 type AutoScalingGroup struct {
@@ -150,7 +147,7 @@ type AutoScalingGroup struct {
 	DesiredCapacity         int                `xml:"member>DesiredCapacity"`
 	HealthCheckGracePeriod  int                `xml:"member>HealthCheckGracePeriod"`
 	HealthCheckType         string             `xml:"member>HealthCheckType"`
-	Instances               []Instance         `xml:"member>Instances"`
+	Instances               []Instance   	   `xml:"member>Instances>member"`
 	LaunchConfigurationName string             `xml:"member>LaunchConfigurationName"`
 	LoadBalancerNames       []LoadBalancerName `xml:"member>LoadBalancerNames"`
 	MaxSize                 int                `xml:"member>MaxSize"`
