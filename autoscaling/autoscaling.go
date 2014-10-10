@@ -4,13 +4,12 @@ package autoscaling
 
 import (
 	"encoding/xml"
+	"github.com/mitchellh/goamz/aws"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/mitchellh/goamz/aws"
 )
 
 // The AutoScaling type encapsulates operations operations with the autoscaling endpoint.
@@ -51,10 +50,8 @@ func (autoscaling *AutoScaling) query(params map[string]string, resp interface{}
 	if r.StatusCode > 200 {
 		return buildError(r)
 	}
-
 	decoder := xml.NewDecoder(r.Body)
 	decodedBody := decoder.Decode(resp)
-
 	return decodedBody
 }
 
@@ -119,13 +116,37 @@ type LaunchConfiguration struct {
 	UserData           []byte          `xml:"member>UserData"`
 }
 
+const (
+	Pending            = "Pending"
+	PendingWait        = "Pending:Wait"
+	PendingProceed     = "Pending:Proceed"
+	Quarantined        = "Quarantined"
+	InService          = "InService"
+	Terminating        = "Terminating"
+	TerminatingWait    = "Terminating:Wait"
+	TerminatingProceed = "Terminating:Proceed"
+	Terminated         = "Terminated"
+	Detaching          = "Detaching"
+	Detached           = "Detached"
+	EnteringStandby    = "EnteringStandby"
+	Standby            = "Standby"
+)
+
+type Instance struct {
+	AvailabilityZone        string `xml:"AvailabilityZone"`
+	HealthStatus            string `xml:"HealthStatus"`
+	InstanceId              string `xml:"InstanceId"`
+	LaunchConfigurationName string `xml:"LaunchConfigurationName"`
+	LifecycleState          string `xml:"LifecycleState"`
+}
+
 type AutoScalingGroup struct {
 	AvailabilityZones       []AvailabilityZone `xml:"member>AvailabilityZones"`
 	DefaultCooldown         int                `xml:"member>DefaultCooldown"`
 	DesiredCapacity         int                `xml:"member>DesiredCapacity"`
 	HealthCheckGracePeriod  int                `xml:"member>HealthCheckGracePeriod"`
 	HealthCheckType         string             `xml:"member>HealthCheckType"`
-	InstanceId              string             `xml:"member>InstanceId"`
+	Instances               []Instance         `xml:"member>Instances>member"`
 	LaunchConfigurationName string             `xml:"member>LaunchConfigurationName"`
 	LoadBalancerNames       []LoadBalancerName `xml:"member>LoadBalancerNames"`
 	MaxSize                 int                `xml:"member>MaxSize"`
@@ -480,7 +501,49 @@ func (autoscaling *AutoScaling) UpdateAutoScalingGroup(options *UpdateAutoScalin
 	return
 }
 
+// ----------------------------------------------------------------------------
+// Destroy
+// The TerminateInstanceInAutoScalingGroup request parameters
+type TerminateInstanceInAutoScalingGroup struct {
+	InstanceId                     string
+	ShouldDecrementDesiredCapacity string
+}
+
+func (autoscaling *AutoScaling) TerminateInstanceInAutoScalingGroup(options *TerminateInstanceInAutoScalingGroup) (resp *TerminateInstanceResp, err error) {
+	params := makeParams("TerminateInstanceInAutoScalingGroup")
+	params["InstanceId"] = options.InstanceId
+	params["ShouldDecrementDesiredCapacity"] = options.ShouldDecrementDesiredCapacity
+
+	resp = &TerminateInstanceResp{}
+
+	err = autoscaling.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Responses
+
+type Activity struct {
+	ActivityId           string `xml:"member"`
+	AutoScalingGroupName string `xml:"member"`
+	Cause                string `xml:"member"`
+	Description          string `xml:"member"`
+	Details              string `xml:"member"`
+	EndTime              string `xml:"member"`
+	Progress             string `xml:"member"`
+	StartTime            string `xml:"member"`
+	StatusCode           string `xml:"member"`
+	StatusMessage        string `xml:"member"`
+}
+
+type TerminateInstanceResp struct {
+	RequestId string   `xml:"ResponseMetadata>RequestId"`
+	Activity  Activity `xml:"DescribeAutoScalingGroupsResult>Activity`
+}
 
 type SimpleResp struct {
 	RequestId string `xml:"ResponseMetadata>RequestId"`
