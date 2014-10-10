@@ -1054,7 +1054,7 @@ func (s *S) TestSignatureWithEndpointPath(c *C) {
 	c.Assert(err, IsNil)
 
 	req := testServer.WaitRequest()
-	c.Assert(req.Form["Signature"], DeepEquals, []string{"QmvgkYGn19WirCuCz/jRp3RmRgFwWR5WRkKZ5AZnyXQ="})
+	c.Assert(req.Form["Signature"], DeepEquals, []string{"tyOTQ0c0T5ujskCPTWa5ATMtv7UyErgT339cU8O2+Q8="})
 }
 
 func (s *S) TestDescribeInstanceStatusExample(c *C) {
