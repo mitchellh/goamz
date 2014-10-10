@@ -35,8 +35,9 @@ const debug = false
 type S3 struct {
 	aws.Auth
 	aws.Region
-	GetHTTPClient func() *http.Client
-	private       byte // Reserve the right of using private data.
+	HTTPClient func() *http.Client
+
+	private    byte // Reserve the right of using private data.
 }
 
 // The Bucket type encapsulates operations with an S3 bucket.
@@ -62,7 +63,7 @@ func New(auth aws.Auth, region aws.Region) *S3 {
 	return &S3{
 		Auth:   auth,
 		Region: region,
-		GetHTTPClient: func() *http.Client {
+		HTTPClient: func() *http.Client {
 			return http.DefaultClient
 		},
 		private: 0}
@@ -775,7 +776,7 @@ func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
 		hreq.Body = ioutil.NopCloser(req.payload)
 	}
 
-	hresp, err := s3.GetHTTPClient().Do(&hreq)
+	hresp, err := s3.HTTPClient().Do(&hreq)
 	if err != nil {
 		return nil, err
 	}
