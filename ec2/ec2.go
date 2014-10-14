@@ -1827,6 +1827,7 @@ type SecurityGroup struct {
 	Name        string `xml:"groupName"`
 	Description string `xml:"groupDescription"`
 	VpcId       string `xml:"vpcId"`
+	Tags        []Tag  `xml:"tagSet>item"`
 }
 
 // SecurityGroupNames is a convenience function that
