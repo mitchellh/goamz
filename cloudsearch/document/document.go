@@ -56,6 +56,16 @@ func (ba *BatchAdd) AddField(name string, value string) {
 	field := &BatchAddField{name, value}
 	ba.Fields = append(ba.Fields, *field)
 }
+// Yes, there can be multiple fields with the same name
+func (ba *BatchAdd) GetFields(name string) []BatchAddField {
+	res := []BatchAddField{}
+	for _, v := range ba.Fields {
+		if v.Name == name {
+			res = append(res, v)
+		}
+	}
+	return res
+}
 
 type BatchAddField struct {
 	Name           string    `xml:"name,attr"`
