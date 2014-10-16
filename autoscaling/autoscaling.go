@@ -97,28 +97,16 @@ type Tag struct {
 	PropagateAtLaunch bool   `xml:"PropagateAtLaunch"`
 }
 
-type SecurityGroup struct {
-	SecurityGroup string `xml:"member"`
-}
-
-type AvailabilityZone struct {
-	AvailabilityZone string `xml:"member"`
-}
-
-type LoadBalancerName struct {
-	LoadBalancerName string `xml:"member"`
-}
-
 type LaunchConfiguration struct {
-	AssociatePublicIpAddress bool            `xml:"AssociatePublicIpAddress"`
-	IamInstanceProfile       string          `xml:"IamInstanceProfile"`
-	ImageId                  string          `xml:"ImageId"`
-	InstanceType             string          `xml:"InstanceType"`
-	KernelId                 string          `xml:"KernelId"`
-	KeyName                  string          `xml:"KeyName"`
-	Name                     string          `xml:"LaunchConfigurationName"`
-	SecurityGroups           []SecurityGroup `xml:"SecurityGroups"`
-	UserData                 []byte          `xml:"UserData"`
+	AssociatePublicIpAddress bool     `xml:"AssociatePublicIpAddress"`
+	IamInstanceProfile       string   `xml:"IamInstanceProfile"`
+	ImageId                  string   `xml:"ImageId"`
+	InstanceType             string   `xml:"InstanceType"`
+	KernelId                 string   `xml:"KernelId"`
+	KeyName                  string   `xml:"KeyName"`
+	Name                     string   `xml:"LaunchConfigurationName"`
+	SecurityGroups           []string `xml:"SecurityGroups>member"`
+	UserData                 []byte   `xml:"UserData"`
 }
 
 type Instance struct {
@@ -130,22 +118,22 @@ type Instance struct {
 }
 
 type AutoScalingGroup struct {
-	AvailabilityZones       []AvailabilityZone `xml:"AvailabilityZones"`
-	CreatedTime             time.Time          `xml:"CreatedTime"`
-	DefaultCooldown         int                `xml:"DefaultCooldown"`
-	DesiredCapacity         int                `xml:"DesiredCapacity"`
-	HealthCheckGracePeriod  int                `xml:"HealthCheckGracePeriod"`
-	HealthCheckType         string             `xml:"HealthCheckType"`
-	InstanceId              string             `xml:"InstanceId"`
-	Instances               []Instance         `xml:"Instances>member"`
-	LaunchConfigurationName string             `xml:"LaunchConfigurationName"`
-	LoadBalancerNames       []LoadBalancerName `xml:"LoadBalancerNames"`
-	MaxSize                 int                `xml:"MaxSize"`
-	MinSize                 int                `xml:"MinSize"`
-	Name                    string             `xml:"AutoScalingGroupName"`
-	Status                  string             `xml:"Status"`
-	Tags                    []Tag              `xml:"Tags>member"`
-	VPCZoneIdentifier       string             `xml:"VPCZoneIdentifier"`
+	AvailabilityZones       []string   `xml:"AvailabilityZones>member"`
+	CreatedTime             time.Time  `xml:"CreatedTime"`
+	DefaultCooldown         int        `xml:"DefaultCooldown"`
+	DesiredCapacity         int        `xml:"DesiredCapacity"`
+	HealthCheckGracePeriod  int        `xml:"HealthCheckGracePeriod"`
+	HealthCheckType         string     `xml:"HealthCheckType"`
+	InstanceId              string     `xml:"InstanceId"`
+	Instances               []Instance `xml:"Instances>member"`
+	LaunchConfigurationName string     `xml:"LaunchConfigurationName"`
+	LoadBalancerNames       []string   `xml:"LoadBalancerNames>member"`
+	MaxSize                 int        `xml:"MaxSize"`
+	MinSize                 int        `xml:"MinSize"`
+	Name                    string     `xml:"AutoScalingGroupName"`
+	Status                  string     `xml:"Status"`
+	Tags                    []Tag      `xml:"Tags>member"`
+	VPCZoneIdentifier       string     `xml:"VPCZoneIdentifier"`
 }
 
 // ----------------------------------------------------------------------------
