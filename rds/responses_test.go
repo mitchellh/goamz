@@ -548,3 +548,18 @@ var RestoreDBInstanceFromDBSnapshotExample = `
   </ResponseMetadata>
 </RestoreDBInstanceFromDBSnapshotResponse>
 `
+
+var CreateDBParameterGroupExample = `
+<CreateDBParameterGroupResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <CreateDBParameterGroupResult>
+    <DBParameterGroup>
+      <DBParameterGroupFamily>mysql5.6</DBParameterGroupFamily>
+      <Description>My new DB Parameter Group</Description>
+      <DBParameterGroupName>mydbparamgroup3</DBParameterGroupName>
+    </DBParameterGroup>
+  </CreateDBParameterGroupResult>
+  <ResponseMetadata>
+    <RequestId>7805c127-af22-11c3-96ac-6999cc5f7e72</RequestId>
+  </ResponseMetadata>
+</CreateDBParameterGroupResponse>
+`
