@@ -1189,6 +1189,20 @@ func (ec2 *EC2) DisassociateAddress(id string) (resp *SimpleResp, err error) {
 	return
 }
 
+// Disassociate an address from a VPC instance.
+func (ec2 *EC2) DisassociateAddressClassic(ip string) (resp *SimpleResp, err error) {
+	params := makeParams("DisassociateAddress")
+	params["PublicIp"] = ip
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
 // DescribeAddresses returns details about one or more
 // Elastic IP Addresses. Returned addresses can be
 // filtered by Public IP, Allocation ID or multiple filters
