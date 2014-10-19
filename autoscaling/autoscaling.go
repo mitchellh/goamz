@@ -104,6 +104,7 @@ type LaunchConfiguration struct {
 	InstanceType             string   `xml:"InstanceType"`
 	KernelId                 string   `xml:"KernelId"`
 	KeyName                  string   `xml:"KeyName"`
+	SpotPrice                string   `xml:"SpotPrice"`
 	Name                     string   `xml:"LaunchConfigurationName"`
 	SecurityGroups           []string `xml:"SecurityGroups>member"`
 	UserData                 []byte   `xml:"UserData"`
@@ -247,6 +248,7 @@ type CreateLaunchConfiguration struct {
 	InstanceType             string
 	KernelId                 string
 	KeyName                  string
+	SpotPrice                string
 	Name                     string
 	SecurityGroups           []string
 	UserData                 string
@@ -280,6 +282,10 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 
 	if options.KeyName != "" {
 		params["KeyName"] = options.KeyName
+	}
+
+	if options.SpotPrice != "" {
+		params["SpotPrice"] = options.SpotPrice
 	}
 
 	for i, v := range options.SecurityGroups {
