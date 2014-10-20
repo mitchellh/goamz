@@ -563,3 +563,29 @@ var CreateDBParameterGroupExample = `
   </ResponseMetadata>
 </CreateDBParameterGroupResponse>
 `
+
+var DescribeDBParameterGroupsExample = `
+<DescribeDBParameterGroupsResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <DescribeDBParameterGroupsResult>
+    <DBParameterGroups>
+      <DBParameterGroup>
+        <DBParameterGroupFamily>mysql5.6</DBParameterGroupFamily>
+        <Description>My new DB Parameter Group</Description>
+        <DBParameterGroupName>mydbparamgroup3</DBParameterGroupName>
+      </DBParameterGroup>
+    </DBParameterGroups>
+  </DescribeDBParameterGroupsResult>
+  <ResponseMetadata>
+    <RequestId>b75d527a-b98c-11d3-f272-7cd6cce12cc5</RequestId>
+  </ResponseMetadata>
+</DescribeDBParameterGroupsResponse>
+`
+
+
+var DeleteDBParameterGroupExample = `
+<DeleteDBParameterGroupResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <ResponseMetadata>
+    <RequestId>cad6c267-ba25-11d3-fe11-33d33a9bb7e3</RequestId>
+  </ResponseMetadata>
+</DeleteDBParameterGroupResponse>
+`

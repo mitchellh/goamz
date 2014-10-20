@@ -150,6 +150,12 @@ type DBSnapshot struct {
 	VpcId                string `xml:"VpcId"`
 }
 
+type DBParameterGroup struct {
+	DBParameterGroupFamily string `xml:"DBParameterGroupFamily"`
+	DBParameterGroupName   string `xml:"DBParameterGroupName"`
+	Description            string `xml:"Description"`
+}
+
 // ----------------------------------------------------------------------------
 // Create
 
@@ -511,6 +517,32 @@ func (rds *Rds) DescribeDBSnapshots(options *DescribeDBSnapshots) (resp *Describ
 	return
 }
 
+// DescribeDBParameterGroups request params
+type DescribeDBParameterGroups struct {
+	DBParameterGroupName string
+}
+
+type DescribeDBParameterGroupsResp struct {
+	RequestId         string             `xml:"ResponseMetadata>RequestId"`
+	DBParameterGroups []DBParameterGroup `xml:"DescribeDBParameterGroupsResult>DBParameterGroups>DBParameterGroup"`
+}
+
+func (rds *Rds) DescribeDBParameterGroups(options *DescribeDBParameterGroups) (resp *DescribeDBParameterGroupsResp, err error) {
+	params := makeParams("DescribeDBParameterGroups")
+
+	params["DBParameterGroupName"] = options.DBParameterGroupName
+
+	resp = &DescribeDBParameterGroupsResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // DeleteDBInstance request params
 type DeleteDBInstance struct {
 	FinalDBSnapshotIdentifier string
@@ -572,6 +604,27 @@ func (rds *Rds) DeleteDBSubnetGroup(options *DeleteDBSubnetGroup) (resp *SimpleR
 	params := makeParams("DeleteDBSubnetGroup")
 
 	params["DBSubnetGroupName"] = options.DBSubnetGroupName
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DeleteDBParameterGroup request params
+type DeleteDBParameterGroup struct {
+	DBParameterGroupName string
+}
+
+func (rds *Rds) DeleteDBParameterGroup(options *DeleteDBParameterGroup) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteDBParameterGroup")
+
+	params["DBParameterGroupName"] = options.DBParameterGroupName
 
 	resp = &SimpleResp{}
 
