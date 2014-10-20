@@ -180,6 +180,25 @@ func (s *S) Test_DescribeDBSubnetGroups(c *C) {
 	c.Assert(resp.DBSubnetGroups[0].VpcId, DeepEquals, "vpc-e7abbdce")
 }
 
+func (s *S) Test_DescribeDBParameterGroups(c *C) {
+	testServer.Response(200, nil, DescribeDBParameterGroupsExample)
+
+	options := rds.DescribeDBParameterGroups{
+		DBParameterGroupName: "mydbparamgroup3",
+	}
+
+	resp, err := s.rds.DescribeDBParameterGroups(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeDBParameterGroups"})
+	c.Assert(req.Form["DBParameterGroupName"], DeepEquals, []string{"mydbparamgroup3"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "b75d527a-b98c-11d3-f272-7cd6cce12cc5")
+	c.Assert(resp.DBParameterGroups[0].DBParameterGroupFamily, Equals, "mysql5.6")
+	c.Assert(resp.DBParameterGroups[0].Description, Equals, "My new DB Parameter Group")
+	c.Assert(resp.DBParameterGroups[0].DBParameterGroupName, Equals, "mydbparamgroup3")
+}
+
 func (s *S) Test_DeleteDBInstance(c *C) {
 	testServer.Response(200, nil, DeleteDBInstanceExample)
 
@@ -248,6 +267,22 @@ func (s *S) Test_DeleteDBSubnetGroup(c *C) {
 	c.Assert(req.Form["DBSubnetGroupName"], DeepEquals, []string{"foobarbaz"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "6295e5ab-bbf3-11d3-f4c6-37db295f7674")
+}
+
+func (s *S) Test_DeleteDBParameterGroup(c *C) {
+	testServer.Response(200, nil, DeleteDBParameterGroupExample)
+
+	options := rds.DeleteDBParameterGroup{
+		DBParameterGroupName: "mydbparamgroup3",
+	}
+
+	resp, err := s.rds.DeleteDBParameterGroup(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteDBParameterGroup"})
+	c.Assert(req.Form["DBParameterGroupName"], DeepEquals, []string{"mydbparamgroup3"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "cad6c267-ba25-11d3-fe11-33d33a9bb7e3")
 }
 
 func (s *S) Test_AuthorizeDBSecurityGroupIngress(c *C) {
