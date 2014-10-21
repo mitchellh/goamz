@@ -589,3 +589,14 @@ var DeleteDBParameterGroupExample = `
   </ResponseMetadata>
 </DeleteDBParameterGroupResponse>
 `
+
+var ModifyDBParameterGroupExample = `
+<ModifyDBParameterGroupResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <ModifyDBParameterGroupResult>
+    <DBParameterGroupName>mydbparamgroup3</DBParameterGroupName>
+  </ModifyDBParameterGroupResult>
+  <ResponseMetadata>
+    <RequestId>12d7435e-bba0-11d3-fe11-33d33a9bb7e3</RequestId>
+  </ResponseMetadata>
+</ModifyDBParameterGroupResponse>
+`
