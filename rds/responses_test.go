@@ -600,3 +600,36 @@ var ModifyDBParameterGroupExample = `
   </ResponseMetadata>
 </ModifyDBParameterGroupResponse>
 `
+
+var DescribeDBParametersExample = `
+<DescribeDBParametersResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <DescribeDBParametersResult>
+    <Marker>bGlzdGVuZXJfbmV0d29ya3M=</Marker>
+    <Parameters>
+      <Parameter>
+        <ParameterValue>utf8</ParameterValue>
+        <ParameterName>character_set_server</ParameterName>
+      </Parameter>
+      <Parameter>
+        <ParameterValue>utf8</ParameterValue>
+        <ParameterName>character_set_client</ParameterName>
+      </Parameter>
+      <Parameter>
+        <ParameterValue>utf8</ParameterValue>
+        <ParameterName>character_set_results</ParameterName>
+      </Parameter>
+      <Parameter>
+        <ParameterValue>utf8_unicode_ci</ParameterValue>
+        <ParameterName>collation_server</ParameterName>
+      </Parameter>
+      <Parameter>
+        <ParameterValue>utf8_unicode_ci</ParameterValue>
+        <ParameterName>collation_connection</ParameterName>
+      </Parameter>
+    </Parameters>
+  </DescribeDBParametersResult>
+  <ResponseMetadata>
+    <RequestId>8c40488f-b9ff-11d3-a15e-7ac49293f4fa</RequestId>
+  </ResponseMetadata>
+</DescribeDBParametersResponse>
+`

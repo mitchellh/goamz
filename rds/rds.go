@@ -549,6 +549,32 @@ func (rds *Rds) DescribeDBParameterGroups(options *DescribeDBParameterGroups) (r
 	return
 }
 
+// DescribeDBParameters request params
+type DescribeDBParameters struct {
+	DBParameterGroupName string
+}
+
+type DescribeDBParametersResp struct {
+	RequestId  string      `xml:"ResponseMetadata>RequestId"`
+	Parameters []Parameter `xml:"DescribeDBParametersResult>Parameters>Parameter"`
+}
+
+func (rds *Rds) DescribeDBParameters(options *DescribeDBParameters) (resp *DescribeDBParametersResp, err error) {
+	params := makeParams("DescribeDBParameters")
+
+	params["DBParameterGroupName"] = options.DBParameterGroupName
+
+	resp = &DescribeDBParametersResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // DeleteDBInstance request params
 type DeleteDBInstance struct {
 	FinalDBSnapshotIdentifier string
