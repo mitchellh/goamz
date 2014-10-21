@@ -199,6 +199,32 @@ func (s *S) Test_DescribeDBParameterGroups(c *C) {
 	c.Assert(resp.DBParameterGroups[0].DBParameterGroupName, Equals, "mydbparamgroup3")
 }
 
+func (s *S) Test_DescribeDBParameters(c *C) {
+	testServer.Response(200, nil, DescribeDBParametersExample)
+
+	options := rds.DescribeDBParameters{
+		DBParameterGroupName: "mydbparamgroup3",
+	}
+
+	resp, err := s.rds.DescribeDBParameters(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeDBParameters"})
+	c.Assert(req.Form["DBParameterGroupName"], DeepEquals, []string{"mydbparamgroup3"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "8c40488f-b9ff-11d3-a15e-7ac49293f4fa")
+	c.Assert(resp.Parameters[0].ParameterName, Equals, "character_set_server")
+	c.Assert(resp.Parameters[0].ParameterValue, Equals, "utf8")
+	c.Assert(resp.Parameters[1].ParameterName, Equals, "character_set_client")
+	c.Assert(resp.Parameters[1].ParameterValue, Equals, "utf8")
+	c.Assert(resp.Parameters[2].ParameterName, Equals, "character_set_results")
+	c.Assert(resp.Parameters[2].ParameterValue, Equals, "utf8")
+	c.Assert(resp.Parameters[3].ParameterName, Equals, "collation_server")
+	c.Assert(resp.Parameters[3].ParameterValue, Equals, "utf8_unicode_ci")
+	c.Assert(resp.Parameters[4].ParameterName, Equals, "collation_connection")
+	c.Assert(resp.Parameters[4].ParameterValue, Equals, "utf8_unicode_ci")
+}
+
 func (s *S) Test_DeleteDBInstance(c *C) {
 	testServer.Response(200, nil, DeleteDBInstanceExample)
 
