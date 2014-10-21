@@ -343,3 +343,61 @@ func (s *S) Test_RestoreDBInstanceFromDBSnapshot(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "863fd73e-be2b-11d3-855b-576787000e19")
 }
+
+func (s *S) Test_ModifyDBParameterGroup(c *C) {
+	testServer.Response(200, nil, ModifyDBParameterGroupExample)
+
+	options := rds.ModifyDBParameterGroup{
+		DBParameterGroupName: "mydbparamgroup3",
+		Parameters:           []rds.Parameter{
+			rds.Parameter{
+				ApplyMethod:    "immediate",
+				ParameterName:  "character_set_server",
+				ParameterValue: "utf8",
+			},
+			rds.Parameter{
+				ApplyMethod:    "immediate",
+				ParameterName:  "character_set_client",
+				ParameterValue: "utf8",
+			},
+			rds.Parameter{
+				ApplyMethod:    "immediate",
+				ParameterName:  "character_set_results",
+				ParameterValue: "utf8",
+			},
+			rds.Parameter{
+				ApplyMethod:    "immediate",
+				ParameterName:  "collation_server",
+				ParameterValue: "utf8_unicode_ci",
+			},
+			rds.Parameter{
+				ApplyMethod:    "immediate",
+				ParameterName:  "collation_connection",
+				ParameterValue: "utf8_unicode_ci",
+			},
+		},
+	}
+
+	resp, err := s.rds.ModifyDBParameterGroup(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ModifyDBParameterGroup"})
+	c.Assert(req.Form["DBParameterGroupName"], DeepEquals, []string{"mydbparamgroup3"})
+	c.Assert(req.Form["Parameters.member.1.ApplyMethod"], DeepEquals, []string{"immediate"})
+	c.Assert(req.Form["Parameters.member.1.ParameterName"], DeepEquals, []string{"character_set_server"})
+	c.Assert(req.Form["Parameters.member.1.ParameterValue"], DeepEquals, []string{"utf8"})
+	c.Assert(req.Form["Parameters.member.2.ApplyMethod"], DeepEquals, []string{"immediate"})
+	c.Assert(req.Form["Parameters.member.2.ParameterName"], DeepEquals, []string{"character_set_client"})
+	c.Assert(req.Form["Parameters.member.2.ParameterValue"], DeepEquals, []string{"utf8"})
+	c.Assert(req.Form["Parameters.member.3.ApplyMethod"], DeepEquals, []string{"immediate"})
+	c.Assert(req.Form["Parameters.member.3.ParameterName"], DeepEquals, []string{"character_set_results"})
+	c.Assert(req.Form["Parameters.member.3.ParameterValue"], DeepEquals, []string{"utf8"})
+	c.Assert(req.Form["Parameters.member.4.ApplyMethod"], DeepEquals, []string{"immediate"})
+	c.Assert(req.Form["Parameters.member.4.ParameterName"], DeepEquals, []string{"collation_server"})
+	c.Assert(req.Form["Parameters.member.4.ParameterValue"], DeepEquals, []string{"utf8_unicode_ci"})
+	c.Assert(req.Form["Parameters.member.5.ApplyMethod"], DeepEquals, []string{"immediate"})
+	c.Assert(req.Form["Parameters.member.5.ParameterName"], DeepEquals, []string{"collation_connection"})
+	c.Assert(req.Form["Parameters.member.5.ParameterValue"], DeepEquals, []string{"utf8_unicode_ci"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "12d7435e-bba0-11d3-fe11-33d33a9bb7e3")
+}

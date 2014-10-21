@@ -156,6 +156,12 @@ type DBParameterGroup struct {
 	Description            string `xml:"Description"`
 }
 
+type Parameter struct {
+	ApplyMethod    string `xml:"ApplyMethod"`
+	ParameterName  string `xml:"ParameterName"`
+	ParameterValue string `xml:"ParameterValue"`
+}
+
 // ----------------------------------------------------------------------------
 // Create
 
@@ -709,6 +715,34 @@ func (rds *Rds) RestoreDBInstanceFromDBSnapshot(options *RestoreDBInstanceFromDB
 
 	if options.PubliclyAccessible {
 		params["PubliclyAccessible"] = "true"
+	}
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ModifyDBParameterGroup request parameters
+type ModifyDBParameterGroup struct {
+	DBParameterGroupName string
+	Parameters           []Parameter
+}
+
+func (rds *Rds) ModifyDBParameterGroup(options *ModifyDBParameterGroup) (resp *SimpleResp, err error) {
+	params := makeParams("ModifyDBParameterGroup")
+
+	params["DBParameterGroupName"] = options.DBParameterGroupName
+
+	for j, group := range options.Parameters {
+		params["Parameters.member."+strconv.Itoa(j+1)+".ApplyMethod"] = group.ApplyMethod
+		params["Parameters.member."+strconv.Itoa(j+1)+".ParameterName"] = group.ParameterName
+		params["Parameters.member."+strconv.Itoa(j+1)+".ParameterValue"] = group.ParameterValue
 	}
 
 	resp = &SimpleResp{}
