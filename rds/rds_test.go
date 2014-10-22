@@ -204,6 +204,7 @@ func (s *S) Test_DescribeDBParameters(c *C) {
 
 	options := rds.DescribeDBParameters{
 		DBParameterGroupName: "mydbparamgroup3",
+		Source: "user",
 	}
 
 	resp, err := s.rds.DescribeDBParameters(&options)
@@ -211,6 +212,7 @@ func (s *S) Test_DescribeDBParameters(c *C) {
 
 	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeDBParameters"})
 	c.Assert(req.Form["DBParameterGroupName"], DeepEquals, []string{"mydbparamgroup3"})
+	c.Assert(req.Form["Source"], DeepEquals, []string{"user"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "8c40488f-b9ff-11d3-a15e-7ac49293f4fa")
 	c.Assert(resp.Parameters[0].ParameterName, Equals, "character_set_server")
