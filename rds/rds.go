@@ -552,6 +552,7 @@ func (rds *Rds) DescribeDBParameterGroups(options *DescribeDBParameterGroups) (r
 // DescribeDBParameters request params
 type DescribeDBParameters struct {
 	DBParameterGroupName string
+	Source               string
 }
 
 type DescribeDBParametersResp struct {
@@ -563,6 +564,10 @@ func (rds *Rds) DescribeDBParameters(options *DescribeDBParameters) (resp *Descr
 	params := makeParams("DescribeDBParameters")
 
 	params["DBParameterGroupName"] = options.DBParameterGroupName
+
+	if attr := options.Source; attr != "" {
+		params["Source"] = attr
+	}
 
 	resp = &DescribeDBParametersResp{}
 
