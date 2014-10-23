@@ -108,7 +108,7 @@ type DBInstance struct {
 	VpcSecurityGroupIds        []string      `xml:"VpcSecurityGroups"`
 	DBSecurityGroupNames       []string      `xml:"DBSecurityGroups>DBSecurityGroup>DBSecurityGroupName"`
 	DBSubnetGroup              DBSubnetGroup `xml:"DBSubnetGroup"`
-	DBParameterGroupName       string        `xml:"DBParameterGroupName"`
+	DBParameterGroupName       string        `xml:"DBParameterGroups>DBParameterGroup>DBParameterGroupName"`
 }
 
 type DBSecurityGroup struct {
