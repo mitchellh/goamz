@@ -105,7 +105,7 @@ type DBInstance struct {
 	Port                       int           `xml:"Endpoint>Port"`
 	PreferredBackupWindow      string        `xml:"PreferredBackupWindow"`
 	PreferredMaintenanceWindow string        `xml:"PreferredMaintenanceWindow"`
-	VpcSecurityGroupIds        []string      `xml:"VpcSecurityGroups"`
+	VpcSecurityGroupIds        []string      `xml:"VpcSecurityGroups>VpcSecurityGroupMembership>VpcSecurityGroupId"`
 	DBSecurityGroupNames       []string      `xml:"DBSecurityGroups>DBSecurityGroup>DBSecurityGroupName"`
 	DBSubnetGroup              DBSubnetGroup `xml:"DBSubnetGroup"`
 	DBParameterGroupName       string        `xml:"DBParameterGroups>DBParameterGroup>DBParameterGroupName"`

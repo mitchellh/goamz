@@ -61,7 +61,12 @@ var DescribeDBInstancesExample = `
         <BackupRetentionPeriod>1</BackupRetentionPeriod>
         <MultiAZ>false</MultiAZ>
         <DBInstanceStatus>available</DBInstanceStatus>
-        <VpcSecurityGroups/>
+        <VpcSecurityGroups>
+          <VpcSecurityGroupMembership>
+            <Status>active</Status>
+            <VpcSecurityGroupId>my-vpc-secgroup</VpcSecurityGroupId>
+          </VpcSecurityGroupMembership>
+        </VpcSecurityGroups>
         <DBInstanceIdentifier>mysqlexampledb-restore</DBInstanceIdentifier>
         <PreferredBackupWindow>10:07-10:37</PreferredBackupWindow>
         <PreferredMaintenanceWindow>sun:06:13-sun:06:43</PreferredMaintenanceWindow>
@@ -88,12 +93,7 @@ var DescribeDBInstancesExample = `
             <Status>in-sync</Status>
           </OptionGroupMembership>
         </OptionGroupMemberships>
-        <DBSecurityGroups>
-          <DBSecurityGroup>
-            <Status>active</Status>
-            <DBSecurityGroupName>default</DBSecurityGroupName>
-          </DBSecurityGroup>
-        </DBSecurityGroups>
+        <DBSecurityGroups/>
         <PubliclyAccessible>true</PubliclyAccessible>
         <DBName>mysampledb</DBName>
         <AutoMinorVersionUpgrade>true</AutoMinorVersionUpgrade>
