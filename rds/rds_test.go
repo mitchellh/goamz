@@ -138,6 +138,7 @@ func (s *S) Test_DescribeDBInstances(c *C) {
 	c.Assert(resp.RequestId, Equals, "01b2685a-b978-11d3-f272-7cd6cce12cc5")
 	c.Assert(resp.DBInstances[0].DBName, Equals, "mysampledb")
 	c.Assert(resp.DBInstances[0].DBSecurityGroupNames, DeepEquals, []string{"my-db-secgroup"})
+	c.Assert(resp.DBInstances[0].DBParameterGroupName, Equals, "my-db-paramgroup")
 	c.Assert(resp.DBInstances[1].VpcSecurityGroupIds, DeepEquals, []string{"my-vpc-secgroup"})
 }
 

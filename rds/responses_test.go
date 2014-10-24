@@ -29,7 +29,7 @@ var DescribeDBInstancesExample = `
         <DBParameterGroups>
           <DBParameterGroup>
             <ParameterApplyStatus>in-sync</ParameterApplyStatus>
-            <DBParameterGroupName>default.mysql5.6</DBParameterGroupName>
+            <DBParameterGroupName>my-db-paramgroup</DBParameterGroupName>
           </DBParameterGroup>
         </DBParameterGroups>
         <Endpoint>
