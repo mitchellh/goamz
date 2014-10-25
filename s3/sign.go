@@ -18,6 +18,7 @@ var b64 = base64.StdEncoding
 
 var s3ParamsToSign = map[string]bool{
 	"acl":                          true,
+	"delete":                       true,
 	"location":                     true,
 	"logging":                      true,
 	"notification":                 true,

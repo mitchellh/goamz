@@ -127,7 +127,7 @@ type xmlErrors struct {
 var timeNow = time.Now
 
 func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
-	params["Version"] = "2014-05-01"
+	params["Version"] = "2014-06-15"
 	params["Timestamp"] = timeNow().In(time.UTC).Format(time.RFC3339)
 	endpoint, err := url.Parse(ec2.Region.EC2Endpoint)
 	if err != nil {
@@ -203,31 +203,32 @@ func addBlockDeviceParams(prename string, params map[string]string, blockdevices
 		if k.DeviceName != "" {
 			params[prefix+"DeviceName"] = k.DeviceName
 		}
+
 		if k.VirtualName != "" {
 			params[prefix+"VirtualName"] = k.VirtualName
-		}
-		if k.SnapshotId != "" {
-			params[prefix+"Ebs.SnapshotId"] = k.SnapshotId
-		}
-		if k.VolumeType != "" {
-			params[prefix+"Ebs.VolumeType"] = k.VolumeType
-		}
-		if k.IOPS != 0 {
-			params[prefix+"Ebs.Iops"] = strconv.FormatInt(k.IOPS, 10)
-		}
-		if k.VolumeSize != 0 {
-			params[prefix+"Ebs.VolumeSize"] = strconv.FormatInt(k.VolumeSize, 10)
-		}
-		if k.DeleteOnTermination {
-			params[prefix+"Ebs.DeleteOnTermination"] = "true"
-		} else {
-			params[prefix+"Ebs.DeleteOnTermination"] = "false"
-		}
-		if k.Encrypted {
-			params[prefix+"Ebs.Encrypted"] = "true"
-		}
-		if k.NoDevice {
+		} else if k.NoDevice {
 			params[prefix+"NoDevice"] = ""
+		} else {
+			if k.SnapshotId != "" {
+				params[prefix+"Ebs.SnapshotId"] = k.SnapshotId
+			}
+			if k.VolumeType != "" {
+				params[prefix+"Ebs.VolumeType"] = k.VolumeType
+			}
+			if k.IOPS != 0 {
+				params[prefix+"Ebs.Iops"] = strconv.FormatInt(k.IOPS, 10)
+			}
+			if k.VolumeSize != 0 {
+				params[prefix+"Ebs.VolumeSize"] = strconv.FormatInt(k.VolumeSize, 10)
+			}
+			if k.DeleteOnTermination {
+				params[prefix+"Ebs.DeleteOnTermination"] = "true"
+			} else {
+				params[prefix+"Ebs.DeleteOnTermination"] = "false"
+			}
+			if k.Encrypted {
+				params[prefix+"Ebs.Encrypted"] = "true"
+			}
 		}
 	}
 }
@@ -1016,6 +1017,47 @@ func (ec2 *EC2) Volumes(volIds []string, filter *Filter) (resp *VolumesResp, err
 }
 
 // ----------------------------------------------------------------------------
+// Availability zone management functions and types.
+// See http://goo.gl/ylxT4R for more details.
+
+// DescribeAvailabilityZonesResp represents a response to a DescribeAvailabilityZones
+// request in EC2.
+type DescribeAvailabilityZonesResp struct {
+	RequestId string                 `xml:"requestId"`
+	Zones     []AvailabilityZoneInfo `xml:"availabilityZoneInfo>item"`
+}
+
+// AvailabilityZoneInfo encapsulates details for an availability zone in EC2.
+type AvailabilityZoneInfo struct {
+	AvailabilityZone
+	State      string   `xml:"zoneState"`
+	MessageSet []string `xml:"messageSet>item"`
+}
+
+// AvailabilityZone represents an EC2 availability zone.
+type AvailabilityZone struct {
+	Name   string `xml:"zoneName"`
+	Region string `xml:"regionName"`
+}
+
+// DescribeAvailabilityZones returns details about availability zones in EC2.
+// The filter parameter is optional, and if provided will limit the
+// availability zones returned to those matching the given filtering
+// rules.
+//
+// See http://goo.gl/ylxT4R for more details.
+func (ec2 *EC2) DescribeAvailabilityZones(filter *Filter) (resp *DescribeAvailabilityZonesResp, err error) {
+	params := makeParams("DescribeAvailabilityZones")
+	filter.addParams(params)
+	resp = &DescribeAvailabilityZonesResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// ----------------------------------------------------------------------------
 // ElasticIp management (for VPC)
 
 // The AllocateAddress request parameters
@@ -1137,6 +1179,20 @@ func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddr
 func (ec2 *EC2) DisassociateAddress(id string) (resp *SimpleResp, err error) {
 	params := makeParams("DisassociateAddress")
 	params["AssociationId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Disassociate an address from a VPC instance.
+func (ec2 *EC2) DisassociateAddressClassic(ip string) (resp *SimpleResp, err error) {
+	params := makeParams("DisassociateAddress")
+	params["PublicIp"] = ip
 
 	resp = &SimpleResp{}
 	err = ec2.query(params, resp)
@@ -1827,6 +1883,7 @@ type SecurityGroup struct {
 	Name        string `xml:"groupName"`
 	Description string `xml:"groupDescription"`
 	VpcId       string `xml:"vpcId"`
+	Tags        []Tag  `xml:"tagSet>item"`
 }
 
 // SecurityGroupNames is a convenience function that
@@ -1982,6 +2039,28 @@ func (ec2 *EC2) CreateTags(resourceIds []string, tags []Tag) (resp *SimpleResp, 
 	if err != nil {
 		return nil, err
 	}
+	return resp, nil
+}
+
+// DeleteTags deletes tags.
+func (ec2 *EC2) DeleteTags(resourceIds []string, tags []Tag) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteTags")
+	addParamsList(params, "ResourceId", resourceIds)
+
+	for j, tag := range tags {
+		params["Tag."+strconv.Itoa(j+1)+".Key"] = tag.Key
+
+		if tag.Value != "" {
+			params["Tag."+strconv.Itoa(j+1)+".Value"] = tag.Value
+		}
+	}
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
 	return resp, nil
 }
 

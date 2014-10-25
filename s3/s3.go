@@ -35,6 +35,8 @@ const debug = false
 type S3 struct {
 	aws.Auth
 	aws.Region
+	HTTPClient func() *http.Client
+
 	private byte // Reserve the right of using private data.
 }
 
@@ -58,7 +60,13 @@ var attempts = aws.AttemptStrategy{
 
 // New creates a new S3.
 func New(auth aws.Auth, region aws.Region) *S3 {
-	return &S3{auth, region, 0}
+	return &S3{
+		Auth:   auth,
+		Region: region,
+		HTTPClient: func() *http.Client {
+			return http.DefaultClient
+		},
+		private: 0}
 }
 
 // Bucket returns a Bucket with the given name.
@@ -189,9 +197,36 @@ func (b *Bucket) GetReader(path string) (rc io.ReadCloser, err error) {
 // It is the caller's responsibility to call Close on rc when
 // finished reading.
 func (b *Bucket) GetResponse(path string) (*http.Response, error) {
+	return b.getResponseParams(path, nil)
+}
+
+// GetTorrent retrieves an Torrent object from an S3 bucket an io.ReadCloser.
+// It is the caller's responsibility to call Close on rc when finished reading.
+func (b *Bucket) GetTorrentReader(path string) (io.ReadCloser, error) {
+	resp, err := b.getResponseParams(path, url.Values{"torrent": {""}})
+	if err != nil {
+		return nil, err
+	}
+	return resp.Body, nil
+}
+
+// GetTorrent retrieves an Torrent object from an S3, returning
+// the torrent as a []byte.
+func (b *Bucket) GetTorrent(path string) ([]byte, error) {
+	body, err := b.GetTorrentReader(path)
+	if err != nil {
+		return nil, err
+	}
+	defer body.Close()
+
+	return ioutil.ReadAll(body)
+}
+
+func (b *Bucket) getResponseParams(path string, params url.Values) (*http.Response, error) {
 	req := &request{
 		bucket: b.Name,
 		path:   path,
+		params: params,
 	}
 	err := b.S3.prepare(req)
 	if err != nil {
@@ -706,22 +741,6 @@ func (s3 *S3) prepare(req *request) error {
 			req.path = "/" + req.path
 		}
 		req.signpath = req.path
-		// signpath includes subresource, if present: "?acl", "?delete", "?location", "?logging", or "?torrent"
-		if req.params["acl"] != nil {
-			req.signpath += "?acl"
-		}
-		if req.params["delete"] != nil {
-			req.signpath += "?delete"
-		}
-		if req.params["location"] != nil {
-			req.signpath += "?location"
-		}
-		if req.params["logging"] != nil {
-			req.signpath += "?logging"
-		}
-		if req.params["torrent"] != nil {
-			req.signpath += "?torrent"
-		}
 
 		if req.bucket != "" {
 			req.baseurl = s3.Region.S3BucketEndpoint
@@ -784,7 +803,7 @@ func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
 		hreq.Body = ioutil.NopCloser(req.payload)
 	}
 
-	hresp, err := http.DefaultClient.Do(&hreq)
+	hresp, err := s3.HTTPClient().Do(&hreq)
 	if err != nil {
 		return nil, err
 	}
