@@ -1,0 +1,149 @@
+// The eb package provides types and functions for interaction with the AWS
+// Elastic Beanstalk service (EB)
+package eb
+
+import (
+	"encoding/xml"
+	"github.com/mitchellh/goamz/aws"
+	"net/http"
+	"net/url"
+	"strconv"
+	"time"
+)
+
+type EB struct {
+	aws.Auth
+	aws.Region
+	httpClient *http.Client
+}
+
+const APIVersion = "2010-12-01"
+
+func NewWithClient(auth aws.Auth, region aws.Region, httpClient *http.Client) *EB {
+	return &EB{auth, region, httpClient}
+}
+
+func (eb *EB) query(params map[string]string, resp interface{}) error {
+	params["Version"] = APIVersion
+	params["Timestamp"] = time.Now().In(time.UTC).Format(time.RFC3339)
+
+	endpoint, err := url.Parse(eb.Region.EBEndpoint)
+	if err != nil {
+		return err
+	}
+
+	sign(eb.Auth, "GET", "/", params, endpoint.Host)
+	endpoint.RawQuery = multimap(params).Encode()
+	r, err := eb.httpClient.Get(endpoint.String())
+
+	if err != nil {
+		return err
+	}
+	defer r.Body.Close()
+	if r.StatusCode > 200 {
+		return buildError(r)
+	}
+
+	decoder := xml.NewDecoder(r.Body)
+	decodedBody := decoder.Decode(resp)
+
+	return decodedBody
+}
+
+func buildError(r *http.Response) error {
+	var (
+		err    Error
+		errors xmlErrors
+	)
+	xml.NewDecoder(r.Body).Decode(&errors)
+	if len(errors.Errors) > 0 {
+		err = errors.Errors[0]
+	}
+	err.StatusCode = r.StatusCode
+	if err.Message == "" {
+		err.Message = r.Status
+	}
+	return &err
+}
+
+func multimap(p map[string]string) url.Values {
+	q := make(url.Values, len(p))
+	for k, v := range p {
+		q[k] = []string{v}
+	}
+	return q
+}
+
+func makeParams(action string) map[string]string {
+	params := make(map[string]string)
+	params["Action"] = action
+	return params
+}
+
+// ----------------------------------------------------------------------------
+// Create
+
+// The CreateApplication request parameters
+type CreateApplication struct {
+	ApplicationName string
+	Description     string
+}
+
+type CreateApplicationResp struct {
+	ApplicationName        string   `xml:"CreateApplicationResult>Application>ApplicationName"`
+	ConfigurationTemplates []string `xml:"CreateApplicationResult>Application>ConfigurationTemplates>member"`
+	DateCreated            string   `xml:"CreateApplicationResult>Application>DateCreated"`
+	DateUpdated            string   `xml:"CreateApplicationResult>Application>DateUpdated"`
+	Description            string   `xml:"CreateApplicationResult>Application>Description"`
+	Versions               []string `xml:"CreateApplicationResult>Application>Versions>member"`
+	RequestId              string   `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) CreateApplication(options *CreateApplication) (resp *CreateApplicationResp, err error) {
+	params := makeParams("CreateApplication")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["Description"] = options.Description
+	resp = &CreateApplicationResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// Responses
+
+type SimpleResp struct {
+	RequestId string `xml:"ResponseMetadata>RequestId"`
+}
+
+type xmlErrors struct {
+	Errors []Error `xml:"Error"`
+}
+
+// Error encapsulates an elb error.
+type Error struct {
+	// HTTP status code of the error.
+	StatusCode int
+
+	// AWS code of the error.
+	Code string
+
+	// Message explaining the error.
+	Message string
+}
+
+func (e *Error) Error() string {
+	var prefix string
+	if e.Code != "" {
+		prefix = e.Code + ": "
+	}
+	if prefix == "" && e.StatusCode > 0 {
+		prefix = strconv.Itoa(e.StatusCode) + ": "
+	}
+	return prefix + e.Message
+}
