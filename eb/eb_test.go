@@ -47,3 +47,19 @@ func (s *S) TestCreateApplication(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "8b00e053-f1d6-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDeleteLoadBalancer(c *C) {
+	testServer.Response(200, nil, DeleteApplicationExample)
+
+	options := eb.DeleteApplication{
+		ApplicationName: "foobar",
+	}
+
+	resp, err := s.eb.DeleteApplication(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteApplication"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"foobar"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "1f155abd-f1d7-11df-8a78-9f77047e0d0c")
+}
