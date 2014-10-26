@@ -20,3 +20,11 @@ var CreateApplicationExample = `
   </ResponseMetadata>
 </CreateApplicationResponse> 
 `
+
+var DeleteApplicationExample = `
+<DeleteApplicationResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ResponseMetadata>
+    <RequestId>1f155abd-f1d7-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</DeleteApplicationResponse>
+`

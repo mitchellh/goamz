@@ -19,6 +19,11 @@ type EB struct {
 
 const APIVersion = "2010-12-01"
 
+// New creates a new ELB instance.
+func New(auth aws.Auth, region aws.Region) *EB {
+	return NewWithClient(auth, region, aws.RetryingClient)
+}
+
 func NewWithClient(auth aws.Auth, region aws.Region, httpClient *http.Client) *EB {
 	return &EB{auth, region, httpClient}
 }
@@ -105,6 +110,35 @@ func (eb *EB) CreateApplication(options *CreateApplication) (resp *CreateApplica
 	params["ApplicationName"] = options.ApplicationName
 	params["Description"] = options.Description
 	resp = &CreateApplicationResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
+// Delete
+
+// The DeleteApplication request parameters
+type DeleteApplication struct {
+	ApplicationName     string
+	TerminateEnvByForce bool
+}
+
+func (eb *EB) DeleteApplication(options *DeleteApplication) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteApplication")
+
+	params["ApplicationName"] = options.ApplicationName
+
+	if options.TerminateEnvByForce {
+		params["TerminateEnvByForce"] = "true"
+	}
+
+	resp = &SimpleResp{}
 
 	err = eb.query(params, resp)
 
