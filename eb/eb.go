@@ -121,6 +121,34 @@ func (eb *EB) CreateApplication(options *CreateApplication) (resp *CreateApplica
 }
 
 // ----------------------------------------------------------------------------
+// CheckDNSAvailability
+
+type CheckDNSAvailability struct {
+	CNAMEPrefix string
+}
+
+type CheckDNSAvailabilityResp struct {
+	FullyQualifiedCNAME string `xml:"CheckDNSAvailabilityResult>FullyQualifiedCNAME"`
+	Available           bool   `xml:"CheckDNSAvailabilityResult>Available"`
+	RequestId           string `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) CheckDNSAvailability(options *CheckDNSAvailability) (resp *CheckDNSAvailabilityResp, err error) {
+	params := makeParams("CheckDNSAvailability")
+
+	params["CNAMEPrefix"] = options.CNAMEPrefix
+	resp = &CheckDNSAvailabilityResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Delete
 
 // The DeleteApplication request parameters
