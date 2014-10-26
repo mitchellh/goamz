@@ -45,6 +45,11 @@ func (s *S) TestCreateApplication(c *C) {
 	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
 	c.Assert(req.Form["Description"], DeepEquals, []string{"Sample Description"})
 	c.Assert(err, IsNil)
+	c.Assert(resp.ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.ConfigurationTemplates, DeepEquals, []string{"Default"})
+	c.Assert(resp.DateCreated, Equals, "2010-11-16T23:09:20.256Z")
+	c.Assert(resp.DateUpdated, Equals, "2010-11-16T23:09:20.256Z")
+	c.Assert(resp.Description, Equals, "Sample Description")
 	c.Assert(resp.RequestId, Equals, "8b00e053-f1d6-11df-8a78-9f77047e0d0c")
 }
 
