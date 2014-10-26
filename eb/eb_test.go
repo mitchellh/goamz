@@ -68,3 +68,21 @@ func (s *S) TestDeleteLoadBalancer(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "1f155abd-f1d7-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestCheckDNSAvailability(c *C) {
+	testServer.Response(200, nil, CheckDNSAvailabilityExample)
+
+	options := eb.CheckDNSAvailability{
+		CNAMEPrefix: "sampleapplication",
+	}
+
+	resp, err := s.eb.CheckDNSAvailability(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CheckDNSAvailability"})
+	c.Assert(req.Form["CNAMEPrefix"], DeepEquals, []string{"sampleapplication"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.FullyQualifiedCNAME, Equals, "sampleapplication.elasticbeanstalk.amazonaws.com")
+	c.Assert(resp.Available, Equals, true)
+	c.Assert(resp.RequestId, Equals, "12f6701f-f1d6-11df-8a78-9f77047e0d0c")
+}
