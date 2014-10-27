@@ -296,3 +296,29 @@ func (s *S) TestDescribeApplications(c *C) {
 	c.Assert(resp.Applications[0].ConfigurationTemplates[0], Equals, "Default")
 	c.Assert(resp.RequestId, Equals, "577c70ff-f1d7-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDescribeConfigurationOptions(c *C) {
+	testServer.Response(200, nil, DescribeConfigurationOptionsExample)
+
+	options := eb.DescribeConfigurationOptions{
+		ApplicationName: "SampleApp",
+		TemplateName:    "default",
+	}
+
+	resp, err := s.eb.DescribeConfigurationOptions(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeConfigurationOptions"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["TemplateName"], DeepEquals, []string{"default"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.SolutionStackName, Equals, "32bit Amazon Linux running Tomcat 7")
+	c.Assert(resp.Options[0].ChangeSeverity, Equals, "RestartEnvironment")
+	c.Assert(resp.Options[0].DefaultValue, Equals, "ami-6036c009")
+	c.Assert(resp.Options[0].MaxLength, Equals, 2000)
+	c.Assert(resp.Options[0].Name, Equals, "ImageId")
+	c.Assert(resp.Options[0].Namespace, Equals, "aws:autoscaling:launchconfiguration")
+	c.Assert(resp.Options[0].UserDefined, Equals, false)
+	c.Assert(resp.Options[0].ValueType, Equals, "Scalar")
+	c.Assert(resp.RequestId, Equals, "e8768900-f272-11df-8a78-9f77047e0d0c")
+}
