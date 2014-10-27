@@ -322,3 +322,30 @@ func (s *S) TestDescribeConfigurationOptions(c *C) {
 	c.Assert(resp.Options[0].ValueType, Equals, "Scalar")
 	c.Assert(resp.RequestId, Equals, "e8768900-f272-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDescribeConfigurationSettings(c *C) {
+	testServer.Response(200, nil, DescribeConfigurationSettingsExample)
+
+	options := eb.DescribeConfigurationSettings{
+		ApplicationName: "SampleApp",
+		TemplateName:    "default",
+	}
+
+	resp, err := s.eb.DescribeConfigurationSettings(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeConfigurationSettings"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["TemplateName"], DeepEquals, []string{"default"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.ConfigurationSettings[0].SolutionStackName, Equals, "32bit Amazon Linux running Tomcat 7")
+	c.Assert(resp.ConfigurationSettings[0].OptionSettings[0].OptionName, Equals, "ImageId")
+	c.Assert(resp.ConfigurationSettings[0].OptionSettings[0].Value, Equals, "ami-f2f0069b")
+	c.Assert(resp.ConfigurationSettings[0].OptionSettings[0].Namespace, Equals, "aws:autoscaling:launchconfiguration")
+	c.Assert(resp.ConfigurationSettings[0].Description, Equals, "Default Configuration Template")
+	c.Assert(resp.ConfigurationSettings[0].ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.ConfigurationSettings[0].TemplateName, Equals, "Default")
+	c.Assert(resp.ConfigurationSettings[0].DateCreated, Equals, "2010-11-17T03:20:17.832Z")
+	c.Assert(resp.ConfigurationSettings[0].DateUpdated, Equals, "2010-11-17T03:20:17.832Z")
+	c.Assert(resp.RequestId, Equals, "4bde8884-f273-11df-8a78-9f77047e0d0c")
+}

@@ -170,6 +170,16 @@ type ConfigurationOptionDescription struct {
 	ValueType      string
 }
 
+type ConfigurationSettingsDescription struct {
+	SolutionStackName string                       `xml:"SolutionStackName"`
+	OptionSettings    []ConfigurationOptionSetting `xml:"OptionSettings>member"`
+	Description       string                       `xml:"Description"`
+	ApplicationName   string                       `xml:"ApplicationName"`
+	DateCreated       string                       `xml:"DateCreated"`
+	DateUpdated       string                       `xml:"DateUpdated"`
+	TemplateName      string                       `xml:"TemplateName"`
+}
+
 // ----------------------------------------------------------------------------
 // Create
 
@@ -620,6 +630,37 @@ func (eb *EB) DescribeConfigurationOptions(options *DescribeConfigurationOptions
 	params["TemplateName"] = options.TemplateName
 
 	resp = &DescribeConfigurationOptionsResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DescribeConfigurationSettings
+
+type DescribeConfigurationSettings struct {
+	ApplicationName string
+	EnvironmentName string
+	TemplateName    string
+}
+
+type DescribeConfigurationSettingsResp struct {
+	ConfigurationSettings []ConfigurationSettingsDescription `xml:"DescribeConfigurationSettingsResult>ConfigurationSettings>member"`
+	RequestId             string                             `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) DescribeConfigurationSettings(options *DescribeConfigurationSettings) (resp *DescribeConfigurationSettingsResp, err error) {
+	params := makeParams("DescribeConfigurationSettings")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["EnvironmentName"] = options.EnvironmentName
+	params["TemplateName"] = options.TemplateName
+
+	resp = &DescribeConfigurationSettingsResp{}
 
 	err = eb.query(params, resp)
 
