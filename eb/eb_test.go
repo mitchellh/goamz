@@ -252,3 +252,26 @@ func (s *S) TestDeleteEnvironmentConfiguration(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "fdf76507-f26d-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDescribeApplicationVersions(c *C) {
+	testServer.Response(200, nil, DescribeApplicationVersionsExample)
+
+	options := eb.DescribeApplicationVersions{
+		ApplicationName: "SampleApp",
+	}
+
+	resp, err := s.eb.DescribeApplicationVersions(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeApplicationVersions"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.ApplicationVersions[0].ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.ApplicationVersions[0].DateCreated, Equals, "2010-11-17T03:21:59.161Z")
+	c.Assert(resp.ApplicationVersions[0].DateUpdated, Equals, "2010-11-17T03:21:59.161Z")
+	c.Assert(resp.ApplicationVersions[0].Description, Equals, "description")
+	c.Assert(resp.ApplicationVersions[0].SourceBundle.S3Bucket, Equals, "amazonaws.com")
+	c.Assert(resp.ApplicationVersions[0].SourceBundle.S3Key, Equals, "sample.war")
+	c.Assert(resp.ApplicationVersions[0].VersionLabel, Equals, "Version1")
+	c.Assert(resp.RequestId, Equals, "773cd80a-f26c-11df-8a78-9f77047e0d0c")
+}
