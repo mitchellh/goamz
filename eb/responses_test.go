@@ -354,3 +354,11 @@ var DeleteApplicationVersionExample = `
   </ResponseMetadata>
 </DeleteApplicationVersionResponse> 
 `
+
+var DeleteConfigurationTemplateExample = `
+<DeleteConfigurationTemplateResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ResponseMetadata>
+    <RequestId>af9cf1b6-f25e-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</DeleteConfigurationTemplateResponse>
+`

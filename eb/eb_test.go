@@ -216,3 +216,21 @@ func (s *S) TestDeleteApplicationVersion(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "58dc7339-f272-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDeleteConfigurationTemplate(c *C) {
+	testServer.Response(200, nil, DeleteConfigurationTemplateExample)
+
+	options := eb.DeleteConfigurationTemplate{
+		ApplicationName: "SampleApp",
+		TemplateName:    "SampleAppTemplate",
+	}
+
+	resp, err := s.eb.DeleteConfigurationTemplate(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteConfigurationTemplate"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["TemplateName"], DeepEquals, []string{"SampleAppTemplate"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "af9cf1b6-f25e-11df-8a78-9f77047e0d0c")
+}
