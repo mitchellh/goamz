@@ -234,3 +234,21 @@ func (s *S) TestDeleteConfigurationTemplate(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "af9cf1b6-f25e-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDeleteEnvironmentConfiguration(c *C) {
+	testServer.Response(200, nil, DeleteEnvironmentConfigurationExample)
+
+	options := eb.DeleteEnvironmentConfiguration{
+		ApplicationName: "SampleApp",
+		EnvironmentName: "SampleAppEnv",
+	}
+
+	resp, err := s.eb.DeleteEnvironmentConfiguration(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteEnvironmentConfiguration"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleAppEnv"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "fdf76507-f26d-11df-8a78-9f77047e0d0c")
+}

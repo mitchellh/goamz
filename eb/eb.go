@@ -474,6 +474,29 @@ func (eb *EB) DeleteConfigurationTemplate(options *DeleteConfigurationTemplate) 
 	return
 }
 
+// DeleteEnvironmentConfiguration
+type DeleteEnvironmentConfiguration struct {
+	ApplicationName string
+	EnvironmentName string
+}
+
+func (eb *EB) DeleteEnvironmentConfiguration(options *DeleteEnvironmentConfiguration) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteEnvironmentConfiguration")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["EnvironmentName"] = options.EnvironmentName
+
+	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Responses
 
 type SimpleResp struct {
