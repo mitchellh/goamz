@@ -325,6 +325,18 @@ var CreateEnvironmentExample = `
 </CreateEnvironmentResponse> 
 `
 
+// http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_CreateStorageLocation.html
+var CreateStorageLocationExample = `
+ <CreateStorageLocationResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <CreateStorageLocationResult>
+    <S3Bucket>elasticbeanstalk-us-east-1-780612358023</S3Bucket>
+  </CreateStorageLocationResult>
+  <ResponseMetadata>
+    <RequestId>ef51b94a-f1d6-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</CreateStorageLocationResponse>  
+`
+
 // http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_DeleteApplication.html
 var DeleteApplicationExample = `
 <DeleteApplicationResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">

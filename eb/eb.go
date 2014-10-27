@@ -344,6 +344,29 @@ func (eb *EB) CreateEnvironment(options *CreateEnvironment) (resp *CreateEnviron
 	return
 }
 
+// CreateStorageLocation
+
+type CreateStorageLocationResp struct {
+	S3Bucket   string `xml:"CreateStorageLocationResult>S3Bucket"`
+	RequestId  string `xml:"ResponseMetadata>RequestId"`
+
+}
+
+func (eb *EB) CreateStorageLocation() (resp *CreateStorageLocationResp, err error) {
+	params := makeParams("CreateStorageLocation")
+
+	resp = &CreateStorageLocationResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+
 // ----------------------------------------------------------------------------
 // CheckDNSAvailability
 

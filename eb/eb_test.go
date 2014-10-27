@@ -187,3 +187,14 @@ func (s *S) TestCreateEnvironment(c *C) {
 	c.Assert(resp.VersionLabel, Equals, "Version1")
 	c.Assert(resp.RequestId, Equals, "15db925e-f1ff-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestCreateStorageLocation(c *C) {
+	testServer.Response(200, nil, CreateStorageLocationExample)
+
+	resp, err := s.eb.CreateStorageLocation()
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateStorageLocation"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.S3Bucket, Equals, "elasticbeanstalk-us-east-1-780612358023")
+}
