@@ -543,6 +543,35 @@ func (eb *EB) DescribeApplicationVersions(options *DescribeApplicationVersions) 
 	return
 }
 
+// DescribeApplications
+
+type DescribeApplications struct {
+	ApplicationNames []string
+}
+
+type DescribeApplicationsResp struct {
+	Applications []ApplicationDescription `xml:"DescribeApplicationsResult>Applications>member"`
+	RequestId    string                   `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) DescribeApplications(options *DescribeApplications) (resp *DescribeApplicationsResp, err error) {
+	params := makeParams("DescribeApplications")
+
+	for i, v := range options.ApplicationNames {
+		params["ApplicationNames.member."+strconv.Itoa(i+1)] = v
+	}
+
+	resp = &DescribeApplicationsResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Responses
 
 type SimpleResp struct {

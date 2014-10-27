@@ -275,3 +275,24 @@ func (s *S) TestDescribeApplicationVersions(c *C) {
 	c.Assert(resp.ApplicationVersions[0].VersionLabel, Equals, "Version1")
 	c.Assert(resp.RequestId, Equals, "773cd80a-f26c-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDescribeApplications(c *C) {
+	testServer.Response(200, nil, DescribeApplicationsExample)
+
+	options := eb.DescribeApplications{
+		ApplicationNames: []string{"SampleApplication"},
+	}
+
+	resp, err := s.eb.DescribeApplications(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeApplications"})
+	c.Assert(req.Form["ApplicationNames.member.1"], DeepEquals, []string{"SampleApplication"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.Applications[0].ApplicationName, Equals, "SampleApplication")
+	c.Assert(resp.Applications[0].DateCreated, Equals, "2010-11-16T20:20:51.974Z")
+	c.Assert(resp.Applications[0].DateUpdated, Equals, "2010-11-16T20:20:51.974Z")
+	c.Assert(resp.Applications[0].Description, Equals, "Sample Description")
+	c.Assert(resp.Applications[0].ConfigurationTemplates[0], Equals, "Default")
+	c.Assert(resp.RequestId, Equals, "577c70ff-f1d7-11df-8a78-9f77047e0d0c")
+}
