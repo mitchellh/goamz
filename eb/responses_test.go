@@ -1172,3 +1172,37 @@ var DescribeConfigurationSettingsExample = `
   </ResponseMetadata>
 </DescribeConfigurationSettingsResponse> 
 `
+
+var DescribeEnvironmentResourcesExample = `
+<DescribeEnvironmentResourcesResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <DescribeEnvironmentResourcesResult>
+    <EnvironmentResources>
+      <LoadBalancers>
+        <member>
+          <Name>elasticbeanstalk-SampleAppVersion</Name>
+        </member>
+      </LoadBalancers>
+      <LaunchConfigurations>
+        <member>
+          <Name>elasticbeanstalk-SampleAppVersion-hbAc8cSZH7</Name>
+        </member>
+      </LaunchConfigurations>
+      <AutoScalingGroups>
+        <member>
+          <Name>elasticbeanstalk-SampleAppVersion-us-east-1c</Name>
+        </member>
+      </AutoScalingGroups>
+      <EnvironmentName>SampleAppVersion</EnvironmentName>
+      <Triggers>
+        <member>
+          <Name>elasticbeanstalk-SampleAppVersion-us-east-1c</Name>
+        </member>
+      </Triggers>
+      <Instances/>
+    </EnvironmentResources>
+  </DescribeEnvironmentResourcesResult>
+  <ResponseMetadata>
+    <RequestId>e1cb7b96-f287-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</DescribeEnvironmentResourcesResponse>
+`

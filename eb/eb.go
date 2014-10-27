@@ -129,8 +129,41 @@ type LoadBalancerDescription struct {
 	LoadBalancerName string
 }
 
+//http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_EnvironmentResourcesDescription.html
 type EnvironmentResourcesDescription struct {
 	LoadBalancer LoadBalancerDescription
+}
+
+type AutoScalingGroup struct {
+	Name string
+}
+type Instance struct {
+	Id string
+}
+type LaunchConfiguration struct {
+	Name string
+}
+type LoadBalancer struct {
+	Name string
+}
+type Queue struct {
+	Name string
+	URL  string
+}
+type Trigger struct {
+	Name string
+}
+
+// Bad amazon! this is going to get confusing...
+// http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_EnvironmentResourceDescription.html
+type EnvironmentResourceDescription struct {
+	AutoScalingGroups    []AutoScalingGroup    `xml:"AutoScalingGroups>member"`
+	EnvironmentName      string                `xml:"EnvironmentName"`
+	Instances            []Instance            `xml:"Instances>member"`
+	LaunchConfigurations []LaunchConfiguration `xml:"LaunchConfigurations>member"`
+	LoadBalancers        []LoadBalancer        `xml:"LoadBalancers>member"`
+	Queues               []Queue               `xml:"Queues>member"`
+	Triggers             []Trigger             `xml:"Triggers>member"`
 }
 
 type ApplicationDescription struct {
@@ -661,6 +694,35 @@ func (eb *EB) DescribeConfigurationSettings(options *DescribeConfigurationSettin
 	params["TemplateName"] = options.TemplateName
 
 	resp = &DescribeConfigurationSettingsResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DescribeEnvironmentResources
+
+type DescribeEnvironmentResources struct {
+	EnvironmentId   string
+	EnvironmentName string
+}
+
+type DescribeEnvironmentResourcesResp struct {
+	EnvironmentResources []EnvironmentResourceDescription `xml:"DescribeEnvironmentResourcesResult>EnvironmentResources"`
+	RequestId            string                           `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) DescribeEnvironmentResources(options *DescribeEnvironmentResources) (resp *DescribeEnvironmentResourcesResp, err error) {
+	params := makeParams("DescribeEnvironmentResources")
+
+	params["EnvironmentId"] = options.EnvironmentId
+	params["EnvironmentName"] = options.EnvironmentName
+
+	resp = &DescribeEnvironmentResourcesResp{}
 
 	err = eb.query(params, resp)
 
