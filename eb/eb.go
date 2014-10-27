@@ -450,6 +450,30 @@ func (eb *EB) DeleteApplicationVersion(options *DeleteApplicationVersion) (resp 
 	return
 }
 
+//DeleteConfigurationTemplate
+
+type DeleteConfigurationTemplate struct {
+	ApplicationName string
+	TemplateName    string
+}
+
+func (eb *EB) DeleteConfigurationTemplate(options *DeleteConfigurationTemplate) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteConfigurationTemplate")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["TemplateName"] = options.TemplateName
+
+	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Responses
 
 type SimpleResp struct {
