@@ -121,6 +121,56 @@ func (eb *EB) CreateApplication(options *CreateApplication) (resp *CreateApplica
 }
 
 // ----------------------------------------------------------------------------
+// http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_CreateApplicationVersion.html
+
+type S3Location struct {
+	S3Bucket string
+	S3Key    string
+}
+
+// The CreateApplicationVersion request parameters
+type CreateApplicationVersion struct {
+	ApplicationName       string
+	AutoCreateApplication bool
+	Description           string
+	SourceBundle          S3Location
+	VersionLabel          string
+}
+
+type CreateApplicationVersionResp struct {
+	ApplicationName string     `xml:"CreateApplicationVersionResult>ApplicationVersion>ApplicationName"`
+	DateCreated     string     `xml:"CreateApplicationVersionResult>ApplicationVersion>DateCreated"`
+	DateUpdated     string     `xml:"CreateApplicationVersionResult>ApplicationVersion>DateUpdated"`
+	Description     string     `xml:"CreateApplicationVersionResult>ApplicationVersion>Description"`
+	SourceBundle    S3Location `xml:"CreateApplicationVersionResult>ApplicationVersion>SourceBundle"`
+	VersionLabel    string     `xml:"CreateApplicationVersionResult>ApplicationVersion>VersionLabel"`
+	RequestId       string     `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) CreateApplicationVersion(options *CreateApplicationVersion) (resp *CreateApplicationVersionResp, err error) {
+	params := makeParams("CreateApplicationVersion")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["Description"] = options.Description
+	if options.AutoCreateApplication {
+		params["AutoCreateApplication"] = "true"
+	}
+	params["SourceBundle.S3Bucket"] = options.SourceBundle.S3Bucket
+	params["SourceBundle.S3Key"] = options.SourceBundle.S3Key
+	params["VersionLabel"] = options.VersionLabel
+
+	resp = &CreateApplicationVersionResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // CheckDNSAvailability
 
 type CheckDNSAvailability struct {
