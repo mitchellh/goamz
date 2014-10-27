@@ -155,3 +155,35 @@ func (s *S) TestCreateConfigurationTemplate(c *C) {
 	c.Assert(resp.SolutionStackName, Equals, "32bit Amazon Linux running Tomcat 7")
 	c.Assert(resp.RequestId, Equals, "846cd905-f1fd-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestCreateEnvironment(c *C) {
+	testServer.Response(200, nil, CreateEnvironmentExample)
+
+	options := eb.CreateEnvironment{
+		ApplicationName:   "SampleApp",
+		EnvironmentName:   "SampleApp",
+		SolutionStackName: "32bit Amazon Linux running Tomcat 7",
+		Description:       "EnvDescrip",
+	}
+
+	resp, err := s.eb.CreateEnvironment(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateEnvironment"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["SolutionStackName"], DeepEquals, []string{"32bit Amazon Linux running Tomcat 7"})
+	c.Assert(req.Form["Description"], DeepEquals, []string{"EnvDescrip"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.DateCreated, Equals, "2010-11-17T03:59:33.520Z")
+	c.Assert(resp.DateUpdated, Equals, "2010-11-17T03:59:33.520Z")
+	c.Assert(resp.Description, Equals, "EnvDescrip")
+	c.Assert(resp.EnvironmentId, Equals, "e-icsgecu3wf")
+	c.Assert(resp.EnvironmentName, Equals, "SampleApp")
+	c.Assert(resp.Health, Equals, "Grey")
+	c.Assert(resp.SolutionStackName, Equals, "32bit Amazon Linux running Tomcat 7")
+	c.Assert(resp.Status, Equals, "Deploying")
+	c.Assert(resp.VersionLabel, Equals, "Version1")
+	c.Assert(resp.RequestId, Equals, "15db925e-f1ff-11df-8a78-9f77047e0d0c")
+}
