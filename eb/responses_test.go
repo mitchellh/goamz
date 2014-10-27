@@ -345,3 +345,12 @@ var DeleteApplicationExample = `
   </ResponseMetadata>
 </DeleteApplicationResponse>
 `
+
+// http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_DeleteApplicationVersion.html
+var DeleteApplicationVersionExample = `
+<DeleteApplicationVersionResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ResponseMetadata>
+    <RequestId>58dc7339-f272-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</DeleteApplicationVersionResponse> 
+`
