@@ -362,3 +362,11 @@ var DeleteConfigurationTemplateExample = `
   </ResponseMetadata>
 </DeleteConfigurationTemplateResponse>
 `
+
+var DeleteEnvironmentConfigurationExample = `
+<DeleteEnvironmentConfigurationResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ResponseMetadata>
+    <RequestId>fdf76507-f26d-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</DeleteEnvironmentConfigurationResponse>
+`
