@@ -86,6 +86,72 @@ func makeParams(action string) map[string]string {
 }
 
 // ----------------------------------------------------------------------------
+// EB objects
+
+type S3Location struct {
+	S3Bucket string
+	S3Key    string
+}
+
+type ConfigurationOptionSetting struct {
+	Namespace  string
+	OptionName string
+	Value      string
+}
+
+type SourceConfiguration struct {
+	ApplicationName string
+	TemplateName    string
+}
+
+type OptionSpecification struct {
+	Namespace  string
+	OptionName string
+}
+
+type Tag struct {
+	Key   string `xml:"Key"`
+	Value string `xml:"Value"`
+}
+
+type EnvironmentTier struct {
+	Name    string
+	Type    string
+	Version string
+}
+type Listener struct {
+	Port     int
+	Protocol string
+}
+type LoadBalancerDescription struct {
+	Domain           string
+	Listeners        []Listener
+	LoadBalancerName string
+}
+
+type EnvironmentResourcesDescription struct {
+	LoadBalancer LoadBalancerDescription
+}
+
+type ApplicationDescription struct {
+	ApplicationName        string   `xml:"ApplicationName"`
+	ConfigurationTemplates []string `xml:"ConfigurationTemplates>member"`
+	DateCreated            string   `xml:"DateCreated"`
+	DateUpdated            string   `xml:DateUpdated"`
+	Description            string   `xml:Description"`
+	Versions               []string `xml:Versions>member"`
+}
+
+type ApplicationVersionDescription struct {
+	ApplicationName string     `xml:"ApplicationName"`
+	DateCreated     string     `xml:"DateCreated"`
+	DateUpdated     string     `xml:"DateUpdated"`
+	Description     string     `xml:"Description"`
+	SourceBundle    S3Location `xml:"SourceBundle"`
+	VersionLabel    string     `xml:"VersionLabel"`
+}
+
+// ----------------------------------------------------------------------------
 // Create
 
 // The CreateApplication request parameters
@@ -95,13 +161,8 @@ type CreateApplication struct {
 }
 
 type CreateApplicationResp struct {
-	ApplicationName        string   `xml:"CreateApplicationResult>Application>ApplicationName"`
-	ConfigurationTemplates []string `xml:"CreateApplicationResult>Application>ConfigurationTemplates>member"`
-	DateCreated            string   `xml:"CreateApplicationResult>Application>DateCreated"`
-	DateUpdated            string   `xml:"CreateApplicationResult>Application>DateUpdated"`
-	Description            string   `xml:"CreateApplicationResult>Application>Description"`
-	Versions               []string `xml:"CreateApplicationResult>Application>Versions>member"`
-	RequestId              string   `xml:"ResponseMetadata>RequestId"`
+	Application ApplicationDescription `xml:"CreateApplicationResult>Application"`
+	RequestId   string                 `xml:"ResponseMetadata>RequestId"`
 }
 
 func (eb *EB) CreateApplication(options *CreateApplication) (resp *CreateApplicationResp, err error) {
@@ -123,11 +184,6 @@ func (eb *EB) CreateApplication(options *CreateApplication) (resp *CreateApplica
 // ----------------------------------------------------------------------------
 // http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_CreateApplicationVersion.html
 
-type S3Location struct {
-	S3Bucket string
-	S3Key    string
-}
-
 // The CreateApplicationVersion request parameters
 type CreateApplicationVersion struct {
 	ApplicationName       string
@@ -138,12 +194,7 @@ type CreateApplicationVersion struct {
 }
 
 type CreateApplicationVersionResp struct {
-	ApplicationName string     `xml:"CreateApplicationVersionResult>ApplicationVersion>ApplicationName"`
-	DateCreated     string     `xml:"CreateApplicationVersionResult>ApplicationVersion>DateCreated"`
-	DateUpdated     string     `xml:"CreateApplicationVersionResult>ApplicationVersion>DateUpdated"`
-	Description     string     `xml:"CreateApplicationVersionResult>ApplicationVersion>Description"`
-	SourceBundle    S3Location `xml:"CreateApplicationVersionResult>ApplicationVersion>SourceBundle"`
-	VersionLabel    string     `xml:"CreateApplicationVersionResult>ApplicationVersion>VersionLabel"`
+	ApplicationVersion ApplicationVersionDescription `xml:"CreateApplicationVersionResult>ApplicationVersion"`
 	RequestId       string     `xml:"ResponseMetadata>RequestId"`
 }
 
@@ -171,17 +222,6 @@ func (eb *EB) CreateApplicationVersion(options *CreateApplicationVersion) (resp 
 }
 
 // CreateConfigurationTemplate
-
-type ConfigurationOptionSetting struct {
-	Namespace  string
-	OptionName string
-	Value      string
-}
-
-type SourceConfiguration struct {
-	ApplicationName string
-	TemplateName    string
-}
 
 type CreateConfigurationTemplate struct {
 	ApplicationName     string
@@ -237,35 +277,6 @@ func (eb *EB) CreateConfigurationTemplate(options *CreateConfigurationTemplate) 
 
 // CreateEnvironment
 // http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_CreateEnvironment.html
-
-type OptionSpecification struct {
-	Namespace  string
-	OptionName string
-}
-
-type Tag struct {
-	Key   string `xml:"Key"`
-	Value string `xml:"Value"`
-}
-
-type EnvironmentTier struct {
-	Name    string
-	Type    string
-	Version string
-}
-type Listener struct {
-	Port     int
-	Protocol string
-}
-type LoadBalancerDescription struct {
-	Domain           string
-	Listeners        []Listener
-	LoadBalancerName string
-}
-
-type EnvironmentResourcesDescription struct {
-	LoadBalancer LoadBalancerDescription
-}
 
 type CreateEnvironment struct {
 	ApplicationName   string
