@@ -151,6 +151,25 @@ type ApplicationVersionDescription struct {
 	VersionLabel    string     `xml:"VersionLabel"`
 }
 
+type OptionRestrictionRegex struct {
+	Label   string
+	Pattern string
+}
+
+type ConfigurationOptionDescription struct {
+	ChangeSeverity string
+	DefaultValue   string
+	MaxLength      int
+	MaxValue       int
+	MinValue       int
+	Name           string
+	Namespace      string
+	Regex          OptionRestrictionRegex
+	UserDefined    bool
+	ValueOptions   []string
+	ValueType      string
+}
+
 // ----------------------------------------------------------------------------
 // Create
 
@@ -562,6 +581,45 @@ func (eb *EB) DescribeApplications(options *DescribeApplications) (resp *Describ
 	}
 
 	resp = &DescribeApplicationsResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DescribeConfigurationOptions
+
+type DescribeConfigurationOptions struct {
+	ApplicationName   string
+	EnvironmentName   string
+	Options           []OptionSpecification
+	SolutionStackName string
+	TemplateName      string
+}
+
+type DescribeConfigurationOptionsResp struct {
+	Options           []ConfigurationOptionDescription `xml:"DescribeConfigurationOptionsResult>Options>member"`
+	SolutionStackName string                           `xml:"DescribeConfigurationOptionsResult>SolutionStackName"`
+	RequestId         string                           `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) DescribeConfigurationOptions(options *DescribeConfigurationOptions) (resp *DescribeConfigurationOptionsResp, err error) {
+	params := makeParams("DescribeConfigurationOptions")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["EnvironmentName"] = options.EnvironmentName
+	for i, v := range options.Options {
+		params["Options.member."+strconv.Itoa(i+1)+".Namespace"] = v.Namespace
+		params["Options.member."+strconv.Itoa(i+1)+".OptionName"] = v.OptionName
+	}
+	params["SolutionStackName"] = options.SolutionStackName
+	params["TemplateName"] = options.TemplateName
+
+	resp = &DescribeConfigurationOptionsResp{}
 
 	err = eb.query(params, resp)
 
