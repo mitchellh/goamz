@@ -53,22 +53,6 @@ func (s *S) TestCreateApplication(c *C) {
 	c.Assert(resp.RequestId, Equals, "8b00e053-f1d6-11df-8a78-9f77047e0d0c")
 }
 
-func (s *S) TestDeleteLoadBalancer(c *C) {
-	testServer.Response(200, nil, DeleteApplicationExample)
-
-	options := eb.DeleteApplication{
-		ApplicationName: "foobar",
-	}
-
-	resp, err := s.eb.DeleteApplication(&options)
-	req := testServer.WaitRequest()
-
-	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteApplication"})
-	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"foobar"})
-	c.Assert(err, IsNil)
-	c.Assert(resp.RequestId, Equals, "1f155abd-f1d7-11df-8a78-9f77047e0d0c")
-}
-
 func (s *S) TestCheckDNSAvailability(c *C) {
 	testServer.Response(200, nil, CheckDNSAvailabilityExample)
 
@@ -197,4 +181,38 @@ func (s *S) TestCreateStorageLocation(c *C) {
 	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateStorageLocation"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.S3Bucket, Equals, "elasticbeanstalk-us-east-1-780612358023")
+}
+
+func (s *S) TestDeleteApplication(c *C) {
+	testServer.Response(200, nil, DeleteApplicationExample)
+
+	options := eb.DeleteApplication{
+		ApplicationName: "foobar",
+	}
+
+	resp, err := s.eb.DeleteApplication(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteApplication"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"foobar"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "1f155abd-f1d7-11df-8a78-9f77047e0d0c")
+}
+
+func (s *S) TestDeleteApplicationVersion(c *C) {
+	testServer.Response(200, nil, DeleteApplicationVersionExample)
+
+	options := eb.DeleteApplicationVersion{
+		ApplicationName: "SampleApp",
+		VersionLabel:    "First Release",
+	}
+
+	resp, err := s.eb.DeleteApplicationVersion(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DeleteApplicationVersion"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["VersionLabel"], DeepEquals, []string{"First Release"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "58dc7339-f272-11df-8a78-9f77047e0d0c")
 }

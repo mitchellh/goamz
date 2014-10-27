@@ -422,6 +422,34 @@ func (eb *EB) DeleteApplication(options *DeleteApplication) (resp *SimpleResp, e
 	return
 }
 
+// DeleteApplicationVersion
+type DeleteApplicationVersion struct {
+	ApplicationName    string
+	DeleteSourceBundle bool
+	VersionLabel       string
+}
+
+func (eb *EB) DeleteApplicationVersion(options *DeleteApplicationVersion) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteApplicationVersion")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["VersionLabel"] = options.VersionLabel
+
+	if options.DeleteSourceBundle {
+		params["DeleteSourceBundle"] = "true"
+	}
+
+	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // Responses
 
 type SimpleResp struct {
