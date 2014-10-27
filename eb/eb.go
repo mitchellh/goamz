@@ -170,6 +170,71 @@ func (eb *EB) CreateApplicationVersion(options *CreateApplicationVersion) (resp 
 	return
 }
 
+// CreateConfigurationTemplate
+
+type ConfigurationOptionSetting struct {
+	Namespace  string
+	OptionName string
+	Value      string
+}
+
+type SourceConfiguration struct {
+	ApplicationName string
+	TemplateName    string
+}
+
+type CreateConfigurationTemplate struct {
+	ApplicationName     string
+	Description         string
+	EnvironmentId       string
+	OptionSettings      []ConfigurationOptionSetting
+	SolutionStackName   string
+	SourceConfiguration SourceConfiguration
+	TemplateName        string
+}
+
+type CreateConfigurationTemplateResp struct {
+	ApplicationName   string                       `xml:"CreateConfigurationTemplateResult>ApplicationName"`
+	DateCreated       string                       `xml:"CreateConfigurationTemplateResult>DateCreated"`
+	DateUpdated       string                       `xml:"CreateConfigurationTemplateResult>DateUpdated"`
+	DeploymentStatus  string                       `xml:"CreateConfigurationTemplateResult>DeploymentStatus"`
+	Description       string                       `xml:"CreateConfigurationTemplateResult>Description"`
+	EnvironmentName   string                       `xml:"CreateConfigurationTemplateResult>EnvironmentName"`
+	OptionSettings    []ConfigurationOptionSetting `xml:"CreateConfigurationTemplateResult>OptionSettings>member"`
+	SolutionStackName string                       `xml:"CreateConfigurationTemplateResult>SolutionStackName"`
+	TemplateName      string                       `xml:"CreateConfigurationTemplateResult>TemplateName"`
+	RequestId         string                       `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) CreateConfigurationTemplate(options *CreateConfigurationTemplate) (resp *CreateConfigurationTemplateResp, err error) {
+	params := makeParams("CreateConfigurationTemplate")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["Description"] = options.Description
+	params["EnvironmentId"] = options.EnvironmentId
+
+	for i, v := range options.OptionSettings {
+		params["OptionSettings.member."+strconv.Itoa(i+1)+"Namespace"] = v.Namespace
+		params["OptionSettings.member."+strconv.Itoa(i+1)+"OptionName"] = v.OptionName
+		params["OptionSettings.member."+strconv.Itoa(i+1)+"Value"] = v.Value
+	}
+
+	params["SolutionStackName"] = options.SolutionStackName
+	params["SourceConfiguration.ApplicationName"] = options.SourceConfiguration.ApplicationName
+	params["SourceConfiguration.TemplateName"] = options.SourceConfiguration.TemplateName
+	params["TemplateName"] = options.TemplateName
+
+	resp = &CreateConfigurationTemplateResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // CheckDNSAvailability
 

@@ -121,3 +121,37 @@ func (s *S) TestCreateApplicationVersion(c *C) {
 	c.Assert(resp.VersionLabel, Equals, "Version1")
 	c.Assert(resp.RequestId, Equals, "d653efef-f1f9-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestCreateConfigurationTemplate(c *C) {
+	testServer.Response(200, nil, CreateConfigurationTemplateExample)
+
+	options := eb.CreateConfigurationTemplate{
+		ApplicationName:     "SampleApp",
+		Description:         "ConfigTemplateDescription",
+		EnvironmentId:       "",
+		OptionSettings:      []eb.ConfigurationOptionSetting{},
+		SolutionStackName:   "32bit Amazon Linux running Tomcat 7",
+		SourceConfiguration: eb.SourceConfiguration{},
+		TemplateName:        "AppTemplate",
+	}
+
+	resp, err := s.eb.CreateConfigurationTemplate(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateConfigurationTemplate"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["Description"], DeepEquals, []string{"ConfigTemplateDescription"})
+	c.Assert(req.Form["EnvironmentId"], DeepEquals, []string{""})
+	c.Assert(req.Form["SolutionStackName"], DeepEquals, []string{"32bit Amazon Linux running Tomcat 7"})
+	c.Assert(req.Form["TemplateName"], DeepEquals, []string{"AppTemplate"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.DateCreated, Equals, "2010-11-17T03:48:19.640Z")
+	c.Assert(resp.DateUpdated, Equals, "2010-11-17T03:48:19.640Z")
+	c.Assert(resp.Description, Equals, "ConfigTemplateDescription")
+	c.Assert(resp.OptionSettings[0].OptionName, Equals, "ImageId")
+	c.Assert(resp.OptionSettings[0].Value, Equals, "ami-f2f0069b")
+	c.Assert(resp.OptionSettings[0].Namespace, Equals, "aws:autoscaling:launchconfiguration")
+	c.Assert(resp.SolutionStackName, Equals, "32bit Amazon Linux running Tomcat 7")
+	c.Assert(resp.RequestId, Equals, "846cd905-f1fd-11df-8a78-9f77047e0d0c")
+}
