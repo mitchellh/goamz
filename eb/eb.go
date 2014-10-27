@@ -235,6 +235,115 @@ func (eb *EB) CreateConfigurationTemplate(options *CreateConfigurationTemplate) 
 	return
 }
 
+// CreateEnvironment
+// http://docs.aws.amazon.com/elasticbeanstalk/latest/api/API_CreateEnvironment.html
+
+type OptionSpecification struct {
+	Namespace  string
+	OptionName string
+}
+
+type Tag struct {
+	Key   string `xml:"Key"`
+	Value string `xml:"Value"`
+}
+
+type EnvironmentTier struct {
+	Name    string
+	Type    string
+	Version string
+}
+type Listener struct {
+	Port     int
+	Protocol string
+}
+type LoadBalancerDescription struct {
+	Domain           string
+	Listeners        []Listener
+	LoadBalancerName string
+}
+
+type EnvironmentResourcesDescription struct {
+	LoadBalancer LoadBalancerDescription
+}
+
+type CreateEnvironment struct {
+	ApplicationName   string
+	CNAMEPrefix       string
+	Description       string
+	EnvironmentName   string
+	OptionSettings    []ConfigurationOptionSetting
+	OptionsToRemove   []OptionSpecification
+	SolutionStackName string
+	Tags              []Tag
+	TemplateName      string
+	Tier              EnvironmentTier
+	VersionLabel      string
+}
+
+type CreateEnvironmentResp struct {
+	ApplicationName   string                          `xml:"CreateEnvironmentResult>ApplicationName"`
+	CNAME             string                          `xml:"CreateEnvironmentResult>CNAME"`
+	DateCreated       string                          `xml:"CreateEnvironmentResult>DateCreated"`
+	DateUpdated       string                          `xml:"CreateEnvironmentResult>DateUpdated"`
+	Description       string                          `xml:"CreateEnvironmentResult>Description"`
+	EndpointURL       string                          `xml:"CreateEnvironmentResult>EndpointURL"`
+	EnvironmentId     string                          `xml:"CreateEnvironmentResult>EnvironmentId"`
+	EnvironmentName   string                          `xml:"CreateEnvironmentResult>EnvironmentName"`
+	Health            string                          `xml:"CreateEnvironmentResult>Health"`
+	Resources         EnvironmentResourcesDescription `xml:"CreateEnvironmentResult>Resources"`
+	SolutionStackName string                          `xml:"CreateEnvironmentResult>SolutionStackName"`
+	Status            string                          `xml:"CreateEnvironmentResult>Status"`
+	TemplateName      string                          `xml:"CreateEnvironmentResult>TemplateName"`
+	Tier              EnvironmentTier                 `xml:"CreateEnvironmentResult>Tier"`
+	VersionLabel      string                          `xml:"CreateEnvironmentResult>VersionLabel"`
+	RequestId         string                          `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) CreateEnvironment(options *CreateEnvironment) (resp *CreateEnvironmentResp, err error) {
+	params := makeParams("CreateEnvironment")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["CNAMEPrefix"] = options.CNAMEPrefix
+	params["Description"] = options.Description
+	params["EnvironmentName"] = options.EnvironmentName
+
+	for i, v := range options.OptionSettings {
+		params["OptionSettings.member."+strconv.Itoa(i+1)+"Namespace"] = v.Namespace
+		params["OptionSettings.member."+strconv.Itoa(i+1)+"OptionName"] = v.OptionName
+		params["OptionSettings.member."+strconv.Itoa(i+1)+"Value"] = v.Value
+	}
+
+	for i, v := range options.OptionsToRemove {
+		params["OptionsToRemove.member."+strconv.Itoa(i+1)+"Namespace"] = v.Namespace
+		params["OptionsToRemove.member."+strconv.Itoa(i+1)+"OptionName"] = v.OptionName
+
+	}
+	params["SolutionStackName"] = options.SolutionStackName
+	for i, v := range options.Tags {
+		params["Tags.member."+strconv.Itoa(i+1)+"Key"] = v.Key
+		params["Tags.member."+strconv.Itoa(i+1)+"Value"] = v.Value
+
+	}
+	params["TemplateName"] = options.TemplateName
+
+	params["Tier.Name"] = options.Tier.Name
+	params["Tier.Type"] = options.Tier.Type
+	params["Tier.Version"] = options.Tier.Version
+
+	params["VersionLabel"] = options.VersionLabel
+
+	resp = &CreateEnvironmentResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // CheckDNSAvailability
 
