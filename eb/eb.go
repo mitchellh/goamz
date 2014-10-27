@@ -347,9 +347,8 @@ func (eb *EB) CreateEnvironment(options *CreateEnvironment) (resp *CreateEnviron
 // CreateStorageLocation
 
 type CreateStorageLocationResp struct {
-	S3Bucket   string `xml:"CreateStorageLocationResult>S3Bucket"`
-	RequestId  string `xml:"ResponseMetadata>RequestId"`
-
+	S3Bucket  string `xml:"CreateStorageLocationResult>S3Bucket"`
+	RequestId string `xml:"ResponseMetadata>RequestId"`
 }
 
 func (eb *EB) CreateStorageLocation() (resp *CreateStorageLocationResp, err error) {
@@ -365,7 +364,6 @@ func (eb *EB) CreateStorageLocation() (resp *CreateStorageLocationResp, err erro
 
 	return
 }
-
 
 // ----------------------------------------------------------------------------
 // CheckDNSAvailability
