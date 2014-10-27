@@ -349,3 +349,26 @@ func (s *S) TestDescribeConfigurationSettings(c *C) {
 	c.Assert(resp.ConfigurationSettings[0].DateUpdated, Equals, "2010-11-17T03:20:17.832Z")
 	c.Assert(resp.RequestId, Equals, "4bde8884-f273-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDescribeEnvironmentResources(c *C) {
+	testServer.Response(200, nil, DescribeEnvironmentResourcesExample)
+
+	options := eb.DescribeEnvironmentResources{
+		EnvironmentId:   "e-hc8mvnayrx",
+		EnvironmentName: "SampleAppVersion",
+	}
+
+	resp, err := s.eb.DescribeEnvironmentResources(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeEnvironmentResources"})
+	c.Assert(req.Form["EnvironmentId"], DeepEquals, []string{"e-hc8mvnayrx"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleAppVersion"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.EnvironmentResources[0].EnvironmentName, Equals, "SampleAppVersion")
+	c.Assert(resp.EnvironmentResources[0].AutoScalingGroups[0].Name, Equals, "elasticbeanstalk-SampleAppVersion-us-east-1c")
+	c.Assert(resp.EnvironmentResources[0].LoadBalancers[0].Name, Equals, "elasticbeanstalk-SampleAppVersion")
+	c.Assert(resp.EnvironmentResources[0].LaunchConfigurations[0].Name, Equals, "elasticbeanstalk-SampleAppVersion-hbAc8cSZH7")
+	c.Assert(resp.EnvironmentResources[0].Triggers[0].Name, Equals, "elasticbeanstalk-SampleAppVersion-us-east-1c")
+	c.Assert(resp.RequestId, Equals, "e1cb7b96-f287-11df-8a78-9f77047e0d0c")
+}
