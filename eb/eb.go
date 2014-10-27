@@ -195,7 +195,7 @@ type CreateApplicationVersion struct {
 
 type CreateApplicationVersionResp struct {
 	ApplicationVersion ApplicationVersionDescription `xml:"CreateApplicationVersionResult>ApplicationVersion"`
-	RequestId       string     `xml:"ResponseMetadata>RequestId"`
+	RequestId          string                        `xml:"ResponseMetadata>RequestId"`
 }
 
 func (eb *EB) CreateApplicationVersion(options *CreateApplicationVersion) (resp *CreateApplicationVersionResp, err error) {
@@ -498,6 +498,41 @@ func (eb *EB) DeleteEnvironmentConfiguration(options *DeleteEnvironmentConfigura
 	params["EnvironmentName"] = options.EnvironmentName
 
 	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
+// Describe
+
+// DescribeApplicationVersions
+
+type DescribeApplicationVersions struct {
+	ApplicationName string
+	VersionLabels   []string
+}
+
+type DescribeApplicationVersionsResp struct {
+	ApplicationVersions []ApplicationVersionDescription `xml:"DescribeApplicationVersionsResult>ApplicationVersions>member"`
+	RequestId           string                          `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) DescribeApplicationVersions(options *DescribeApplicationVersions) (resp *DescribeApplicationVersionsResp, err error) {
+	params := makeParams("DescribeApplicationVersions")
+
+	params["ApplicationName"] = options.ApplicationName
+	for i, v := range options.VersionLabels {
+		params["VersionLabels.member."+strconv.Itoa(i+1)] = v
+
+	}
+
+	resp = &DescribeApplicationVersionsResp{}
 
 	err = eb.query(params, resp)
 
