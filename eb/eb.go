@@ -908,6 +908,32 @@ func (eb *EB) RebuildEnvironment(options *RebuildEnvironment) (resp *SimpleResp,
 	return
 }
 
+// RequestEnvironmentInfo
+
+type RequestEnvironmentInfo struct {
+	EnvironmentId   string
+	EnvironmentName string
+	InfoType        string
+}
+
+func (eb *EB) RequestEnvironmentInfo(options *RequestEnvironmentInfo) (resp *SimpleResp, err error) {
+	params := makeParams("RequestEnvironmentInfo")
+
+	params["EnvironmentId"] = options.EnvironmentId
+	params["EnvironmentName"] = options.EnvironmentName
+	params["InfoType"] = options.InfoType
+
+	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Responses
 
