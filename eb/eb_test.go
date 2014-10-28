@@ -372,3 +372,35 @@ func (s *S) TestDescribeEnvironmentResources(c *C) {
 	c.Assert(resp.EnvironmentResources[0].Triggers[0].Name, Equals, "elasticbeanstalk-SampleAppVersion-us-east-1c")
 	c.Assert(resp.RequestId, Equals, "e1cb7b96-f287-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDescribeEnvironments(c *C) {
+	testServer.Response(200, nil, DescribeEnvironmentsExample)
+
+	options := eb.DescribeEnvironments{
+		ApplicationName:       "SampleApp",
+		IncludeDeleted:        true,
+		IncludedDeletedBackTo: "2008-11-05T06:00:00Z",
+	}
+
+	resp, err := s.eb.DescribeEnvironments(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeEnvironments"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["IncludeDeleted"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["IncludedDeletedBackTo"], DeepEquals, []string{"2008-11-05T06:00:00Z"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.Environments[0].ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.Environments[0].CNAME, Equals, "SampleApp-jxb293wg7n.elasticbeanstalk.amazonaws.com")
+	c.Assert(resp.Environments[0].DateCreated, Equals, "2010-11-17T03:59:33.520Z")
+	c.Assert(resp.Environments[0].DateUpdated, Equals, "2010-11-17T04:01:40.668Z")
+	c.Assert(resp.Environments[0].Description, Equals, "EnvDescrip")
+	c.Assert(resp.Environments[0].EndpointURL, Equals, "elasticbeanstalk-SampleApp-1394386994.us-east-1.elb.amazonaws.com")
+	c.Assert(resp.Environments[0].EnvironmentId, Equals, "e-icsgecu3wf")
+	c.Assert(resp.Environments[0].EnvironmentName, Equals, "SampleApp")
+	c.Assert(resp.Environments[0].Health, Equals, "Green")
+	c.Assert(resp.Environments[0].SolutionStackName, Equals, "32bit Amazon Linux running Tomcat 7")
+	c.Assert(resp.Environments[0].Status, Equals, "Available")
+	c.Assert(resp.Environments[0].VersionLabel, Equals, "Version1")
+	c.Assert(resp.RequestId, Equals, "44790c68-f260-11df-8a78-9f77047e0d0c")
+}
