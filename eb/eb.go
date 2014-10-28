@@ -166,6 +166,24 @@ type EnvironmentResourceDescription struct {
 	Triggers             []Trigger             `xml:"Triggers>member"`
 }
 
+type EnvironmentDescription struct {
+	ApplicationName   string
+	CNAME             string
+	DateCreated       string
+	DateUpdated       string
+	Description       string
+	EndpointURL       string
+	EnvironmentId     string
+	EnvironmentName   string
+	Health            string
+	Resources         []EnvironmentResourcesDescription
+	SolutionStackName string
+	Status            string
+	TemplateName      string
+	Tier              EnvironmentTier
+	VersionLabel      string
+}
+
 type ApplicationDescription struct {
 	ApplicationName        string   `xml:"ApplicationName"`
 	ConfigurationTemplates []string `xml:"ConfigurationTemplates>member"`
@@ -723,6 +741,49 @@ func (eb *EB) DescribeEnvironmentResources(options *DescribeEnvironmentResources
 	params["EnvironmentName"] = options.EnvironmentName
 
 	resp = &DescribeEnvironmentResourcesResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DescribeEnvironments
+
+type DescribeEnvironments struct {
+	ApplicationName       string
+	EnvironmentIds        []string
+	EnvironmentNames      []string
+	IncludeDeleted        bool
+	IncludedDeletedBackTo string
+	VersionLabel          string
+}
+
+type DescribeEnvironmentsResp struct {
+	Environments []EnvironmentDescription `xml:"DescribeEnvironmentsResult>Environments>member"`
+	RequestId    string                   `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) DescribeEnvironments(options *DescribeEnvironments) (resp *DescribeEnvironmentsResp, err error) {
+	params := makeParams("DescribeEnvironments")
+
+	params["ApplicationName"] = options.ApplicationName
+	for i, v := range options.EnvironmentIds {
+		params["EnvironmentIds.member."+strconv.Itoa(i+1)] = v
+	}
+	for i, v := range options.EnvironmentNames {
+		params["EnvironmentNames.member."+strconv.Itoa(i+1)] = v
+	}
+	if options.IncludeDeleted {
+		params["IncludeDeleted"] = "true"
+	}
+	params["IncludedDeletedBackTo"] = options.IncludedDeletedBackTo
+	params["VersionLabel"] = options.VersionLabel
+
+	resp = &DescribeEnvironmentsResp{}
 
 	err = eb.query(params, resp)
 
