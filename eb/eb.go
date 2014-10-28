@@ -199,9 +199,9 @@ type ApplicationDescription struct {
 	ApplicationName        string   `xml:"ApplicationName"`
 	ConfigurationTemplates []string `xml:"ConfigurationTemplates>member"`
 	DateCreated            string   `xml:"DateCreated"`
-	DateUpdated            string   `xml:DateUpdated"`
-	Description            string   `xml:Description"`
-	Versions               []string `xml:Versions>member"`
+	DateUpdated            string   `xml:"DateUpdated"`
+	Description            string   `xml:"Description"`
+	Versions               []string `xml:"Versions>member"`
 }
 
 type ApplicationVersionDescription struct {
@@ -1014,6 +1014,41 @@ func (eb *EB) SwapEnvironmentCNAMEs(options *SwapEnvironmentCNAMEs) (resp *Simpl
 	params["SourceEnvironmentName"] = options.SourceEnvironmentName
 
 	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
+// Terminate
+
+// ----------------------------------------------------------------------------
+// Update
+
+// UpdateApplication
+
+type UpdateApplication struct {
+	ApplicationName string
+	Description     string
+}
+
+type UpdateApplicationResp struct {
+	Application ApplicationDescription `xml:"UpdateApplicationResult>Application"`
+	RequestId   string                 `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) UpdateApplication(options *UpdateApplication) (resp *UpdateApplicationResp, err error) {
+	params := makeParams("UpdateApplication")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["Description"] = options.Description
+
+	resp = &UpdateApplicationResp{}
 
 	err = eb.query(params, resp)
 

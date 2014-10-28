@@ -1342,3 +1342,25 @@ var SwapEnvironmentCNAMEsExample = `
   </ResponseMetadata>
 </SwapEnvironmentCNAMEsResponse> 
 `
+
+var UpdateApplicationExample = `
+<UpdateApplicationResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <UpdateApplicationResult>
+    <Application>
+      <Versions>
+        <member>New Version</member>
+      </Versions>
+      <Description>Another Description</Description>
+      <ApplicationName>SampleApp</ApplicationName>
+      <DateCreated>2010-11-17T19:26:20.410Z</DateCreated>
+      <DateUpdated>2010-11-17T20:42:54.611Z</DateUpdated>
+      <ConfigurationTemplates>
+        <member>Default</member>
+      </ConfigurationTemplates>
+    </Application>
+  </UpdateApplicationResult>
+  <ResponseMetadata>
+    <RequestId>40be666b-f28b-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</UpdateApplicationResponse>  
+`

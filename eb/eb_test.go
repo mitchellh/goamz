@@ -540,3 +540,27 @@ func (s *S) TestSwapEnvironmentCNAMEs(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "f4e1b145-9080-11e0-8e5a-a558e0ce1fc4")
 }
+
+func (s *S) TestUpdateApplication(c *C) {
+	testServer.Response(200, nil, UpdateApplicationExample)
+
+	options := eb.UpdateApplication{
+		ApplicationName: "SampleApp",
+		Description:     "Another Description",
+	}
+
+	resp, err := s.eb.UpdateApplication(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"UpdateApplication"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["Description"], DeepEquals, []string{"Another Description"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.Application.ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.Application.ConfigurationTemplates[0], Equals, "Default")
+	c.Assert(resp.Application.DateCreated, Equals, "2010-11-17T19:26:20.410Z")
+	c.Assert(resp.Application.DateUpdated, Equals, "2010-11-17T20:42:54.611Z")
+	c.Assert(resp.Application.Description, Equals, "Another Description")
+	c.Assert(resp.Application.Versions[0], Equals, "New Version")
+	c.Assert(resp.RequestId, Equals, "40be666b-f28b-11df-8a78-9f77047e0d0c")
+}
