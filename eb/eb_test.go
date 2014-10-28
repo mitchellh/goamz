@@ -431,3 +431,16 @@ func (s *S) TestDescribeEvents(c *C) {
 	c.Assert(resp.Events[0].VersionLabel, Equals, "New Version")
 	c.Assert(resp.RequestId, Equals, "f10d02dd-f288-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestListAvailableSolutionStacks(c *C) {
+	testServer.Response(200, nil, ListAvailableSolutionStacksExample)
+
+	resp, err := s.eb.ListAvailableSolutionStacks()
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ListAvailableSolutionStacks"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.SolutionStacks[0], Equals, "64bit Amazon Linux running Tomcat 6")
+	c.Assert(resp.SolutionStacks[1], Equals, "32bit Amazon Linux running Tomcat 6")
+	c.Assert(resp.RequestId, Equals, "f21e2a92-f1fc-11df-8a78-9f77047e0d0c")
+}
