@@ -1292,3 +1292,11 @@ var ListAvailableSolutionStacksExample = `
   </ResponseMetadata>
 </ListAvailableSolutionStacksResponse>  
 `
+
+var RebuildEnvironmentExample = `
+<RebuildEnvironmentResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ResponseMetadata>
+    <RequestId>a7d6606e-f289-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</RebuildEnvironmentResponse> 
+`
