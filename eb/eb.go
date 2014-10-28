@@ -958,6 +958,44 @@ func (eb *EB) RestartAppServer(options *RestartAppServer) (resp *SimpleResp, err
 	return
 }
 
+// RetrieveEnvironmentInfo
+
+type EnvironmentInfoDescription struct {
+	Ec2InstanceId   string `xml:"Ec2InstanceId"`
+	InfoType        string `xml:"InfoType"`
+	Message         string `xml:"Message"`
+	SampleTimestamp string `xml:"SampleTimestamp"`
+}
+
+type RetrieveEnvironmentInfo struct {
+	EnvironmentId   string
+	EnvironmentName string
+	InfoType        string
+}
+
+type RetrieveEnvironmentInfoResp struct {
+	EnvironmentInfo []EnvironmentInfoDescription `xml:"RetrieveEnvironmentInfoResult>EnvironmentInfo>member"`
+	RequestId       string                       `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) RetrieveEnvironmentInfo(options *RetrieveEnvironmentInfo) (resp *RetrieveEnvironmentInfoResp, err error) {
+	params := makeParams("RetrieveEnvironmentInfo")
+
+	params["EnvironmentId"] = options.EnvironmentId
+	params["EnvironmentName"] = options.EnvironmentName
+	params["InfoType"] = options.InfoType
+
+	resp = &RetrieveEnvironmentInfoResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Responses
 
