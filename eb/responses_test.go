@@ -1300,3 +1300,11 @@ var RebuildEnvironmentExample = `
   </ResponseMetadata>
 </RebuildEnvironmentResponse> 
 `
+
+var RequestEnvironmentInfoExample = `
+<RequestEnvironmentInfoResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ResponseMetadata>
+    <RequestId>126a4ff3-f28a-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</RequestEnvironmentInfoResponse>  
+`

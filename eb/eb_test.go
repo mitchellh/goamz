@@ -457,6 +457,26 @@ func (s *S) TestRebuildEnvironment(c *C) {
 	req := testServer.WaitRequest()
 
 	c.Assert(req.Form["Action"], DeepEquals, []string{"RebuildEnvironment"})
+	c.Assert(req.Form["EnvironmentId"], DeepEquals, []string{"e-hc8mvnayrx"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleAppVersion"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "a7d6606e-f289-11df-8a78-9f77047e0d0c")
+}
+
+func (s *S) TestRequestEnvironmentInfo(c *C) {
+	testServer.Response(200, nil, RequestEnvironmentInfoExample)
+
+	options := eb.RequestEnvironmentInfo{
+		EnvironmentId:   "e-hc8mvnayrx",
+		EnvironmentName: "SampleAppVersion",
+	}
+
+	resp, err := s.eb.RequestEnvironmentInfo(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"RequestEnvironmentInfo"})
+	c.Assert(req.Form["EnvironmentId"], DeepEquals, []string{"e-hc8mvnayrx"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleAppVersion"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "126a4ff3-f28a-11df-8a78-9f77047e0d0c")
 }
