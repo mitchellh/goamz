@@ -996,6 +996,34 @@ func (eb *EB) RetrieveEnvironmentInfo(options *RetrieveEnvironmentInfo) (resp *R
 	return
 }
 
+// SwapEnvironmentCNAMEs
+
+type SwapEnvironmentCNAMEs struct {
+	DestinationEnvironmentId   string
+	DestinationEnvironmentName string
+	SourceEnvironmentId        string
+	SourceEnvironmentName      string
+}
+
+func (eb *EB) SwapEnvironmentCNAMEs(options *SwapEnvironmentCNAMEs) (resp *SimpleResp, err error) {
+	params := makeParams("SwapEnvironmentCNAMEs")
+
+	params["DestinationEnvironmentId"] = options.DestinationEnvironmentId
+	params["DestinationEnvironmentName"] = options.DestinationEnvironmentName
+	params["SourceEnvironmentId"] = options.SourceEnvironmentId
+	params["SourceEnvironmentName"] = options.SourceEnvironmentName
+
+	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Responses
 

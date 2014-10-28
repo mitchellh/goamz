@@ -1334,3 +1334,11 @@ var RetrieveEnvironmentInfoExample = `
   </ResponseMetadata>
 </RetrieveEnvironmentInfoResponse>  
 `
+
+var SwapEnvironmentCNAMEsExample = `
+<SwapEnvironmentCNAMEsResponse xmlns="http://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ResponseMetadata>
+    <RequestId>f4e1b145-9080-11e0-8e5a-a558e0ce1fc4</RequestId>
+  </ResponseMetadata>
+</SwapEnvironmentCNAMEsResponse> 
+`
