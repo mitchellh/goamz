@@ -823,8 +823,8 @@ type DescribeEvents struct {
 
 type DescribeEventsResp struct {
 	Events    []EventDescription `xml:"DescribeEventsResult>Events>member"`
-	NextToken string `xml:"DescribeEventsResult>NextToken"`
-	RequestId string `xml:"ResponseMetadata>RequestId"`
+	NextToken string             `xml:"DescribeEventsResult>NextToken"`
+	RequestId string             `xml:"ResponseMetadata>RequestId"`
 }
 
 func (eb *EB) DescribeEvents(options *DescribeEvents) (resp *DescribeEventsResp, err error) {
@@ -853,6 +853,35 @@ func (eb *EB) DescribeEvents(options *DescribeEvents) (resp *DescribeEventsResp,
 	return
 }
 
+// ----------------------------------------------------------------------------
+// List
+
+type SolutionStackDescription struct {
+	PermittedFileTypes []string
+	SolutionStackName  string
+}
+
+type ListAvailableSolutionStacksResp struct {
+	SolutionStackDetails []SolutionStackDescription `xml:"ListAvailableSolutionStacksResult>SolutionStackDetails"`
+	SolutionStacks       []string                   `xml:"ListAvailableSolutionStacksResult>SolutionStacks>member"`
+	RequestId            string                     `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) ListAvailableSolutionStacks() (resp *ListAvailableSolutionStacksResp, err error) {
+	params := makeParams("ListAvailableSolutionStacks")
+
+	resp = &ListAvailableSolutionStacksResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Responses
 
 type SimpleResp struct {

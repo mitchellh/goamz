@@ -1277,3 +1277,18 @@ var DescribeEventsExample = `
   </ResponseMetadata>
 </DescribeEventsResponse> 
 `
+var ListAvailableSolutionStacksExample = `
+<ListAvailableSolutionStacksResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ListAvailableSolutionStacksResult>
+    <SolutionStacks>
+      <member>64bit Amazon Linux running Tomcat 6</member>
+      <member>32bit Amazon Linux running Tomcat 6</member>
+      <member>64bit Amazon Linux running Tomcat 7</member>
+      <member>32bit Amazon Linux running Tomcat 7</member>
+    </SolutionStacks>
+  </ListAvailableSolutionStacksResult>
+  <ResponseMetadata>
+    <RequestId>f21e2a92-f1fc-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</ListAvailableSolutionStacksResponse>  
+`
