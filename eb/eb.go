@@ -882,6 +882,33 @@ func (eb *EB) ListAvailableSolutionStacks() (resp *ListAvailableSolutionStacksRe
 }
 
 // ----------------------------------------------------------------------------
+// Rebuild
+
+// RebuildEnvironment
+
+type RebuildEnvironment struct {
+	EnvironmentId   string
+	EnvironmentName string
+}
+
+func (eb *EB) RebuildEnvironment(options *RebuildEnvironment) (resp *SimpleResp, err error) {
+	params := makeParams("RebuildEnvironment")
+
+	params["EnvironmentId"] = options.EnvironmentId
+	params["EnvironmentName"] = options.EnvironmentName
+
+	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Responses
 
 type SimpleResp struct {

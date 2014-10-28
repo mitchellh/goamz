@@ -444,3 +444,19 @@ func (s *S) TestListAvailableSolutionStacks(c *C) {
 	c.Assert(resp.SolutionStacks[1], Equals, "32bit Amazon Linux running Tomcat 6")
 	c.Assert(resp.RequestId, Equals, "f21e2a92-f1fc-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestRebuildEnvironment(c *C) {
+	testServer.Response(200, nil, RebuildEnvironmentExample)
+
+	options := eb.RebuildEnvironment{
+		EnvironmentId:   "e-hc8mvnayrx",
+		EnvironmentName: "SampleAppVersion",
+	}
+
+	resp, err := s.eb.RebuildEnvironment(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"RebuildEnvironment"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "a7d6606e-f289-11df-8a78-9f77047e0d0c")
+}
