@@ -934,6 +934,30 @@ func (eb *EB) RequestEnvironmentInfo(options *RequestEnvironmentInfo) (resp *Sim
 	return
 }
 
+// RestartAppServer
+
+type RestartAppServer struct {
+	EnvironmentId   string
+	EnvironmentName string
+}
+
+func (eb *EB) RestartAppServer(options *RestartAppServer) (resp *SimpleResp, err error) {
+	params := makeParams("RestartAppServer")
+
+	params["EnvironmentId"] = options.EnvironmentId
+	params["EnvironmentName"] = options.EnvironmentName
+
+	resp = &SimpleResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Responses
 

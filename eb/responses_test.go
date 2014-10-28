@@ -1308,3 +1308,11 @@ var RequestEnvironmentInfoExample = `
   </ResponseMetadata>
 </RequestEnvironmentInfoResponse>  
 `
+
+var RestartAppServerExample = `
+<RestartAppServerResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ResponseMetadata>
+    <RequestId>90e8d1d5-f28a-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</RestartAppServerResponse>    
+`
