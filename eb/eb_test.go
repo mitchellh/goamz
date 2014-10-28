@@ -404,3 +404,30 @@ func (s *S) TestDescribeEnvironments(c *C) {
 	c.Assert(resp.Environments[0].VersionLabel, Equals, "Version1")
 	c.Assert(resp.RequestId, Equals, "44790c68-f260-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestDescribeEvents(c *C) {
+	testServer.Response(200, nil, DescribeEventsExample)
+
+	options := eb.DescribeEvents{
+		ApplicationName: "SampleApp",
+		Severity:        "TRACE",
+		StartTime:       "2010-11-17T10:26:40Z",
+	}
+
+	resp, err := s.eb.DescribeEvents(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeEvents"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["Severity"], DeepEquals, []string{"TRACE"})
+	c.Assert(req.Form["StartTime"], DeepEquals, []string{"2010-11-17T10:26:40Z"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.Events[0].ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.Events[0].EnvironmentName, Equals, "SampleAppVersion")
+	c.Assert(resp.Events[0].EventDate, Equals, "2010-11-17T20:25:35.191Z")
+	c.Assert(resp.Events[0].Message, Equals, "Successfully completed createEnvironment activity.")
+	c.Assert(resp.Events[0].RequestId, Equals, "bb01fa74-f287-11df-8a78-9f77047e0d0c")
+	c.Assert(resp.Events[0].Severity, Equals, "INFO")
+	c.Assert(resp.Events[0].VersionLabel, Equals, "New Version")
+	c.Assert(resp.RequestId, Equals, "f10d02dd-f288-11df-8a78-9f77047e0d0c")
+}

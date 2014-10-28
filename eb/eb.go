@@ -184,6 +184,17 @@ type EnvironmentDescription struct {
 	VersionLabel      string
 }
 
+type EventDescription struct {
+	ApplicationName string
+	EnvironmentName string
+	EventDate       string
+	Message         string
+	RequestId       string
+	Severity        string
+	TemplateName    string
+	VersionLabel    string
+}
+
 type ApplicationDescription struct {
 	ApplicationName        string   `xml:"ApplicationName"`
 	ConfigurationTemplates []string `xml:"ConfigurationTemplates>member"`
@@ -784,6 +795,54 @@ func (eb *EB) DescribeEnvironments(options *DescribeEnvironments) (resp *Describ
 	params["VersionLabel"] = options.VersionLabel
 
 	resp = &DescribeEnvironmentsResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DescribeEvents
+
+type DescribeEvents struct {
+	ApplicationName string
+	EndTime         string
+	EnvironmentId   string
+	EnvironmentName string
+	MaxRecords      string
+	NextToken       string
+	RequestId       string
+	Severity        string
+	StartTime       string
+	TemplateName    string
+	VersionLabel    string
+}
+
+type DescribeEventsResp struct {
+	Events    []EventDescription `xml:"DescribeEventsResult>Events>member"`
+	NextToken string `xml:"DescribeEventsResult>NextToken"`
+	RequestId string `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) DescribeEvents(options *DescribeEvents) (resp *DescribeEventsResp, err error) {
+	params := makeParams("DescribeEvents")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["EndTime"] = options.EndTime
+	params["EnvironmentId"] = options.EnvironmentId
+	params["EnvironmentName"] = options.EnvironmentName
+	params["MaxRecords"] = options.MaxRecords
+	params["NextToken"] = options.NextToken
+	params["RequestId"] = options.RequestId
+	params["Severity"] = options.Severity
+	params["StartTime"] = options.StartTime
+	params["TemplateName"] = options.TemplateName
+	params["VersionLabel"] = options.VersionLabel
+
+	resp = &DescribeEventsResp{}
 
 	err = eb.query(params, resp)
 
