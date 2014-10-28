@@ -480,3 +480,21 @@ func (s *S) TestRequestEnvironmentInfo(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "126a4ff3-f28a-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestRestartAppServer(c *C) {
+	testServer.Response(200, nil, RestartAppServerExample)
+
+	options := eb.RestartAppServer{
+		EnvironmentId:   "e-hc8mvnayrx",
+		EnvironmentName: "SampleAppVersion",
+	}
+
+	resp, err := s.eb.RestartAppServer(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"RestartAppServer"})
+	c.Assert(req.Form["EnvironmentId"], DeepEquals, []string{"e-hc8mvnayrx"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleAppVersion"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "90e8d1d5-f28a-11df-8a78-9f77047e0d0c")
+}
