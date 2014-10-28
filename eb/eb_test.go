@@ -522,3 +522,21 @@ func (s *S) TestRetrieveEnvironmentInfo(c *C) {
 	c.Assert(resp.EnvironmentInfo[0].SampleTimestamp, Equals, "2010-11-17T20:40:23.210Z")
 	c.Assert(resp.RequestId, Equals, "e8e785c9-f28a-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestSwapEnvironmentCNAMEs(c *C) {
+	testServer.Response(200, nil, SwapEnvironmentCNAMEsExample)
+
+	options := eb.SwapEnvironmentCNAMEs{
+		SourceEnvironmentName:      "SampleApp",
+		DestinationEnvironmentName: "SampleApp2",
+	}
+
+	resp, err := s.eb.SwapEnvironmentCNAMEs(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"SwapEnvironmentCNAMEs"})
+	c.Assert(req.Form["SourceEnvironmentName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["DestinationEnvironmentName"], DeepEquals, []string{"SampleApp2"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "f4e1b145-9080-11e0-8e5a-a558e0ce1fc4")
+}
