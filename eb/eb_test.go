@@ -498,3 +498,27 @@ func (s *S) TestRestartAppServer(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "90e8d1d5-f28a-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestRetrieveEnvironmentInfo(c *C) {
+	testServer.Response(200, nil, RetrieveEnvironmentInfoExample)
+
+	options := eb.RetrieveEnvironmentInfo{
+		EnvironmentId:   "e-hc8mvnayrx",
+		EnvironmentName: "SampleAppVersion",
+		InfoType:        "tail",
+	}
+
+	resp, err := s.eb.RetrieveEnvironmentInfo(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"RetrieveEnvironmentInfo"})
+	c.Assert(req.Form["EnvironmentId"], DeepEquals, []string{"e-hc8mvnayrx"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleAppVersion"})
+	c.Assert(req.Form["InfoType"], DeepEquals, []string{"tail"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.EnvironmentInfo[0].Ec2InstanceId, Equals, "i-92a3ceff")
+	c.Assert(resp.EnvironmentInfo[0].InfoType, Equals, "tail")
+	c.Assert(resp.EnvironmentInfo[0].Message, Equals, "https://elasticbeanstalk.us-east-1.s3.amazonaws.com/environments%2Fa514386a-709f-4888-9683-068c38d744b4%2Flogs%2Fi-92a3ceff%2F278756a8-7d83-4bc1-93db-b1763163705a.log?Expires=1291236023")
+	c.Assert(resp.EnvironmentInfo[0].SampleTimestamp, Equals, "2010-11-17T20:40:23.210Z")
+	c.Assert(resp.RequestId, Equals, "e8e785c9-f28a-11df-8a78-9f77047e0d0c")
+}
