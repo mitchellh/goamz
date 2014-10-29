@@ -1364,3 +1364,24 @@ var UpdateApplicationExample = `
   </ResponseMetadata>
 </UpdateApplicationResponse>  
 `
+var TerminateEnvironmentExample = `
+<TerminateEnvironmentResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <TerminateEnvironmentResult>
+    <VersionLabel>Version1</VersionLabel>
+    <Status>Terminating</Status>
+    <ApplicationName>SampleApp</ApplicationName>
+    <EndpointURL>elasticbeanstalk-SampleApp-1394386994.us-east-1.elb.amazonaws.com</EndpointURL>
+    <CNAME>SampleApp-jxb293wg7n.elasticbeanstalk.amazonaws.com</CNAME>
+    <Health>Grey</Health>
+    <EnvironmentId>e-icsgecu3wf</EnvironmentId>
+    <DateUpdated>2010-11-17T17:10:41.976Z</DateUpdated>
+    <SolutionStackName>32bit Amazon Linux running Tomcat 7</SolutionStackName>
+    <Description>EnvDescrip</Description>
+    <EnvironmentName>SampleApp</EnvironmentName>
+    <DateCreated>2010-11-17T03:59:33.520Z</DateCreated>
+  </TerminateEnvironmentResult>
+  <ResponseMetadata>
+    <RequestId>9b71af21-f26d-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</TerminateEnvironmentResponse>
+`
