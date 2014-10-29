@@ -541,6 +541,36 @@ func (s *S) TestSwapEnvironmentCNAMEs(c *C) {
 	c.Assert(resp.RequestId, Equals, "f4e1b145-9080-11e0-8e5a-a558e0ce1fc4")
 }
 
+func (s *S) TestTerminateEnvironment(c *C) {
+	testServer.Response(200, nil, TerminateEnvironmentExample)
+
+	options := eb.TerminateEnvironment{
+		EnvironmentId:   "e-icsgecu3wf",
+		EnvironmentName: "SampleApp",
+	}
+
+	resp, err := s.eb.TerminateEnvironment(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"TerminateEnvironment"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["EnvironmentId"], DeepEquals, []string{"e-icsgecu3wf"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.CNAME, Equals, "SampleApp-jxb293wg7n.elasticbeanstalk.amazonaws.com")
+	c.Assert(resp.DateCreated, Equals, "2010-11-17T03:59:33.520Z")
+	c.Assert(resp.DateUpdated, Equals, "2010-11-17T17:10:41.976Z")
+	c.Assert(resp.Description, Equals, "EnvDescrip")
+	c.Assert(resp.EndpointURL, Equals, "elasticbeanstalk-SampleApp-1394386994.us-east-1.elb.amazonaws.com")
+	c.Assert(resp.EnvironmentId, Equals, "e-icsgecu3wf")
+	c.Assert(resp.EnvironmentName, Equals, "SampleApp")
+	c.Assert(resp.Health, Equals, "Grey")
+	c.Assert(resp.SolutionStackName, Equals, "32bit Amazon Linux running Tomcat 7")
+	c.Assert(resp.Status, Equals, "Terminating")
+	c.Assert(resp.VersionLabel, Equals, "Version1")
+	c.Assert(resp.RequestId, Equals, "9b71af21-f26d-11df-8a78-9f77047e0d0c")
+}
+
 func (s *S) TestUpdateApplication(c *C) {
 	testServer.Response(200, nil, UpdateApplicationExample)
 

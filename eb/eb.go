@@ -1027,6 +1027,53 @@ func (eb *EB) SwapEnvironmentCNAMEs(options *SwapEnvironmentCNAMEs) (resp *Simpl
 // ----------------------------------------------------------------------------
 // Terminate
 
+type TerminateEnvironment struct {
+	EnvironmentId      string
+	EnvironmentName    string
+	TerminateResources bool
+}
+
+type TerminateEnvironmentResp struct {
+	ApplicationName   string                          `xml:"TerminateEnvironmentResult>ApplicationName"`
+	CNAME             string                          `xml:"TerminateEnvironmentResult>CNAME"`
+	DateCreated       string                          `xml:"TerminateEnvironmentResult>DateCreated"`
+	DateUpdated       string                          `xml:"TerminateEnvironmentResult>DateUpdated"`
+	Description       string                          `xml:"TerminateEnvironmentResult>Description"`
+	EndpointURL       string                          `xml:"TerminateEnvironmentResult>EndpointURL"`
+	EnvironmentId     string                          `xml:"TerminateEnvironmentResult>EnvironmentId"`
+	EnvironmentName   string                          `xml:"TerminateEnvironmentResult>EnvironmentName"`
+	Health            string                          `xml:"TerminateEnvironmentResult>Health"`
+	Resources         EnvironmentResourcesDescription `xml:"TerminateEnvironmentResult>Resources"`
+	SolutionStackName string                          `xml:"TerminateEnvironmentResult>SolutionStackName"`
+	Status            string                          `xml:"TerminateEnvironmentResult>Status"`
+	TemplateName      string                          `xml:"TerminateEnvironmentResult>TemplateName"`
+	Tier              EnvironmentTier                 `xml:"TerminateEnvironmentResult>Tier"`
+	VersionLabel      string                          `xml:"TerminateEnvironmentResult>VersionLabel"`
+	RequestId         string                          `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) TerminateEnvironment(options *TerminateEnvironment) (resp *TerminateEnvironmentResp, err error) {
+	params := makeParams("TerminateEnvironment")
+
+	params["EnvironmentId"] = options.EnvironmentId
+	params["EnvironmentName"] = options.EnvironmentName
+	if !options.TerminateResources {
+		params["TerminateResources"] = "false"
+	} else {
+		params["TerminateResources"] = "true"
+	}
+
+	resp = &TerminateEnvironmentResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Update
 
