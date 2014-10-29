@@ -145,6 +145,7 @@ var EUCentral = Region{
 	"https://autoscaling.eu-central-1.amazonaws.com",
 	"https://rds.eu-central-1.amazonaws.com",
 	"https://route53.amazonaws.com",
+	"",
 }
 
 var APSoutheast = Region{
