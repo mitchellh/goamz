@@ -108,6 +108,7 @@ type DBInstance struct {
 	VpcSecurityGroupIds        []string      `xml:"VpcSecurityGroups"`
 	DBSecurityGroupNames       []string      `xml:"DBSecurityGroups>DBSecurityGroup>DBSecurityGroupName"`
 	DBSubnetGroup              DBSubnetGroup `xml:"DBSubnetGroup"`
+	DBParameterGroupName       string        `xml:"DBParameterGroupName"`
 }
 
 type DBSecurityGroup struct {
@@ -173,6 +174,7 @@ type CreateDBInstance struct {
 	PubliclyAccessible         bool
 	VpcSecurityGroupIds        []string
 	DBSecurityGroupNames       []string
+	DBParameterGroupName       string
 
 	SetAllocatedStorage      bool
 	SetBackupRetentionPeriod bool
@@ -258,6 +260,10 @@ func (rds *Rds) CreateDBInstance(options *CreateDBInstance) (resp *SimpleResp, e
 	for j, group := range options.DBSecurityGroupNames {
 		params["DBSecurityGroups.member."+strconv.Itoa(j+1)] = group
 	}
+
+	if options.DBParameterGroupName != "" {
+                params["DBParameterGroupName"] = options.DBParameterGroupName
+        }
 
 	resp = &SimpleResp{}
 
@@ -350,6 +356,31 @@ func (rds *Rds) AuthorizeDBSecurityGroupIngress(options *AuthorizeDBSecurityGrou
 	}
 
 	params["DBSecurityGroupName"] = options.DBSecurityGroupName
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// The CreateDBParameterGroup request parameters
+type CreateDBParameterGroup struct {
+        DBParameterGroupFamily string
+        DBParameterGroupName   string
+        Description            string
+}
+
+func (rds *Rds) CreateDBParameterGroup(options *CreateDBParameterGroup) (resp *SimpleResp, err error) {
+	params := makeParams("CreateDBParameterGroup")
+
+	params["DBParameterGroupFamily"] = options.DBParameterGroupFamily
+	params["DBParameterGroupName"] = options.DBParameterGroupName
+	params["Description"] = options.Description
 
 	resp = &SimpleResp{}
 

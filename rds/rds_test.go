@@ -48,6 +48,7 @@ func (s *S) Test_CreateDBInstance(c *C) {
 		MasterUserPassword:         "bazbarbaz",
 		DBInstanceClass:            "db.m1.small",
 		DBSecurityGroupNames:       []string{"foo", "bar"},
+		DBParameterGroupName:       "default.mysql5.6",
 
 		SetBackupRetentionPeriod: true,
 	}
@@ -99,6 +100,26 @@ func (s *S) Test_CreateDBSubnetGroup(c *C) {
 	c.Assert(req.Form["SubnetIds.member.2"], DeepEquals, []string{"subnet-c2bdb6ba"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "3a401b3f-bb9e-11d3-f4c6-37db295f7674")
+}
+
+func (s *S) Test_CreateDBParameterGroup(c *C) {
+	testServer.Response(200, nil, CreateDBParameterGroupExample)
+
+	options := rds.CreateDBParameterGroup{
+		DBParameterGroupFamily: "mysql5.6",
+		DBParameterGroupName:   "mydbparamgroup3",
+		Description:            "My new DB Parameter Group",
+	}
+
+	resp, err := s.rds.CreateDBParameterGroup(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"CreateDBParameterGroup"})
+	c.Assert(req.Form["DBParameterGroupFamily"], DeepEquals, []string{"mysql5.6"})
+	c.Assert(req.Form["DBParameterGroupName"], DeepEquals, []string{"mydbparamgroup3"})
+	c.Assert(req.Form["Description"], DeepEquals, []string{"My new DB Parameter Group"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7805c127-af22-11c3-96ac-6999cc5f7e72")
 }
 
 func (s *S) Test_DescribeDBInstances(c *C) {

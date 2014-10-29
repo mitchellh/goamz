@@ -94,44 +94,47 @@ func makeParams(action string) map[string]string {
 type Tag struct {
 	Key               string `xml:"Key"`
 	Value             string `xml:"Value"`
-	PropogateAtLaunch string `xml:"PropogateAtLaunch"`
-}
-
-type SecurityGroup struct {
-	SecurityGroup string `xml:"member"`
-}
-
-type AvailabilityZone struct {
-	AvailabilityZone string `xml:"member"`
-}
-
-type LoadBalancerName struct {
-	LoadBalancerName string `xml:"member"`
+	PropagateAtLaunch bool   `xml:"PropagateAtLaunch"`
 }
 
 type LaunchConfiguration struct {
-	IamInstanceProfile string          `xml:"member>IamInstanceProfile"`
-	ImageId            string          `xml:"member>ImageId"`
-	InstanceType       string          `xml:"member>InstanceType"`
-	KeyName            string          `xml:"member>KeyName"`
-	Name               string          `xml:"member>LaunchConfigurationName"`
-	SecurityGroups     []SecurityGroup `xml:"member>SecurityGroups"`
-	UserData           []byte          `xml:"member>UserData"`
+	AssociatePublicIpAddress bool     `xml:"AssociatePublicIpAddress"`
+	IamInstanceProfile       string   `xml:"IamInstanceProfile"`
+	ImageId                  string   `xml:"ImageId"`
+	InstanceType             string   `xml:"InstanceType"`
+	KernelId                 string   `xml:"KernelId"`
+	KeyName                  string   `xml:"KeyName"`
+	SpotPrice                string   `xml:"SpotPrice"`
+	Name                     string   `xml:"LaunchConfigurationName"`
+	SecurityGroups           []string `xml:"SecurityGroups>member"`
+	UserData                 []byte   `xml:"UserData"`
+}
+
+type Instance struct {
+	AvailabilityZone        string `xml:"AvailabilityZone"`
+	HealthStatus            string `xml:"HealthStatus"`
+	InstanceId              string `xml:"InstanceId"`
+	LaunchConfigurationName string `xml:"LaunchConfigurationName"`
+	LifecycleState          string `xml:"LifecycleState"`
 }
 
 type AutoScalingGroup struct {
-	AvailabilityZones       []AvailabilityZone `xml:"member>AvailabilityZones"`
-	DefaultCooldown         int                `xml:"member>DefaultCooldown"`
-	DesiredCapacity         int                `xml:"member>DesiredCapacity"`
-	HealthCheckGracePeriod  int                `xml:"member>HealthCheckGracePeriod"`
-	HealthCheckType         string             `xml:"member>HealthCheckType"`
-	InstanceId              string             `xml:"member>InstanceId"`
-	LaunchConfigurationName string             `xml:"member>LaunchConfigurationName"`
-	LoadBalancerNames       []LoadBalancerName `xml:"member>LoadBalancerNames"`
-	MaxSize                 int                `xml:"member>MaxSize"`
-	MinSize                 int                `xml:"member>MinSize"`
-	Name                    string             `xml:"member>AutoScalingGroupName"`
-	VPCZoneIdentifier       string             `xml:"member>VPCZoneIdentifier"`
+	AvailabilityZones       []string   `xml:"AvailabilityZones>member"`
+	CreatedTime             time.Time  `xml:"CreatedTime"`
+	DefaultCooldown         int        `xml:"DefaultCooldown"`
+	DesiredCapacity         int        `xml:"DesiredCapacity"`
+	HealthCheckGracePeriod  int        `xml:"HealthCheckGracePeriod"`
+	HealthCheckType         string     `xml:"HealthCheckType"`
+	InstanceId              string     `xml:"InstanceId"`
+	Instances               []Instance `xml:"Instances>member"`
+	LaunchConfigurationName string     `xml:"LaunchConfigurationName"`
+	LoadBalancerNames       []string   `xml:"LoadBalancerNames>member"`
+	MaxSize                 int        `xml:"MaxSize"`
+	MinSize                 int        `xml:"MinSize"`
+	Name                    string     `xml:"AutoScalingGroupName"`
+	Status                  string     `xml:"Status"`
+	Tags                    []Tag      `xml:"Tags>member"`
+	VPCZoneIdentifier       string     `xml:"VPCZoneIdentifier"`
 }
 
 // ----------------------------------------------------------------------------
@@ -212,8 +215,9 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 	}
 
 	for j, tag := range options.Tags {
-		params["Tag.member."+strconv.Itoa(j+1)+".Key"] = tag.Key
-		params["Tag.member."+strconv.Itoa(j+1)+".Value"] = tag.Value
+		params["Tags.member."+strconv.Itoa(j+1)+".Key"] = tag.Key
+		params["Tags.member."+strconv.Itoa(j+1)+".Value"] = tag.Value
+		params["Tags.member."+strconv.Itoa(j+1)+".PropagateAtLaunch"] = strconv.FormatBool(tag.PropagateAtLaunch)
 	}
 
 	for i, v := range options.TerminationPolicies {
@@ -237,19 +241,31 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 
 // The CreateLaunchConfiguration request parameters
 type CreateLaunchConfiguration struct {
-	ImageId        string
-	InstanceId     string
-	InstanceType   string
-	KeyName        string
-	Name           string
-	SecurityGroups []string
-	UserData       string
+	AssociatePublicIpAddress bool
+	IamInstanceProfile       string
+	ImageId                  string
+	InstanceId               string
+	InstanceType             string
+	KernelId                 string
+	KeyName                  string
+	SpotPrice                string
+	Name                     string
+	SecurityGroups           []string
+	UserData                 string
 }
 
 func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchConfiguration) (resp *SimpleResp, err error) {
 	params := makeParams("CreateLaunchConfiguration")
 
 	params["LaunchConfigurationName"] = options.Name
+
+	if options.AssociatePublicIpAddress {
+		params["AssociatePublicIpAddress"] = "true"
+	}
+
+	if options.IamInstanceProfile != "" {
+		params["IamInstanceProfile"] = options.IamInstanceProfile
+	}
 
 	if options.ImageId != "" {
 		params["ImageId"] = options.ImageId
@@ -260,9 +276,16 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 	if options.InstanceId != "" {
 		params["InstanceId"] = options.InstanceId
 	}
+	if options.KernelId != "" {
+		params["KernelId"] = options.KernelId
+	}
 
 	if options.KeyName != "" {
 		params["KeyName"] = options.KeyName
+	}
+
+	if options.SpotPrice != "" {
+		params["SpotPrice"] = options.SpotPrice
 	}
 
 	for i, v := range options.SecurityGroups {
@@ -295,7 +318,7 @@ type DescribeAutoScalingGroups struct {
 
 type DescribeAutoScalingGroupsResp struct {
 	RequestId         string             `xml:"ResponseMetadata>RequestId"`
-	AutoScalingGroups []AutoScalingGroup `xml:"DescribeAutoScalingGroupsResult>AutoScalingGroups"`
+	AutoScalingGroups []AutoScalingGroup `xml:"DescribeAutoScalingGroupsResult>AutoScalingGroups>member"`
 }
 
 func (autoscaling *AutoScaling) DescribeAutoScalingGroups(options *DescribeAutoScalingGroups) (resp *DescribeAutoScalingGroupsResp, err error) {
@@ -323,7 +346,7 @@ type DescribeLaunchConfigurations struct {
 
 type DescribeLaunchConfigurationsResp struct {
 	RequestId            string                `xml:"ResponseMetadata>RequestId"`
-	LaunchConfigurations []LaunchConfiguration `xml:"DescribeLaunchConfigurationsResult>LaunchConfigurations"`
+	LaunchConfigurations []LaunchConfiguration `xml:"DescribeLaunchConfigurationsResult>LaunchConfigurations>member"`
 }
 
 func (autoscaling *AutoScaling) DescribeLaunchConfigurations(options *DescribeLaunchConfigurations) (resp *DescribeLaunchConfigurationsResp, err error) {

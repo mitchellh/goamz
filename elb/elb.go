@@ -91,11 +91,11 @@ func makeParams(action string) map[string]string {
 
 // A listener attaches to an elb
 type Listener struct {
-	InstancePort     int64  `xml:"member>Listener>InstancePort"`
-	InstanceProtocol string `xml:"member>Listener>InstanceProtocol"`
-	SSLCertificateId string `xml:"member>Listener>SSLCertificateId"`
-	LoadBalancerPort int64  `xml:"member>Listener>LoadBalancerPort"`
-	Protocol         string `xml:"member>Listener>Protocol"`
+	InstancePort     int64  `xml:"Listener>InstancePort"`
+	InstanceProtocol string `xml:"Listener>InstanceProtocol"`
+	SSLCertificateId string `xml:"Listener>SSLCertificateId"`
+	LoadBalancerPort int64  `xml:"Listener>LoadBalancerPort"`
+	Protocol         string `xml:"Listener>Protocol"`
 }
 
 // An Instance attaches to an elb
@@ -276,15 +276,15 @@ func (elb *ELB) DeleteLoadBalancer(options *DeleteLoadBalancer) (resp *SimpleRes
 
 // An individual load balancer
 type LoadBalancer struct {
-	LoadBalancerName  string             `xml:"member>LoadBalancerName"`
-	Listeners         []Listener         `xml:"member>ListenerDescriptions"`
-	Instances         []Instance         `xml:"member>Instances>member"`
-	HealthCheck       HealthCheck        `xml:"member>HealthCheck"`
-	AvailabilityZones []AvailabilityZone `xml:"member>AvailabilityZones"`
-	DNSName           string             `xml:"member>DNSName"`
-	SecurityGroups    []string           `xml:"member>SecurityGroups>member"`
-	Scheme            string             `xml:"member>Scheme"`
-	Subnets           []string           `xml:"member>Subnets>member"`
+	LoadBalancerName  string             `xml:"LoadBalancerName"`
+	Listeners         []Listener         `xml:"ListenerDescriptions>member"`
+	Instances         []Instance         `xml:"Instances>member"`
+	HealthCheck       HealthCheck        `xml:"HealthCheck"`
+	AvailabilityZones []AvailabilityZone `xml:"AvailabilityZones"`
+	DNSName           string             `xml:"DNSName"`
+	SecurityGroups    []string           `xml:"SecurityGroups>member"`
+	Scheme            string             `xml:"Scheme"`
+	Subnets           []string           `xml:"Subnets>member"`
 }
 
 // DescribeLoadBalancer request params
@@ -294,7 +294,7 @@ type DescribeLoadBalancer struct {
 
 type DescribeLoadBalancersResp struct {
 	RequestId     string         `xml:"ResponseMetadata>RequestId"`
-	LoadBalancers []LoadBalancer `xml:"DescribeLoadBalancersResult>LoadBalancerDescriptions"`
+	LoadBalancers []LoadBalancer `xml:"DescribeLoadBalancersResult>LoadBalancerDescriptions>member"`
 }
 
 func (elb *ELB) DescribeLoadBalancers(options *DescribeLoadBalancer) (resp *DescribeLoadBalancersResp, err error) {
