@@ -56,6 +56,29 @@ func (s *S) TestSubmitBatch(c *C) {
 
 }
 
+func (s *S) TestSubmitBatchXmlEncoding(c *C) {
+	testServer.Response(200, nil, SubmitBatchSuccessResponse)
+	batch := document.Batch{}
+	add := batch.Add("test")
+	add.AddField("Foo", "Bar & Bar")
+	batch.Delete("gone")
+
+	batchResult, err := s.document.SubmitBatch(batch)
+	req := testServer.WaitRequest()
+	c.Assert(err, IsNil)
+	c.Assert(batchResult, NotNil)
+	c.Assert(batchResult.Adds, Equals, 1)
+	c.Assert(batchResult.Deletes, Equals, 1)
+
+	c.Assert(req.Method, Equals, "POST")
+	c.Assert(req.URL.Path, Equals, "/2013-01-01/documents/batch")
+
+	data, err := ioutil.ReadAll(req.Body)
+	req.Body.Close()
+	c.Assert(err, IsNil)
+	c.Assert(string(data), Equals, `<batch><add id="test"><field name="Foo">Bar &amp; Bar</field></add><delete id="gone"></delete></batch>`)
+}
+
 func (s *S) TestSubmitBatchReturnsError(c *C) {
 	testServer.Response(200, nil, SubmitBatchErrorResponse)
 	batch := document.Batch{}

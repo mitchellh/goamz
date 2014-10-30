@@ -9,6 +9,7 @@ import (
 	"fmt"
 	awsauth "github.com/smartystreets/go-aws-auth"
 	"strings"
+	"io/ioutil"
 )
 
 type CloudsearchDocument struct {
@@ -70,7 +71,7 @@ func (ba *BatchAdd) GetFields(name string) []BatchAddField {
 
 type BatchAddField struct {
 	Name  string `xml:"name,attr"`
-	Value string `xml:",innerxml"`
+	Value string `xml:",chardata"`
 }
 
 type BatchResult struct {
@@ -121,10 +122,11 @@ func (r *CloudsearchDocument) query(method string, path string, request interfac
 	if err != nil {
 		return err
 	}
+	bodyString , err := ioutil.ReadAll(re.Body)
 	defer re.Body.Close()
-
+	decodingError := xml.NewDecoder(bytes.NewReader(bodyString)).Decode(resp)
 	if re.StatusCode > 200 {
-		return fmt.Errorf("Cloudsearch returned unexpected http %v", re.Status)
+		return fmt.Errorf("Cloudsearch returned unexpected http %v ( %v ) ", re.Status, string(bodyString))
 	}
-	return xml.NewDecoder(re.Body).Decode(resp)
+	return decodingError
 }
