@@ -1,15 +1,15 @@
 package document
 
 import (
+	"bytes"
 	"encoding/xml"
+	"fmt"
 	"github.com/mitchellh/goamz/aws"
+	awsauth "github.com/smartystreets/go-aws-auth"
+	"io/ioutil"
 	"net/http"
 	"net/url"
-	"bytes"
-	"fmt"
-	awsauth "github.com/smartystreets/go-aws-auth"
 	"strings"
-	"io/ioutil"
 )
 
 type CloudsearchDocument struct {
@@ -41,6 +41,7 @@ func (b *Batch) Add(id string) *BatchAdd {
 	b.Adds = append(b.Adds, add)
 	return add
 }
+
 func (b *Batch) Delete(id string) {
 	b.Deletes = append(b.Deletes, BatchDelete{id})
 }
@@ -56,6 +57,11 @@ type BatchAdd struct {
 func (ba *BatchAdd) AddField(name string, value string) {
 	field := &BatchAddField{name, value}
 	ba.Fields = append(ba.Fields, *field)
+}
+func (ba *BatchAdd) AddFields(name string, values []string) {
+	for _, value := range values {
+		ba.AddField(name, value)
+	}
 }
 
 // Yes, there can be multiple fields with the same name
@@ -122,7 +128,7 @@ func (r *CloudsearchDocument) query(method string, path string, request interfac
 	if err != nil {
 		return err
 	}
-	bodyString , err := ioutil.ReadAll(re.Body)
+	bodyString, err := ioutil.ReadAll(re.Body)
 	defer re.Body.Close()
 	decodingError := xml.NewDecoder(bytes.NewReader(bodyString)).Decode(resp)
 	if re.StatusCode > 200 {

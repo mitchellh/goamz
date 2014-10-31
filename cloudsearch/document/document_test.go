@@ -102,3 +102,11 @@ func (s *S) TestBatchApi(c *C) {
 
 	c.Assert(batch, DeepEquals, document.Batch{Adds: []*document.BatchAdd{&document.BatchAdd{Id: "test", Fields: []document.BatchAddField{document.BatchAddField{"Foo", "Bar"}}}}, Deletes: []document.BatchDelete{document.BatchDelete{"gone"}}})
 }
+
+func (s *S) TestBatchApiAddValues(c *C) {
+	batch := document.Batch{}
+	add := batch.Add("test")
+	add.AddFields("Foo", []string{"Bar", "Yar", "Dar"})
+
+	c.Assert(batch, DeepEquals, document.Batch{Adds: []*document.BatchAdd{&document.BatchAdd{Id: "test", Fields: []document.BatchAddField{document.BatchAddField{"Foo", "Bar"}, document.BatchAddField{"Foo", "Yar"}, document.BatchAddField{"Foo", "Dar"}}}}})
+}
