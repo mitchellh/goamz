@@ -1137,6 +1137,56 @@ func (eb *EB) UpdateApplicationVersion(options *UpdateApplicationVersion) (resp 
 	return
 }
 
+// UpdateConfigurationTemplate
+
+type UpdateConfigurationTemplate struct {
+	ApplicationName string
+	Description     string
+	OptionSettings  []ConfigurationOptionSetting
+	OptionsToRemove []OptionSpecification
+	TemplateName    string
+}
+
+type UpdateConfigurationTemplateResp struct {
+	ApplicationName   string                       `xml:"UpdateConfigurationTemplateResult>ApplicationName"`
+	DateCreated       string                       `xml:"UpdateConfigurationTemplateResult>DateCreated"`
+	DateUpdated       string                       `xml:"UpdateConfigurationTemplateResult>DateUpdated"`
+	DeploymentStatus  string                       `xml:"UpdateConfigurationTemplateResult>DeploymentStatus"`
+	Description       string                       `xml:"UpdateConfigurationTemplateResult>Description"`
+	EnvironmentName   string                       `xml:"UpdateConfigurationTemplateResult>EnvironmentName"`
+	OptionSettings    []ConfigurationOptionSetting `xml:"UpdateConfigurationTemplateResult>OptionSettings>member"`
+	SolutionStackName string                       `xml:"UpdateConfigurationTemplateResult>SolutionStackName"`
+	TemplateName      string                       `xml:"UpdateConfigurationTemplateResult>TemplateName"`
+	RequestId         string                       `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) UpdateConfigurationTemplate(options *UpdateConfigurationTemplate) (resp *UpdateConfigurationTemplateResp, err error) {
+	params := makeParams("UpdateConfigurationTemplate")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["Description"] = options.Description
+	for i, v := range options.OptionSettings {
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".Namespace"] = v.Namespace
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".OptionName"] = v.OptionName
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".Value"] = v.Value
+	}
+	for i, v := range options.OptionsToRemove {
+		params["OptionsToRemove.member."+strconv.Itoa(i+1)+".Namespace"] = v.Namespace
+		params["OptionsToRemove.member."+strconv.Itoa(i+1)+".OptionName"] = v.OptionName
+	}
+	params["TemplateName"] = options.TemplateName
+
+	resp = &UpdateConfigurationTemplateResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Responses
 
