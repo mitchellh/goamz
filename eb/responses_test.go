@@ -1170,7 +1170,7 @@ var DescribeConfigurationSettingsExample = `
   <ResponseMetadata>
     <RequestId>4bde8884-f273-11df-8a78-9f77047e0d0c</RequestId>
   </ResponseMetadata>
-</DescribeConfigurationSettingsResponse> 
+</DescribeConfigurationSettingsResponse>
 `
 
 var DescribeEnvironmentResourcesExample = `
@@ -1384,4 +1384,25 @@ var TerminateEnvironmentExample = `
     <RequestId>9b71af21-f26d-11df-8a78-9f77047e0d0c</RequestId>
   </ResponseMetadata>
 </TerminateEnvironmentResponse>
+`
+
+var UpdateApplicationVersionExample = `
+<UpdateApplicationVersionResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <UpdateApplicationVersionResult>
+    <ApplicationVersion>
+      <SourceBundle>
+        <S3Bucket>awsemr</S3Bucket>
+        <S3Key>sample.war</S3Key>
+      </SourceBundle>
+      <VersionLabel>New Version</VersionLabel>
+      <Description>New Release Description</Description>
+      <ApplicationName>SampleApp</ApplicationName>
+      <DateCreated>2010-11-17T19:26:20.699Z</DateCreated>
+      <DateUpdated>2010-11-17T20:48:16.632Z</DateUpdated>
+    </ApplicationVersion>
+  </UpdateApplicationVersionResult>
+  <ResponseMetadata>
+    <RequestId>00b10aa1-f28c-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</UpdateApplicationVersionResponse>
 `

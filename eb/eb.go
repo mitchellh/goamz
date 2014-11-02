@@ -1106,6 +1106,37 @@ func (eb *EB) UpdateApplication(options *UpdateApplication) (resp *UpdateApplica
 	return
 }
 
+// UpdateApplicationVersion
+
+type UpdateApplicationVersion struct {
+	ApplicationName string
+	Description     string
+	VersionLabel    string
+}
+
+type UpdateApplicationVersionResp struct {
+	ApplicationVersion ApplicationVersionDescription `xml:"UpdateApplicationVersionResult>ApplicationVersion"`
+	RequestId          string                        `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) UpdateApplicationVersion(options *UpdateApplicationVersion) (resp *UpdateApplicationVersionResp, err error) {
+	params := makeParams("UpdateApplicationVersion")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["Description"] = options.Description
+	params["VersionLabel"] = options.VersionLabel
+
+	resp = &UpdateApplicationVersionResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Responses
 
