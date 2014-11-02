@@ -621,3 +621,39 @@ func (s *S) TestUpdateApplicationVersion(c *C) {
 	c.Assert(resp.ApplicationVersion.SourceBundle.S3Bucket, Equals, "awsemr")
 	c.Assert(resp.RequestId, Equals, "00b10aa1-f28c-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestUpdateConfigurationTemplate(c *C) {
+	testServer.Response(200, nil, UpdateConfigurationTemplateExample)
+
+	options := eb.UpdateConfigurationTemplate{
+		ApplicationName: "SampleApp",
+		Description:     "changed description",
+		OptionSettings: []eb.ConfigurationOptionSetting{{
+			Namespace:  "aws.autoscaling.trigger",
+			OptionName: "LowerThreshold",
+			Value:      "1000000",
+		}},
+		OptionsToRemove: []eb.OptionSpecification{},
+		TemplateName:    "default",
+	}
+
+	resp, err := s.eb.UpdateConfigurationTemplate(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"UpdateConfigurationTemplate"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["Description"], DeepEquals, []string{"changed description"})
+	c.Assert(req.Form["OptionSettings.member.1.Namespace"], DeepEquals, []string{"aws.autoscaling.trigger"})
+	c.Assert(req.Form["OptionSettings.member.1.OptionName"], DeepEquals, []string{"LowerThreshold"})
+	c.Assert(req.Form["OptionSettings.member.1.Value"], DeepEquals, []string{"1000000"})
+	c.Assert(req.Form["TemplateName"], DeepEquals, []string{"default"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.TemplateName, Equals, "Default")
+	c.Assert(resp.OptionSettings[0].OptionName, Equals, "Availability Zones")
+	c.Assert(resp.OptionSettings[0].Value, Equals, "Any 1")
+	c.Assert(resp.OptionSettings[0].Namespace, Equals, "aws:autoscaling:asg")
+	c.Assert(resp.DateCreated, Equals, "2010-11-17T19:26:20.420Z")
+	c.Assert(resp.DateUpdated, Equals, "2010-11-17T20:58:27.508Z")
+	c.Assert(resp.RequestId, Equals, "6cbcb09a-f28d-11df-8a78-9f77047e0d0c")
+}
