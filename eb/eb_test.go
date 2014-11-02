@@ -594,3 +594,30 @@ func (s *S) TestUpdateApplication(c *C) {
 	c.Assert(resp.Application.Versions[0], Equals, "New Version")
 	c.Assert(resp.RequestId, Equals, "40be666b-f28b-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestUpdateApplicationVersion(c *C) {
+	testServer.Response(200, nil, UpdateApplicationVersionExample)
+
+	options := eb.UpdateApplicationVersion{
+		ApplicationName: "SampleApp",
+		Description:     "New Release Description",
+		VersionLabel:    "New Version",
+	}
+
+	resp, err := s.eb.UpdateApplicationVersion(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"UpdateApplicationVersion"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["Description"], DeepEquals, []string{"New Release Description"})
+	c.Assert(req.Form["VersionLabel"], DeepEquals, []string{"New Version"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.ApplicationVersion.ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.ApplicationVersion.DateCreated, Equals, "2010-11-17T19:26:20.699Z")
+	c.Assert(resp.ApplicationVersion.DateUpdated, Equals, "2010-11-17T20:48:16.632Z")
+	c.Assert(resp.ApplicationVersion.Description, Equals, "New Release Description")
+	c.Assert(resp.ApplicationVersion.VersionLabel, Equals, "New Version")
+	c.Assert(resp.ApplicationVersion.SourceBundle.S3Key, Equals, "sample.war")
+	c.Assert(resp.ApplicationVersion.SourceBundle.S3Bucket, Equals, "awsemr")
+	c.Assert(resp.RequestId, Equals, "00b10aa1-f28c-11df-8a78-9f77047e0d0c")
+}
