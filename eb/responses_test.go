@@ -1671,3 +1671,21 @@ var UpdateEnvironmentExample = `
   </ResponseMetadata>
 </UpdateEnvironmentResponse>
 `
+
+var ValidateConfigurationSettingsExample = `
+<ValidateConfigurationSettingsResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <ValidateConfigurationSettingsResult>
+    <Messages>
+    <member>
+      <Message>abc</Message>
+      <Namespace>def</Namespace>
+      <OptionName>ghi</OptionName>
+      <Severity>warning</Severity>
+    </member>
+    </Messages>
+  </ValidateConfigurationSettingsResult>
+  <ResponseMetadata>
+    <RequestId>06f1cfff-f28f-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</ValidateConfigurationSettingsResponse>
+`
