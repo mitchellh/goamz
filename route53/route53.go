@@ -1,4 +1,4 @@
-// The elb package provides types and functions for interaction with the AWS
+// The route53 package provides types and functions for interaction with the AWS
 // Route53 service
 package route53
 
