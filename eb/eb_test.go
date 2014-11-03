@@ -657,3 +657,42 @@ func (s *S) TestUpdateConfigurationTemplate(c *C) {
 	c.Assert(resp.DateUpdated, Equals, "2010-11-17T20:58:27.508Z")
 	c.Assert(resp.RequestId, Equals, "6cbcb09a-f28d-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestUpdateEnvironment(c *C) {
+	testServer.Response(200, nil, UpdateEnvironmentExample)
+
+	options := eb.UpdateEnvironment{
+		EnvironmentId:   "e-hc8mvnayrx",
+		EnvironmentName: "SampleAppVersion",
+		OptionsToRemove: []eb.OptionSpecification{{
+			Namespace:  "aws.autoscaling.trigger",
+			OptionName: "MeasureName",
+		}},
+		TemplateName: "default",
+	}
+
+	resp, err := s.eb.UpdateEnvironment(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"UpdateEnvironment"})
+	c.Assert(req.Form["EnvironmentId"], DeepEquals, []string{"e-hc8mvnayrx"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleAppVersion"})
+	c.Assert(req.Form["OptionsToRemove.member.1.Namespace"], DeepEquals, []string{"aws.autoscaling.trigger"})
+	c.Assert(req.Form["OptionsToRemove.member.1.OptionName"], DeepEquals, []string{"MeasureName"})
+	c.Assert(req.Form["TemplateName"], DeepEquals, []string{"default"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.ApplicationName, Equals, "SampleApp")
+	c.Assert(resp.CNAME, Equals, "SampleApp.elasticbeanstalk.amazonaws.com")
+	c.Assert(resp.DateCreated, Equals, "2010-11-17T20:17:42.339Z")
+	c.Assert(resp.DateUpdated, Equals, "2010-11-17T21:05:55.251Z")
+	c.Assert(resp.Description, Equals, "SampleAppDescription")
+	c.Assert(resp.EndpointURL, Equals, "elasticbeanstalk-SampleAppVersion-246126201.us-east-1.elb.amazonaws.com")
+	c.Assert(resp.EnvironmentId, Equals, "e-hc8mvnayrx")
+	c.Assert(resp.EnvironmentName, Equals, "SampleAppVersion")
+	c.Assert(resp.Health, Equals, "Grey")
+	c.Assert(resp.SolutionStackName, Equals, "32bit Amazon Linux running Tomcat 7")
+	c.Assert(resp.Status, Equals, "Deploying")
+	c.Assert(resp.TemplateName, Equals, "")
+	c.Assert(resp.VersionLabel, Equals, "New Version")
+	c.Assert(resp.RequestId, Equals, "7705f0bc-f28e-11df-8a78-9f77047e0d0c")
+}

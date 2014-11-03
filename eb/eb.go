@@ -1187,6 +1187,71 @@ func (eb *EB) UpdateConfigurationTemplate(options *UpdateConfigurationTemplate) 
 	return
 }
 
+// UpdateEnvironment
+
+type UpdateEnvironment struct {
+	Description     string
+	EnvironmentId   string
+	EnvironmentName string
+	OptionSettings  []ConfigurationOptionSetting
+	OptionsToRemove []OptionSpecification
+	TemplateName    string
+	Tier            EnvironmentTier
+	VersionLabel    string
+}
+
+type UpdateEnvironmentResp struct {
+	ApplicationName   string                         `xml:"UpdateEnvironmentResult>ApplicationName"`
+	CNAME             string                         `xml:"UpdateEnvironmentResult>CNAME"`
+	DateCreated       string                         `xml:"UpdateEnvironmentResult>DateCreated"`
+	DateUpdated       string                         `xml:"UpdateEnvironmentResult>DateUpdated"`
+	Description       string                         `xml:"UpdateEnvironmentResult>Description"`
+	EndpointURL       string                         `xml:"UpdateEnvironmentResult>EndpointURL"`
+	EnvironmentId     string                         `xml:"UpdateEnvironmentResult>EnvironmentId"`
+	EnvironmentName   string                         `xml:"UpdateEnvironmentResult>EnvironmentName"`
+	Health            string                         `xml:"UpdateEnvironmentResult>Health"`
+	Resources         EnvironmentResourceDescription `xml:"UpdateEnvironmentResult>Resources"`
+	SolutionStackName string                         `xml:"UpdateEnvironmentResult>SolutionStackName"`
+	Status            string                         `xml:"UpdateEnvironmentResult>Status"`
+	TemplateName      string                         `xml:"UpdateEnvironmentResult>TemplateName"`
+	Tier              EnvironmentTier                `xml:"UpdateEnvironmentResult>Tier"`
+	VersionLabel      string                         `xml:"UpdateEnvironmentResult>VersionLabel"`
+	RequestId         string                         `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) UpdateEnvironment(options *UpdateEnvironment) (resp *UpdateEnvironmentResp, err error) {
+	params := makeParams("UpdateEnvironment")
+
+	params["Description"] = options.Description
+	params["EnvironmentId"] = options.EnvironmentId
+	params["EnvironmentName"] = options.EnvironmentName
+	params["TemplateName"] = options.TemplateName
+	params["VersionLabel"] = options.VersionLabel
+
+	for i, v := range options.OptionSettings {
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".Namespace"] = v.Namespace
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".OptionName"] = v.OptionName
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".Value"] = v.Value
+	}
+	for i, v := range options.OptionsToRemove {
+		params["OptionsToRemove.member."+strconv.Itoa(i+1)+".Namespace"] = v.Namespace
+		params["OptionsToRemove.member."+strconv.Itoa(i+1)+".OptionName"] = v.OptionName
+	}
+	params["Tier.Name"] = options.Tier.Name
+	params["Tier.Type"] = options.Tier.Type
+	params["Tier.Version"] = options.Tier.Version
+
+	resp = &UpdateEnvironmentResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Responses
 

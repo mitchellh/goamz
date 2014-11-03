@@ -1649,3 +1649,25 @@ var UpdateConfigurationTemplateExample = `
   </ResponseMetadata>
 </UpdateConfigurationTemplateResponse>
 `
+
+var UpdateEnvironmentExample = `
+<UpdateEnvironmentResponse xmlns="https://elasticbeanstalk.amazonaws.com/docs/2010-12-01/">
+  <UpdateEnvironmentResult>
+    <VersionLabel>New Version</VersionLabel>
+    <Status>Deploying</Status>
+    <ApplicationName>SampleApp</ApplicationName>
+    <EndpointURL>elasticbeanstalk-SampleAppVersion-246126201.us-east-1.elb.amazonaws.com</EndpointURL>
+    <CNAME>SampleApp.elasticbeanstalk.amazonaws.com</CNAME>
+    <Health>Grey</Health>
+    <EnvironmentId>e-hc8mvnayrx</EnvironmentId>
+    <DateUpdated>2010-11-17T21:05:55.251Z</DateUpdated>
+    <SolutionStackName>32bit Amazon Linux running Tomcat 7</SolutionStackName>
+    <Description>SampleAppDescription</Description>
+    <EnvironmentName>SampleAppVersion</EnvironmentName>
+    <DateCreated>2010-11-17T20:17:42.339Z</DateCreated>
+  </UpdateEnvironmentResult>
+  <ResponseMetadata>
+    <RequestId>7705f0bc-f28e-11df-8a78-9f77047e0d0c</RequestId>
+  </ResponseMetadata>
+</UpdateEnvironmentResponse>
+`
