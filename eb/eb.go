@@ -1253,6 +1253,54 @@ func (eb *EB) UpdateEnvironment(options *UpdateEnvironment) (resp *UpdateEnviron
 }
 
 // ----------------------------------------------------------------------------
+// Validate
+
+// ValidateConfigurationSettings
+
+type ValidateConfigurationSettings struct {
+	ApplicationName string
+	EnvironmentName string
+	OptionSettings  []ConfigurationOptionSetting
+	TemplateName    string
+}
+
+type ValidationMessage struct {
+	Message    string
+	Namespace  string
+	OptionName string
+	Severity   string
+}
+
+type ValidateConfigurationSettingsResp struct {
+	Messages  []ValidationMessage `xml:"ValidateConfigurationSettingsResult>Messages>member"`
+	RequestId string              `xml:"ResponseMetadata>RequestId"`
+}
+
+func (eb *EB) ValidateConfigurationSettings(options *ValidateConfigurationSettings) (resp *ValidateConfigurationSettingsResp, err error) {
+	params := makeParams("ValidateConfigurationSettings")
+
+	params["ApplicationName"] = options.ApplicationName
+	params["EnvironmentName"] = options.EnvironmentName
+	params["TemplateName"] = options.TemplateName
+
+	for i, v := range options.OptionSettings {
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".Namespace"] = v.Namespace
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".OptionName"] = v.OptionName
+		params["OptionSettings.member."+strconv.Itoa(i+1)+".Value"] = v.Value
+	}
+
+	resp = &ValidateConfigurationSettingsResp{}
+
+	err = eb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Responses
 
 type SimpleResp struct {

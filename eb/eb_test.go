@@ -696,3 +696,33 @@ func (s *S) TestUpdateEnvironment(c *C) {
 	c.Assert(resp.VersionLabel, Equals, "New Version")
 	c.Assert(resp.RequestId, Equals, "7705f0bc-f28e-11df-8a78-9f77047e0d0c")
 }
+
+func (s *S) TestValidateConfigurationSettings(c *C) {
+	testServer.Response(200, nil, ValidateConfigurationSettingsExample)
+
+	options := eb.ValidateConfigurationSettings{
+		ApplicationName: "SampleApp",
+		EnvironmentName: "SampleAppVersion",
+		OptionSettings: []eb.ConfigurationOptionSetting{{
+			Namespace:  "aws.autoscaling.trigger",
+			OptionName: "LowerThreshold",
+			Value:      "1000000",
+		}},
+	}
+
+	resp, err := s.eb.ValidateConfigurationSettings(&options)
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["Action"], DeepEquals, []string{"ValidateConfigurationSettings"})
+	c.Assert(req.Form["ApplicationName"], DeepEquals, []string{"SampleApp"})
+	c.Assert(req.Form["EnvironmentName"], DeepEquals, []string{"SampleAppVersion"})
+	c.Assert(req.Form["OptionSettings.member.1.Namespace"], DeepEquals, []string{"aws.autoscaling.trigger"})
+	c.Assert(req.Form["OptionSettings.member.1.OptionName"], DeepEquals, []string{"LowerThreshold"})
+	c.Assert(req.Form["OptionSettings.member.1.Value"], DeepEquals, []string{"1000000"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.Messages[0].Message, Equals, "abc")
+	c.Assert(resp.Messages[0].Namespace, Equals, "def")
+	c.Assert(resp.Messages[0].OptionName, Equals, "ghi")
+	c.Assert(resp.Messages[0].Severity, Equals, "warning")
+	c.Assert(resp.RequestId, Equals, "06f1cfff-f28f-11df-8a78-9f77047e0d0c")
+}
