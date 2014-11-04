@@ -298,7 +298,7 @@ type Instance struct {
 	VirtType           string          `xml:"virtualizationType"`
 	Monitoring         string          `xml:"monitoring>state"`
 	AvailZone          string          `xml:"placement>availabilityZone"`
-	Tenancy            string          `xml:"tenancy"`
+	Tenancy            string          `xml:"placement>tenancy"`
 	PlacementGroupName string          `xml:"placement>groupName"`
 	State              InstanceState   `xml:"instanceState"`
 	Tags               []Tag           `xml:"tagSet>item"`
