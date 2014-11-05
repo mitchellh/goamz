@@ -623,7 +623,15 @@ func (b *Bucket) URL(path string) string {
 // SignedURL returns a signed URL that allows anyone holding the URL
 // to retrieve the object at path. The signature is valid until expires.
 func (b *Bucket) SignedURL(path string, expires time.Time) string {
+	return b.SignedMethodURL("GET", path, expires)
+}
+
+// SignedMethodURL returns a signed URL that allows anyone holding the URL to
+// access the object at path for a given method. The signature is valid until
+// expires.
+func (b *Bucket) SignedMethodURL(method string, path string, expires time.Time) string {
 	req := &request{
+		method: method,
 		bucket: b.Name,
 		path:   path,
 		params: url.Values{"Expires": {strconv.FormatInt(expires.Unix(), 10)}},
