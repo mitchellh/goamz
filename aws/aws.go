@@ -32,6 +32,7 @@ type Region struct {
 	SDBEndpoint          string
 	SNSEndpoint          string
 	SQSEndpoint          string
+	SESEndpoint          string
 	IAMEndpoint          string
 	ELBEndpoint          string
 	AutoScalingEndpoint  string
@@ -49,6 +50,7 @@ var USGovWest = Region{
 	"",
 	"https://sns.us-gov-west-1.amazonaws.com",
 	"https://sqs.us-gov-west-1.amazonaws.com",
+	"https://email.us-gov-west-1.amazonaws.com",
 	"https://iam.us-gov.amazonaws.com",
 	"https://elasticloadbalancing.us-gov-west-1.amazonaws.com",
 	"https://autoscaling.us-gov-west-1.amazonaws.com",
@@ -66,6 +68,7 @@ var USEast = Region{
 	"https://sdb.amazonaws.com",
 	"https://sns.us-east-1.amazonaws.com",
 	"https://sqs.us-east-1.amazonaws.com",
+	"https://email.us-east-1.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.us-east-1.amazonaws.com",
 	"https://autoscaling.us-east-1.amazonaws.com",
@@ -83,6 +86,7 @@ var USWest = Region{
 	"https://sdb.us-west-1.amazonaws.com",
 	"https://sns.us-west-1.amazonaws.com",
 	"https://sqs.us-west-1.amazonaws.com",
+	"https://email.us-west-1.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.us-west-1.amazonaws.com",
 	"https://autoscaling.us-west-1.amazonaws.com",
@@ -100,6 +104,7 @@ var USWest2 = Region{
 	"https://sdb.us-west-2.amazonaws.com",
 	"https://sns.us-west-2.amazonaws.com",
 	"https://sqs.us-west-2.amazonaws.com",
+	"https://email.us-west-2.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.us-west-2.amazonaws.com",
 	"https://autoscaling.us-west-2.amazonaws.com",
@@ -117,6 +122,7 @@ var EUWest = Region{
 	"https://sdb.eu-west-1.amazonaws.com",
 	"https://sns.eu-west-1.amazonaws.com",
 	"https://sqs.eu-west-1.amazonaws.com",
+	"https://email.eu-west-1.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.eu-west-1.amazonaws.com",
 	"https://autoscaling.eu-west-1.amazonaws.com",
@@ -134,6 +140,7 @@ var EUCentral = Region{
 	"",
 	"https://sns.eu-central-1.amazonaws.com",
 	"https://sqs.eu-central-1.amazonaws.com",
+	"https://email.eu-central-1.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.eu-central-1.amazonaws.com",
 	"https://autoscaling.eu-central-1.amazonaws.com",
@@ -151,6 +158,7 @@ var APSoutheast = Region{
 	"https://sdb.ap-southeast-1.amazonaws.com",
 	"https://sns.ap-southeast-1.amazonaws.com",
 	"https://sqs.ap-southeast-1.amazonaws.com",
+	"https://email.ap-southeast-1.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.ap-southeast-1.amazonaws.com",
 	"https://autoscaling.ap-southeast-1.amazonaws.com",
@@ -168,6 +176,7 @@ var APSoutheast2 = Region{
 	"https://sdb.ap-southeast-2.amazonaws.com",
 	"https://sns.ap-southeast-2.amazonaws.com",
 	"https://sqs.ap-southeast-2.amazonaws.com",
+	"https://email.ap-southeast-2.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.ap-southeast-2.amazonaws.com",
 	"https://autoscaling.ap-southeast-2.amazonaws.com",
@@ -185,6 +194,7 @@ var APNortheast = Region{
 	"https://sdb.ap-northeast-1.amazonaws.com",
 	"https://sns.ap-northeast-1.amazonaws.com",
 	"https://sqs.ap-northeast-1.amazonaws.com",
+	"https://email.ap-northeast-1.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.ap-northeast-1.amazonaws.com",
 	"https://autoscaling.ap-northeast-1.amazonaws.com",
@@ -202,6 +212,7 @@ var SAEast = Region{
 	"https://sdb.sa-east-1.amazonaws.com",
 	"https://sns.sa-east-1.amazonaws.com",
 	"https://sqs.sa-east-1.amazonaws.com",
+	"https://email.sa-east-1.amazonaws.com",
 	"https://iam.amazonaws.com",
 	"https://elasticloadbalancing.sa-east-1.amazonaws.com",
 	"https://autoscaling.sa-east-1.amazonaws.com",
@@ -219,6 +230,7 @@ var CNNorth = Region{
 	"",
 	"https://sns.cn-north-1.amazonaws.com.cn",
 	"https://sqs.cn-north-1.amazonaws.com.cn",
+	"https://email.cn-north-1.amazonaws.com.cn",
 	"https://iam.cn-north-1.amazonaws.com.cn",
 	"https://elasticloadbalancing.cn-north-1.amazonaws.com.cn",
 	"https://autoscaling.cn-north-1.amazonaws.com.cn",
