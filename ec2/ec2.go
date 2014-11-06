@@ -442,6 +442,39 @@ func clientToken() (string, error) {
 	return hex.EncodeToString(buf), nil
 }
 
+// The GetConsoleOutput type encapsulates options for the respective request in EC2.
+//
+// See http://goo.gl/EY70zb for more details.
+type GetConsoleOutput struct {
+	InstanceId string
+}
+
+// Response to a GetConsoleOutput request. Note that Output is base64-encoded,
+// as in the underlying AWS API.
+//
+// See http://goo.gl/EY70zb for more details.
+type GetConsoleOutputResp struct {
+	RequestId  string    `xml:"requestId"`
+	InstanceId string    `xml:"instanceId"`
+	Timestamp  time.Time `xml:"timestamp"`
+	Output     string    `xml:"output"`
+}
+
+// GetConsoleOutput returns the console output for the sepcified instance. Note
+// that console output is base64-encoded, as in the underlying AWS API.
+//
+// See http://goo.gl/EY70zb for more details.
+func (ec2 *EC2) GetConsoleOutput(options *GetConsoleOutput) (resp *GetConsoleOutputResp, err error) {
+	params := makeParams("GetConsoleOutput")
+	params["InstanceId"] = options.InstanceId
+	resp = &GetConsoleOutputResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
 // ----------------------------------------------------------------------------
 // Instance events and status functions and types.
 
