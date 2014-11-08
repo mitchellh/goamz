@@ -1356,3 +1356,41 @@ func (s *S) TestDescribeAvailabilityZonesExample2(c *C) {
 	c.Assert(z1.State, Equals, "unavailable")
 	c.Assert(z1.MessageSet, DeepEquals, []string{"us-east-1b is currently down for maintenance."})
 }
+
+func (s *S) TestDescribeRegionsExample1(c *C) {
+	testServer.Response(200, nil, DescribeRegionsExample1)
+
+	resp, err := s.ec2.DescribeRegions(nil)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeRegions"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.Zones, HasLen, 2)
+
+	z0 := resp.Zones[0]
+	c.Assert(z0.regionName, Equals, "us-east-1")
+	c.Assert(z0.regionEndpoint, Equals, "ec2.us-east-1.amazonaws.com")
+
+	z1 := resp.Zones[1]
+	c.Assert(z0.regionName, Equals, "eu-west-1")
+	c.Assert(z0.regionEndpoint, Equals, "ec2.eu-west-1.amazonaws.com")
+}
+
+func (s *S) TestDescribeRegionsExample2(c *C) {
+	testServer.Response(200, nil, DescribeRegionsExample2)
+
+	resp, err := s.ec2.DescribeRegions(nil)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeRegions"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.Zones, HasLen, 1)
+
+	z0 := resp.Zones[0]
+	c.Assert(z0.regionName, Equals, "ap-southeast-1")
+	c.Assert(z0.regionEndpoint, Equals, "ec2.ap-southeast-1.amazonaws.com")
+}
