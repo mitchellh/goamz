@@ -382,7 +382,7 @@ type RegisterInstancesWithLoadBalancer struct {
 }
 
 type RegisterInstancesWithLoadBalancerResp struct {
-	Instances []Instance `xml:"RegisterInstancesWithLoadBalancerResult>Instances"`
+	Instances []Instance `xml:"RegisterInstancesWithLoadBalancerResult>Instances>member"`
 	RequestId string     `xml:"ResponseMetadata>RequestId"`
 }
 
@@ -413,7 +413,7 @@ type DeregisterInstancesFromLoadBalancer struct {
 }
 
 type DeregisterInstancesFromLoadBalancerResp struct {
-	Instances []Instance `xml:"DeregisterInstancesFromLoadBalancerResult>Instances"`
+	Instances []Instance `xml:"DeregisterInstancesFromLoadBalancerResult>Instances>member"`
 	RequestId string     `xml:"ResponseMetadata>RequestId"`
 }
 
