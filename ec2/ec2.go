@@ -260,6 +260,7 @@ type RunInstances struct {
 	ShutdownBehavior         string
 	PrivateIPAddress         string
 	BlockDevices             []BlockDeviceMapping
+	Tenancy                  string
 }
 
 // Response to a RunInstances request.
@@ -297,6 +298,7 @@ type Instance struct {
 	VirtType           string          `xml:"virtualizationType"`
 	Monitoring         string          `xml:"monitoring>state"`
 	AvailZone          string          `xml:"placement>availabilityZone"`
+	Tenancy            string          `xml:"placement>tenancy"`
 	PlacementGroupName string          `xml:"placement>groupName"`
 	State              InstanceState   `xml:"instanceState"`
 	Tags               []Tag           `xml:"tagSet>item"`
@@ -364,6 +366,9 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	}
 	if options.Monitoring {
 		params["Monitoring.Enabled"] = "true"
+	}
+	if options.Tenancy != "" {
+		params["Placement.Tenancy"] = options.Tenancy
 	}
 	if options.SubnetId != "" && options.AssociatePublicIpAddress {
 		// If we have a non-default VPC / Subnet specified, we can flag
