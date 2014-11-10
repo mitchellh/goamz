@@ -316,6 +316,63 @@ func (elb *ELB) DescribeLoadBalancers(options *DescribeLoadBalancer) (resp *Desc
 }
 
 // ----------------------------------------------------------------------------
+// Attributes
+
+type AccessLog struct {
+	EmitInterval int64
+	Enabled bool
+	S3BucketName string
+	S3BucketPrefix string
+}
+
+type ConnectionDraining struct {
+	Enabled bool
+	Timeout int64
+}
+
+type LoadBalancerAttributes struct {
+	CrossZoneLoadBalancingEnabled bool
+	ConnectionSettingsIdleTimeout int64
+	ConnectionDraining ConnectionDraining
+	AccessLog AccessLog
+}
+
+type ModifyLoadBalancerAttributes struct {
+	LoadBalancerName string
+	LoadBalancerAttributes LoadBalancerAttributes
+}
+
+func (elb *ELB) ModifyLoadBalancerAttributes(options *ModifyLoadBalancerAttributes) (resp *SimpleResp, err error) {
+	params := makeParams("ModifyLoadBalancerAttributes")
+
+	params["LoadBalancerName"] = options.LoadBalancerName
+	params["LoadBalancerAttributes.CrossZoneLoadBalancing.Enabled"] = strconv.FormatBool(options.LoadBalancerAttributes.CrossZoneLoadBalancingEnabled)
+	if options.LoadBalancerAttributes.ConnectionSettingsIdleTimeout > 0 {
+		params["LoadBalancerAttributes.ConnectionSettings.IdleTimeout"] = strconv.Itoa(int(options.LoadBalancerAttributes.ConnectionSettingsIdleTimeout))
+	}
+	if options.LoadBalancerAttributes.ConnectionDraining.Timeout > 0 {
+		params["LoadBalancerAttributes.ConnectionDraining.Timeout"] = strconv.Itoa(int(options.LoadBalancerAttributes.ConnectionDraining.Timeout))
+	}
+	params["LoadBalancerAttributes.ConnectionDraining.Enabled"] = strconv.FormatBool(options.LoadBalancerAttributes.ConnectionDraining.Enabled)
+	params["LoadBalancerAttributes.AccessLog.Enabled"] = strconv.FormatBool(options.LoadBalancerAttributes.AccessLog.Enabled)
+	if options.LoadBalancerAttributes.AccessLog.Enabled {
+		params["LoadBalancerAttributes.AccessLog.EmitInterval"] = strconv.Itoa(int(options.LoadBalancerAttributes.AccessLog.EmitInterval))
+		params["LoadBalancerAttributes.AccessLog.S3BucketName"] = options.LoadBalancerAttributes.AccessLog.S3BucketName
+		params["LoadBalancerAttributes.AccessLog.S3BucketPrefix"] = options.LoadBalancerAttributes.AccessLog.S3BucketPrefix
+	}
+
+	resp = &SimpleResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Instance Registration / degregistration
 
 // The RegisterInstancesWithLoadBalancer request parameters
