@@ -316,7 +316,7 @@ func (elb *ELB) DescribeLoadBalancers(options *DescribeLoadBalancer) (resp *Desc
 }
 
 // ----------------------------------------------------------------------------
-// Instance Registration / degregistration
+// Instance Registration / deregistration
 
 // The RegisterInstancesWithLoadBalancer request parameters
 type RegisterInstancesWithLoadBalancer struct {
