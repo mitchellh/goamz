@@ -319,9 +319,9 @@ func (elb *ELB) DescribeLoadBalancers(options *DescribeLoadBalancer) (resp *Desc
 // Attributes
 
 type AccessLog struct {
-	EmitInterval int64
-	Enabled bool
-	S3BucketName string
+	EmitInterval   int64
+	Enabled        bool
+	S3BucketName   string
 	S3BucketPrefix string
 }
 
@@ -333,12 +333,12 @@ type ConnectionDraining struct {
 type LoadBalancerAttributes struct {
 	CrossZoneLoadBalancingEnabled bool
 	ConnectionSettingsIdleTimeout int64
-	ConnectionDraining ConnectionDraining
-	AccessLog AccessLog
+	ConnectionDraining            ConnectionDraining
+	AccessLog                     AccessLog
 }
 
 type ModifyLoadBalancerAttributes struct {
-	LoadBalancerName string
+	LoadBalancerName       string
 	LoadBalancerAttributes LoadBalancerAttributes
 }
 
@@ -373,7 +373,7 @@ func (elb *ELB) ModifyLoadBalancerAttributes(options *ModifyLoadBalancerAttribut
 }
 
 // ----------------------------------------------------------------------------
-// Instance Registration / degregistration
+// Instance Registration / deregistration
 
 // The RegisterInstancesWithLoadBalancer request parameters
 type RegisterInstancesWithLoadBalancer struct {
