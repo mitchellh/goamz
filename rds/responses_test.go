@@ -29,7 +29,7 @@ var DescribeDBInstancesExample = `
         <DBParameterGroups>
           <DBParameterGroup>
             <ParameterApplyStatus>in-sync</ParameterApplyStatus>
-            <DBParameterGroupName>default.mysql5.6</DBParameterGroupName>
+            <DBParameterGroupName>my-db-paramgroup</DBParameterGroupName>
           </DBParameterGroup>
         </DBParameterGroups>
         <Endpoint>
@@ -61,7 +61,12 @@ var DescribeDBInstancesExample = `
         <BackupRetentionPeriod>1</BackupRetentionPeriod>
         <MultiAZ>false</MultiAZ>
         <DBInstanceStatus>available</DBInstanceStatus>
-        <VpcSecurityGroups/>
+        <VpcSecurityGroups>
+          <VpcSecurityGroupMembership>
+            <Status>active</Status>
+            <VpcSecurityGroupId>my-vpc-secgroup</VpcSecurityGroupId>
+          </VpcSecurityGroupMembership>
+        </VpcSecurityGroups>
         <DBInstanceIdentifier>mysqlexampledb-restore</DBInstanceIdentifier>
         <PreferredBackupWindow>10:07-10:37</PreferredBackupWindow>
         <PreferredMaintenanceWindow>sun:06:13-sun:06:43</PreferredMaintenanceWindow>
@@ -88,12 +93,7 @@ var DescribeDBInstancesExample = `
             <Status>in-sync</Status>
           </OptionGroupMembership>
         </OptionGroupMemberships>
-        <DBSecurityGroups>
-          <DBSecurityGroup>
-            <Status>active</Status>
-            <DBSecurityGroupName>default</DBSecurityGroupName>
-          </DBSecurityGroup>
-        </DBSecurityGroups>
+        <DBSecurityGroups/>
         <PubliclyAccessible>true</PubliclyAccessible>
         <DBName>mysampledb</DBName>
         <AutoMinorVersionUpgrade>true</AutoMinorVersionUpgrade>
@@ -562,4 +562,74 @@ var CreateDBParameterGroupExample = `
     <RequestId>7805c127-af22-11c3-96ac-6999cc5f7e72</RequestId>
   </ResponseMetadata>
 </CreateDBParameterGroupResponse>
+`
+
+var DescribeDBParameterGroupsExample = `
+<DescribeDBParameterGroupsResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <DescribeDBParameterGroupsResult>
+    <DBParameterGroups>
+      <DBParameterGroup>
+        <DBParameterGroupFamily>mysql5.6</DBParameterGroupFamily>
+        <Description>My new DB Parameter Group</Description>
+        <DBParameterGroupName>mydbparamgroup3</DBParameterGroupName>
+      </DBParameterGroup>
+    </DBParameterGroups>
+  </DescribeDBParameterGroupsResult>
+  <ResponseMetadata>
+    <RequestId>b75d527a-b98c-11d3-f272-7cd6cce12cc5</RequestId>
+  </ResponseMetadata>
+</DescribeDBParameterGroupsResponse>
+`
+
+
+var DeleteDBParameterGroupExample = `
+<DeleteDBParameterGroupResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <ResponseMetadata>
+    <RequestId>cad6c267-ba25-11d3-fe11-33d33a9bb7e3</RequestId>
+  </ResponseMetadata>
+</DeleteDBParameterGroupResponse>
+`
+
+var ModifyDBParameterGroupExample = `
+<ModifyDBParameterGroupResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <ModifyDBParameterGroupResult>
+    <DBParameterGroupName>mydbparamgroup3</DBParameterGroupName>
+  </ModifyDBParameterGroupResult>
+  <ResponseMetadata>
+    <RequestId>12d7435e-bba0-11d3-fe11-33d33a9bb7e3</RequestId>
+  </ResponseMetadata>
+</ModifyDBParameterGroupResponse>
+`
+
+var DescribeDBParametersExample = `
+<DescribeDBParametersResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
+  <DescribeDBParametersResult>
+    <Marker>bGlzdGVuZXJfbmV0d29ya3M=</Marker>
+    <Parameters>
+      <Parameter>
+        <ParameterValue>utf8</ParameterValue>
+        <ParameterName>character_set_server</ParameterName>
+      </Parameter>
+      <Parameter>
+        <ParameterValue>utf8</ParameterValue>
+        <ParameterName>character_set_client</ParameterName>
+      </Parameter>
+      <Parameter>
+        <ParameterValue>utf8</ParameterValue>
+        <ParameterName>character_set_results</ParameterName>
+      </Parameter>
+      <Parameter>
+        <ParameterValue>utf8_unicode_ci</ParameterValue>
+        <ParameterName>collation_server</ParameterName>
+      </Parameter>
+      <Parameter>
+        <ParameterValue>utf8_unicode_ci</ParameterValue>
+        <ParameterName>collation_connection</ParameterName>
+      </Parameter>
+    </Parameters>
+  </DescribeDBParametersResult>
+  <ResponseMetadata>
+    <RequestId>8c40488f-b9ff-11d3-a15e-7ac49293f4fa</RequestId>
+  </ResponseMetadata>
+</DescribeDBParametersResponse>
 `
