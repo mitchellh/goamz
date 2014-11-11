@@ -105,10 +105,10 @@ type DBInstance struct {
 	Port                       int           `xml:"Endpoint>Port"`
 	PreferredBackupWindow      string        `xml:"PreferredBackupWindow"`
 	PreferredMaintenanceWindow string        `xml:"PreferredMaintenanceWindow"`
-	VpcSecurityGroupIds        []string      `xml:"VpcSecurityGroups"`
+	VpcSecurityGroupIds        []string      `xml:"VpcSecurityGroups>VpcSecurityGroupMembership>VpcSecurityGroupId"`
 	DBSecurityGroupNames       []string      `xml:"DBSecurityGroups>DBSecurityGroup>DBSecurityGroupName"`
 	DBSubnetGroup              DBSubnetGroup `xml:"DBSubnetGroup"`
-	DBParameterGroupName       string        `xml:"DBParameterGroupName"`
+	DBParameterGroupName       string        `xml:"DBParameterGroups>DBParameterGroup>DBParameterGroupName"`
 }
 
 type DBSecurityGroup struct {
@@ -148,6 +148,18 @@ type DBSnapshot struct {
 	SourceRegion         string `xml:"SourceRegion"`
 	Status               string `xml:"Status"`
 	VpcId                string `xml:"VpcId"`
+}
+
+type DBParameterGroup struct {
+	DBParameterGroupFamily string `xml:"DBParameterGroupFamily"`
+	DBParameterGroupName   string `xml:"DBParameterGroupName"`
+	Description            string `xml:"Description"`
+}
+
+type Parameter struct {
+	ApplyMethod    string `xml:"ApplyMethod"`
+	ParameterName  string `xml:"ParameterName"`
+	ParameterValue string `xml:"ParameterValue"`
 }
 
 // ----------------------------------------------------------------------------
@@ -511,6 +523,63 @@ func (rds *Rds) DescribeDBSnapshots(options *DescribeDBSnapshots) (resp *Describ
 	return
 }
 
+// DescribeDBParameterGroups request params
+type DescribeDBParameterGroups struct {
+	DBParameterGroupName string
+}
+
+type DescribeDBParameterGroupsResp struct {
+	RequestId         string             `xml:"ResponseMetadata>RequestId"`
+	DBParameterGroups []DBParameterGroup `xml:"DescribeDBParameterGroupsResult>DBParameterGroups>DBParameterGroup"`
+}
+
+func (rds *Rds) DescribeDBParameterGroups(options *DescribeDBParameterGroups) (resp *DescribeDBParameterGroupsResp, err error) {
+	params := makeParams("DescribeDBParameterGroups")
+
+	params["DBParameterGroupName"] = options.DBParameterGroupName
+
+	resp = &DescribeDBParameterGroupsResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DescribeDBParameters request params
+type DescribeDBParameters struct {
+	DBParameterGroupName string
+	Source               string
+}
+
+type DescribeDBParametersResp struct {
+	RequestId  string      `xml:"ResponseMetadata>RequestId"`
+	Parameters []Parameter `xml:"DescribeDBParametersResult>Parameters>Parameter"`
+}
+
+func (rds *Rds) DescribeDBParameters(options *DescribeDBParameters) (resp *DescribeDBParametersResp, err error) {
+	params := makeParams("DescribeDBParameters")
+
+	params["DBParameterGroupName"] = options.DBParameterGroupName
+
+	if attr := options.Source; attr != "" {
+		params["Source"] = attr
+	}
+
+	resp = &DescribeDBParametersResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
 // DeleteDBInstance request params
 type DeleteDBInstance struct {
 	FinalDBSnapshotIdentifier string
@@ -572,6 +641,27 @@ func (rds *Rds) DeleteDBSubnetGroup(options *DeleteDBSubnetGroup) (resp *SimpleR
 	params := makeParams("DeleteDBSubnetGroup")
 
 	params["DBSubnetGroupName"] = options.DBSubnetGroupName
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// DeleteDBParameterGroup request params
+type DeleteDBParameterGroup struct {
+	DBParameterGroupName string
+}
+
+func (rds *Rds) DeleteDBParameterGroup(options *DeleteDBParameterGroup) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteDBParameterGroup")
+
+	params["DBParameterGroupName"] = options.DBParameterGroupName
 
 	resp = &SimpleResp{}
 
@@ -656,6 +746,34 @@ func (rds *Rds) RestoreDBInstanceFromDBSnapshot(options *RestoreDBInstanceFromDB
 
 	if options.PubliclyAccessible {
 		params["PubliclyAccessible"] = "true"
+	}
+
+	resp = &SimpleResp{}
+
+	err = rds.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ModifyDBParameterGroup request parameters
+type ModifyDBParameterGroup struct {
+	DBParameterGroupName string
+	Parameters           []Parameter
+}
+
+func (rds *Rds) ModifyDBParameterGroup(options *ModifyDBParameterGroup) (resp *SimpleResp, err error) {
+	params := makeParams("ModifyDBParameterGroup")
+
+	params["DBParameterGroupName"] = options.DBParameterGroupName
+
+	for j, group := range options.Parameters {
+		params["Parameters.member."+strconv.Itoa(j+1)+".ApplyMethod"] = group.ApplyMethod
+		params["Parameters.member."+strconv.Itoa(j+1)+".ParameterName"] = group.ParameterName
+		params["Parameters.member."+strconv.Itoa(j+1)+".ParameterValue"] = group.ParameterValue
 	}
 
 	resp = &SimpleResp{}

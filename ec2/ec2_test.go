@@ -136,6 +136,7 @@ func (s *S) TestRunInstancesExample(c *C) {
 		KernelId:              "kernel-id",
 		RamdiskId:             "ramdisk-id",
 		AvailZone:             "zone",
+		Tenancy:               "dedicated",
 		PlacementGroupName:    "group",
 		Monitoring:            true,
 		SubnetId:              "subnet-id",

@@ -260,6 +260,7 @@ type RunInstances struct {
 	ShutdownBehavior         string
 	PrivateIPAddress         string
 	BlockDevices             []BlockDeviceMapping
+	Tenancy                  string
 }
 
 // Response to a RunInstances request.
@@ -297,6 +298,7 @@ type Instance struct {
 	VirtType           string          `xml:"virtualizationType"`
 	Monitoring         string          `xml:"monitoring>state"`
 	AvailZone          string          `xml:"placement>availabilityZone"`
+	Tenancy            string          `xml:"placement>tenancy"`
 	PlacementGroupName string          `xml:"placement>groupName"`
 	State              InstanceState   `xml:"instanceState"`
 	Tags               []Tag           `xml:"tagSet>item"`
@@ -364,6 +366,9 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	}
 	if options.Monitoring {
 		params["Monitoring.Enabled"] = "true"
+	}
+	if options.Tenancy != "" {
+		params["Placement.Tenancy"] = options.Tenancy
 	}
 	if options.SubnetId != "" && options.AssociatePublicIpAddress {
 		// If we have a non-default VPC / Subnet specified, we can flag
@@ -435,6 +440,39 @@ func clientToken() (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(buf), nil
+}
+
+// The GetConsoleOutput type encapsulates options for the respective request in EC2.
+//
+// See http://goo.gl/EY70zb for more details.
+type GetConsoleOutput struct {
+	InstanceId string
+}
+
+// Response to a GetConsoleOutput request. Note that Output is base64-encoded,
+// as in the underlying AWS API.
+//
+// See http://goo.gl/EY70zb for more details.
+type GetConsoleOutputResp struct {
+	RequestId  string    `xml:"requestId"`
+	InstanceId string    `xml:"instanceId"`
+	Timestamp  time.Time `xml:"timestamp"`
+	Output     string    `xml:"output"`
+}
+
+// GetConsoleOutput returns the console output for the sepcified instance. Note
+// that console output is base64-encoded, as in the underlying AWS API.
+//
+// See http://goo.gl/EY70zb for more details.
+func (ec2 *EC2) GetConsoleOutput(options *GetConsoleOutput) (resp *GetConsoleOutputResp, err error) {
+	params := makeParams("GetConsoleOutput")
+	params["InstanceId"] = options.InstanceId
+	resp = &GetConsoleOutputResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
 }
 
 // ----------------------------------------------------------------------------
