@@ -1367,15 +1367,15 @@ func (s *S) TestDescribeRegionsExample1(c *C) {
 
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
-	c.Assert(resp.Zones, HasLen, 2)
+	c.Assert(resp.Regions, HasLen, 2)
 
-	z0 := resp.Zones[0]
-	c.Assert(z0.regionName, Equals, "us-east-1")
-	c.Assert(z0.regionEndpoint, Equals, "ec2.us-east-1.amazonaws.com")
+	z0 := resp.Regions[0]
+	c.Assert(z0.Name, Equals, "us-east-1")
+	c.Assert(z0.Endpoint, Equals, "ec2.us-east-1.amazonaws.com")
 
-	z1 := resp.Zones[1]
-	c.Assert(z0.regionName, Equals, "eu-west-1")
-	c.Assert(z0.regionEndpoint, Equals, "ec2.eu-west-1.amazonaws.com")
+	z1 := resp.Regions[1]
+	c.Assert(z0.Name, Equals, "eu-west-1")
+	c.Assert(z0.Endpoint, Equals, "ec2.eu-west-1.amazonaws.com")
 }
 
 func (s *S) TestDescribeRegionsExample2(c *C) {
@@ -1388,9 +1388,9 @@ func (s *S) TestDescribeRegionsExample2(c *C) {
 
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
-	c.Assert(resp.Zones, HasLen, 1)
+	c.Assert(resp.Regions, HasLen, 1)
 
-	z0 := resp.Zones[0]
-	c.Assert(z0.regionName, Equals, "ap-southeast-1")
-	c.Assert(z0.regionEndpoint, Equals, "ec2.ap-southeast-1.amazonaws.com")
+	z0 := resp.Regions[0]
+	c.Assert(z0.Name, Equals, "ap-southeast-1")
+	c.Assert(z0.Endpoint, Equals, "ec2.ap-southeast-1.amazonaws.com")
 }

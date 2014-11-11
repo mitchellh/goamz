@@ -1064,12 +1064,17 @@ func (ec2 *EC2) DescribeAvailabilityZones(filter *Filter) (resp *DescribeAvailab
 // DescribeRegionsResp represents a response to a DescribeRegions
 // request in EC2.
 type DescribeRegionsResp struct {
-	RequestId  string       `xml:"requestId"`
-	RegionName []RegionInfo `xml:"regionInfo>item"`
+	RequestId string   `xml:"requestId"`
+	Regions   []Region `xml:"regionInfo>item"`
 }
 
 // RegionInfo encapsulates details for an Region in EC2.
 type RegionInfo struct {
+	Region
+}
+
+// Region represents an EC2 region.
+type Region struct {
 	Name     string `xml:"regionName"`
 	Endpoint string `xml:"regionEndpoint"`
 }

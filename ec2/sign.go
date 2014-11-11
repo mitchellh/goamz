@@ -4,9 +4,10 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"github.com/mitchellh/goamz/aws"
 	"sort"
 	"strings"
+
+	"github.com/mitchellh/goamz/aws"
 )
 
 // ----------------------------------------------------------------------------
