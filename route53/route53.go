@@ -39,6 +39,7 @@ type CreateHostedZoneRequest struct {
 	Name            string `xml:"Name"`
 	CallerReference string `xml:"CallerReference"`
 	Comment         string `xml:"HostedZoneConfig>Comment"`
+	VPC             VPC    `xml:"VPC"`
 }
 
 type CreateHostedZoneResponse struct {
@@ -53,6 +54,8 @@ type HostedZone struct {
 	CallerReference string `xml:"CallerReference"`
 	Comment         string `xml:"Config>Comment"`
 	ResourceCount   int    `xml:"ResourceRecordSetCount"`
+	PrivateZone     bool   `xml:"Config>PrivateZone"`
+	VPC             VPC    `xml:"VPC"`
 }
 
 type ChangeInfo struct {
@@ -63,6 +66,11 @@ type ChangeInfo struct {
 
 type DelegationSet struct {
 	NameServers []string `xml:"NameServers>NameServer"`
+}
+
+type VPC struct {
+	ID     string `xml:"VPCId"`
+	Region string `xml:"VPCRegion"`
 }
 
 func (r *Route53) query(method, path string, req, resp interface{}) error {
@@ -98,11 +106,14 @@ func (r *Route53) query(method, path string, req, resp interface{}) error {
 
 		// This is really a sadness, but can't think of a better way to
 		// do this for now in Go's constructs.
-		replace := "<ResourceRecords><ResourceRecord></ResourceRecord></ResourceRecords>"
-		if strings.Contains(bodyBuf.String(), replace) {
-			var newBuf bytes.Buffer
-			newBuf.WriteString(strings.Replace(bodyBuf.String(), replace, "", -1))
-			bodyBuf = &newBuf
+		replace := []string{"<ResourceRecords><ResourceRecord></ResourceRecord></ResourceRecords>",
+			"<VPC><VPCId></VPCId><VPCRegion></VPCRegion></VPC>"}
+		for _, el := range replace {
+			if strings.Contains(bodyBuf.String(), el) {
+				var newBuf bytes.Buffer
+				newBuf.WriteString(strings.Replace(bodyBuf.String(), el, "", -1))
+				bodyBuf = &newBuf
+			}
 		}
 
 		body = bodyBuf
@@ -193,6 +204,7 @@ func CleanChangeID(ID string) string {
 type GetHostedZoneResponse struct {
 	HostedZone    HostedZone    `xml:"HostedZone"`
 	DelegationSet DelegationSet `xml:"DelegationSet"`
+	VPCs          []VPC         `xml:"VPCs>VPC"`
 }
 
 func (r *Route53) GetHostedZone(ID string) (*GetHostedZoneResponse, error) {
@@ -362,4 +374,46 @@ func FQDN(name string) string {
 	} else {
 		return name + "."
 	}
+}
+
+type AssociateVPCWithHostedZoneRequest struct {
+	VPC     VPC    `xml:"VPC"`
+	Comment string `xml:"Comment"`
+}
+
+type AssociateVPCWithHostedZoneResponse struct {
+	ChangeInfo ChangeInfo `xml:"ChangeInfo"`
+}
+
+func (r *Route53) AssociateVPCWithHostedZone(ID string,
+	req *AssociateVPCWithHostedZoneRequest) (*AssociateVPCWithHostedZoneResponse, error) {
+	// Remove the hostedzone prefix if given
+	ID = CleanZoneID(ID)
+	out := &AssociateVPCWithHostedZoneResponse{}
+	err := r.query("POST", fmt.Sprintf("/%s/hostedzone/%s/associatevpc", APIVersion, ID), req, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, err
+}
+
+type DisassociateVPCFromHostedZoneRequest struct {
+	VPC     VPC    `xml:"VPC"`
+	Comment string `xml:"Comment"`
+}
+
+type DisassociateVPCFromHostedZoneResponse struct {
+	ChangeInfo ChangeInfo `xml:"ChangeInfo"`
+}
+
+func (r *Route53) DisassociateVPCFromHostedZone(ID string,
+	req *DisassociateVPCFromHostedZoneRequest) (*DisassociateVPCFromHostedZoneResponse, error) {
+	// Remove the hostedzone prefix if given
+	ID = CleanZoneID(ID)
+	out := &DisassociateVPCFromHostedZoneResponse{}
+	err := r.query("POST", fmt.Sprintf("/%s/hostedzone/%s/disassociatevpc", APIVersion, ID), req, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, err
 }

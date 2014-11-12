@@ -120,3 +120,21 @@ var ListHostedZonesExample = `<?xml version="1.0" encoding="utf-8"?>
     <IsTruncated>false</IsTruncated>
     <MaxItems>100</MaxItems>
 </ListHostedZonesResponse>`
+
+var AssociateVPCWithHostedZoneExample = `<?xml version="1.0" encoding="UTF-8"?>
+<AssociateVPCWithHostedZoneResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+   <ChangeInfo>
+      <Id>/change/abcd</Id>
+      <Status>PENDING</Status>
+      <SubmittedAt>2014</SubmittedAt>
+   </ChangeInfo>
+</AssociateVPCWithHostedZoneResponse>`
+
+var DisassociateVPCFromHostedZoneExample = `<?xml version="1.0" encoding="UTF-8"?>
+<DisassociateVPCFromHostedZoneResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+   <ChangeInfo>
+      <Id>/change/abcd</Id>
+      <Status>PENDING</Status>
+      <SubmittedAt>2014</SubmittedAt>
+   </ChangeInfo>
+</DisassociateVPCFromHostedZoneResponse>`
