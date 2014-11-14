@@ -22,4 +22,7 @@ func sign(auth aws.Auth, path string, params map[string]string) {
 	header := fmt.Sprintf("AWS3-HTTPS AWSAccessKeyId=%s,Algorithm=HmacSHA256,Signature=%s",
 		auth.AccessKey, signature)
 	params["X-Amzn-Authorization"] = string(header)
+	if auth.Token != "" {
+		params["X-Amz-Security-Token"] = auth.Token
+	}
 }
