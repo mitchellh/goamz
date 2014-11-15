@@ -373,6 +373,22 @@ func (iam *IAM) GetUserPolicy(userName, policyName string) (*GetUserPolicyResp, 
 	return nil, nil
 }
 
+type AccountAliasesResp struct {
+	RequestId string   `xml:"ResponseMetadata>RequestId"`
+	Aliases   []string `xml:"ListAccountAliasesResult>AccountAliases>member"`
+}
+
+func (iam *IAM) ListAccountAliases() (*AccountAliasesResp, error) {
+	params := map[string]string{
+		"Action": "ListAccountAliases",
+	}
+	resp := new(AccountAliasesResp)
+	if err := iam.query(params, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // PutUserPolicy creates a user policy in IAM.
 //
 // See http://goo.gl/ldCO8 for more details.
