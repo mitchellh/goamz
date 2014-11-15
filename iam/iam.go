@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // The IAM type encapsulates operations operations with the IAM endpoint.
@@ -29,13 +28,11 @@ func NewWithClient(auth aws.Auth, region aws.Region, httpClient *http.Client) *I
 }
 
 func (iam *IAM) query(params map[string]string, resp interface{}) error {
-	params["Version"] = "2010-05-08"
-	params["Timestamp"] = time.Now().In(time.UTC).Format(time.RFC3339)
 	endpoint, err := url.Parse(iam.IAMEndpoint)
 	if err != nil {
 		return err
 	}
-	sign(iam.Auth, "GET", "/", params, endpoint.Host)
+	signV4(iam, "GET", "/", params, endpoint.Host)
 	endpoint.RawQuery = multimap(params).Encode()
 	r, err := iam.httpClient.Get(endpoint.String())
 	if err != nil {
@@ -53,8 +50,6 @@ func (iam *IAM) postQuery(params map[string]string, resp interface{}) error {
 	if err != nil {
 		return err
 	}
-	params["Version"] = "2010-05-08"
-	params["Timestamp"] = time.Now().In(time.UTC).Format(time.RFC3339)
 	sign(iam.Auth, "POST", "/", params, endpoint.Host)
 	encoded := multimap(params).Encode()
 	body := strings.NewReader(encoded)
@@ -147,9 +142,13 @@ type GetUserResp struct {
 // See http://goo.gl/ZnzRN for more details.
 func (iam *IAM) GetUser(name string) (*GetUserResp, error) {
 	params := map[string]string{
-		"Action":   "GetUser",
-		"UserName": name,
+		"Action": "GetUser",
 	}
+
+	if name != "" {
+		params["UserName"] = name
+	}
+
 	resp := new(GetUserResp)
 	if err := iam.query(params, resp); err != nil {
 		return nil, err

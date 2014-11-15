@@ -7,6 +7,7 @@ import (
 	"github.com/mitchellh/goamz/aws"
 	"sort"
 	"strings"
+	"time"
 )
 
 // ----------------------------------------------------------------------------
@@ -15,6 +16,8 @@ import (
 var b64 = base64.StdEncoding
 
 func sign(auth aws.Auth, method, path string, params map[string]string, host string) {
+	params["Version"] = "2010-05-08"
+	params["Timestamp"] = time.Now().In(time.UTC).Format(time.RFC3339)
 	params["AWSAccessKeyId"] = auth.AccessKey
 	params["SignatureVersion"] = "2"
 	params["SignatureMethod"] = "HmacSHA256"
