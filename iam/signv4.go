@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/mitchellh/goamz/aws"
+	"sort"
 	"strings"
 	"time"
 )
@@ -27,7 +28,7 @@ func signGetV4(iam *IAM, method, cannocialUri, payload string, params, headers m
 		amzTimeStamp = utcnow.Format(ISO8601BasicFormat)
 	)
 
-	cannocialHeaders, signedHeaders := formatHeader(headers)
+	cannocialHeaders, signedHeaders := formatHeaders(headers)
 	credentialScope := timestamp + "/" + iam.Region.Name + "/iam/aws4_request"
 
 	params["X-Amz-Algorithm"] = Algorithm
@@ -53,7 +54,7 @@ func signPostV4(iam *IAM, method, cannocialUri, payload string, headers map[stri
 	)
 
 	headers["X-Amz-Date"] = amzTimeStamp
-	cannocialHeaders, signedHeaders := formatHeader(headers)
+	cannocialHeaders, signedHeaders := formatHeaders(headers)
 
 	canonicalReq := method + "\n" + cannocialUri + "\n" + cannocialQueryStr + "\n" + cannocialHeaders + "\n" + signedHeaders + "\n" + payloadHash
 	credentialScope := timestamp + "/" + iam.Region.Name + "/iam/aws4_request"
@@ -63,19 +64,28 @@ func signPostV4(iam *IAM, method, cannocialUri, payload string, headers map[stri
 	headers["Authorization"] = Algorithm + " " + "Credential=" + iam.Auth.AccessKey + "/" + credentialScope + "," + "SignedHeaders=" + signedHeaders + "," + "Signature=" + hex.EncodeToString(HMac(signKey, stringToSign))
 }
 
-func formatHeader(headers map[string]string) (string, string) {
+func formatHeaders(headers map[string]string) (string, string) {
 	var (
 		cHeaders []string
 		sHeaders []string
 	)
 
 	for k, v := range headers {
-		lh := strings.ToLower(k)
-		cHeaders = append(cHeaders, lh+":"+v)
-		sHeaders = append(sHeaders, lh)
+		normalizedName := normalize(k)
+
+		cHeaders = append(cHeaders, normalizedName+":"+v)
+		sHeaders = append(sHeaders, normalizedName)
 	}
 
+	sort.Strings(sHeaders)
+	sort.Strings(cHeaders)
+
 	return strings.Join(cHeaders, "\n") + "\n", strings.Join(sHeaders, ";")
+}
+
+func normalize(target string) string {
+	trimed := strings.TrimSpace(target)
+	return strings.ToLower(trimed)
 }
 
 func HMac(key, message string) []byte {
