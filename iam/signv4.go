@@ -6,48 +6,77 @@ import (
 	"encoding/hex"
 	"github.com/mitchellh/goamz/aws"
 	"hash"
+	"strings"
 	"time"
 )
 
 const (
 	ISO8601BasicFormat      = "20060102T150405Z"
 	ISO8601BasicFormatShort = "20060102"
+
+	Algorithm = "AWS4-HMAC-SHA256"
 )
 
 // ----------------------------------------------------------------------------
 // Version 4 signing (http://goo.gl/HyL72W), which will support China (Beijing) and EU (Frankfurt)
 
-func signV4(iam *IAM, method, path string, params map[string]string, host string) {
+func signGetV4(iam *IAM, method, cannocialUri, payload string, params, headers map[string]string, utcnow time.Time) {
 	var (
-		now               = time.Now().In(time.UTC)
-		cannocial_uri     = path
-		cannocial_headers = "host:" + host + "\n"
-		signed_headers    = "host"
-		credential_scope  = now.Format(ISO8601BasicFormatShort) + "/" + iam.Region.Name + "/iam/aws4_request"
-		payloadHash       = hashAsHex("", "")
+		payloadHash = hashAsHex("", payload)
+
+		timestamp    = utcnow.Format(ISO8601BasicFormatShort)
+		amzTimeStamp = utcnow.Format(ISO8601BasicFormat)
 	)
 
-	params["Version"] = "2010-05-08"
-	params["X-Amz-Algorithm"] = "AWS4-HMAC-SHA256"
-	params["X-Amz-Date"] = now.Format(ISO8601BasicFormat)
+	cannocialHeaders, signedHeaders := formatHeader(headers)
+	credentialScope := timestamp + "/" + iam.Region.Name + "/iam/aws4_request"
+
+	params["X-Amz-Algorithm"] = Algorithm
+	params["X-Amz-Date"] = amzTimeStamp
 	params["X-Amz-Expires"] = "30"
-	params["X-Amz-Credential"] = iam.Auth.AccessKey + "/" + credential_scope
-	params["X-Amz-SignedHeaders"] = signed_headers
+	params["X-Amz-Credential"] = iam.Auth.AccessKey + "/" + credentialScope
+	params["X-Amz-SignedHeaders"] = signedHeaders
 
-	canonical_req := method + "\n" +
-		cannocial_uri + "\n" +
-		multimap(params).Encode() + "\n" +
-		cannocial_headers + "\n" +
-		signed_headers + "\n" + payloadHash
-
-	stringToSign := params["X-Amz-Algorithm"] + "\n" +
-		params["X-Amz-Date"] + "\n" +
-		credential_scope + "\n" +
-		hashAsHex("", canonical_req)
-
-	signKey := getSignatureKey(iam.Auth.SecretKey, now.Format(ISO8601BasicFormatShort), iam.Region, "iam")
+	canonicalReq := method + "\n" + cannocialUri + "\n" + multimap(params).Encode() + "\n" + cannocialHeaders + "\n" + signedHeaders + "\n" + payloadHash
+	stringToSign := params["X-Amz-Algorithm"] + "\n" + params["X-Amz-Date"] + "\n" + credentialScope + "\n" + hashAsHex("", canonicalReq)
+	signKey := getSignatureKey(iam.Auth.SecretKey, timestamp, iam.Region, "iam")
 
 	params["X-Amz-Signature"] = hashAsHex(signKey, stringToSign)
+}
+
+func signPostV4(iam *IAM, method, cannocialUri, payload string, headers map[string]string, utcnow time.Time) {
+	var (
+		timestamp         = utcnow.Format(ISO8601BasicFormatShort)
+		amzTimeStamp      = utcnow.Format(ISO8601BasicFormat)
+		cannocialQueryStr = ""
+
+		payloadHash = hashAsHex("", payload)
+	)
+
+	headers["X-Amz-Date"] = amzTimeStamp
+	cannocialHeaders, signedHeaders := formatHeader(headers)
+
+	canonicalReq := method + "\n" + cannocialUri + "\n" + cannocialQueryStr + "\n" + cannocialHeaders + "\n" + signedHeaders + "\n" + payloadHash
+	credentialScope := timestamp + "/" + iam.Region.Name + "/iam/aws4_request"
+	stringToSign := Algorithm + "\n" + amzTimeStamp + "\n" + credentialScope + "\n" + hashAsHex("", canonicalReq)
+	signKey := getSignatureKey(iam.Auth.SecretKey, timestamp, iam.Region, "iam")
+
+	headers["Authorization"] = Algorithm + " " + "Credential=" + iam.Auth.AccessKey + "/" + credentialScope + "," + "SignedHeaders=" + signedHeaders + "," + "Signature=" + hashAsHex(signKey, stringToSign)
+}
+
+func formatHeader(headers map[string]string) (string, string) {
+	var (
+		cHeaders []string
+		sHeaders []string
+	)
+
+	for k, v := range headers {
+		lh := strings.ToLower(k)
+		cHeaders = append(cHeaders, lh+":"+v)
+		sHeaders = append(sHeaders, lh)
+	}
+
+	return strings.Join(cHeaders, "\n") + "\n", strings.Join(sHeaders, ";")
 }
 
 func HashAsStr(key string, target string) string {
