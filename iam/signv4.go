@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/mitchellh/goamz/aws"
-	"hash"
 	"strings"
 	"time"
 )
@@ -22,7 +21,7 @@ const (
 
 func signGetV4(iam *IAM, method, cannocialUri, payload string, params, headers map[string]string, utcnow time.Time) {
 	var (
-		payloadHash = hashAsHex("", payload)
+		payloadHash = hex.EncodeToString(Sha256(payload))
 
 		timestamp    = utcnow.Format(ISO8601BasicFormatShort)
 		amzTimeStamp = utcnow.Format(ISO8601BasicFormat)
@@ -38,10 +37,10 @@ func signGetV4(iam *IAM, method, cannocialUri, payload string, params, headers m
 	params["X-Amz-SignedHeaders"] = signedHeaders
 
 	canonicalReq := method + "\n" + cannocialUri + "\n" + multimap(params).Encode() + "\n" + cannocialHeaders + "\n" + signedHeaders + "\n" + payloadHash
-	stringToSign := params["X-Amz-Algorithm"] + "\n" + params["X-Amz-Date"] + "\n" + credentialScope + "\n" + hashAsHex("", canonicalReq)
-	signKey := getSignatureKey(iam.Auth.SecretKey, timestamp, iam.Region, "iam")
+	stringToSign := params["X-Amz-Algorithm"] + "\n" + params["X-Amz-Date"] + "\n" + credentialScope + "\n" + hex.EncodeToString(Sha256(canonicalReq))
+	signKey := signatureKey(iam.Auth.SecretKey, timestamp, iam.Region, "iam")
 
-	params["X-Amz-Signature"] = hashAsHex(signKey, stringToSign)
+	params["X-Amz-Signature"] = hex.EncodeToString(HMac(signKey, stringToSign))
 }
 
 func signPostV4(iam *IAM, method, cannocialUri, payload string, headers map[string]string, utcnow time.Time) {
@@ -50,7 +49,7 @@ func signPostV4(iam *IAM, method, cannocialUri, payload string, headers map[stri
 		amzTimeStamp      = utcnow.Format(ISO8601BasicFormat)
 		cannocialQueryStr = ""
 
-		payloadHash = hashAsHex("", payload)
+		payloadHash = hex.EncodeToString(Sha256(payload))
 	)
 
 	headers["X-Amz-Date"] = amzTimeStamp
@@ -58,10 +57,10 @@ func signPostV4(iam *IAM, method, cannocialUri, payload string, headers map[stri
 
 	canonicalReq := method + "\n" + cannocialUri + "\n" + cannocialQueryStr + "\n" + cannocialHeaders + "\n" + signedHeaders + "\n" + payloadHash
 	credentialScope := timestamp + "/" + iam.Region.Name + "/iam/aws4_request"
-	stringToSign := Algorithm + "\n" + amzTimeStamp + "\n" + credentialScope + "\n" + hashAsHex("", canonicalReq)
-	signKey := getSignatureKey(iam.Auth.SecretKey, timestamp, iam.Region, "iam")
+	stringToSign := Algorithm + "\n" + amzTimeStamp + "\n" + credentialScope + "\n" + hex.EncodeToString(Sha256(canonicalReq))
+	signKey := signatureKey(iam.Auth.SecretKey, timestamp, iam.Region, "iam")
 
-	headers["Authorization"] = Algorithm + " " + "Credential=" + iam.Auth.AccessKey + "/" + credentialScope + "," + "SignedHeaders=" + signedHeaders + "," + "Signature=" + hashAsHex(signKey, stringToSign)
+	headers["Authorization"] = Algorithm + " " + "Credential=" + iam.Auth.AccessKey + "/" + credentialScope + "," + "SignedHeaders=" + signedHeaders + "," + "Signature=" + hex.EncodeToString(HMac(signKey, stringToSign))
 }
 
 func formatHeader(headers map[string]string) (string, string) {
@@ -79,33 +78,21 @@ func formatHeader(headers map[string]string) (string, string) {
 	return strings.Join(cHeaders, "\n") + "\n", strings.Join(sHeaders, ";")
 }
 
-func HashAsStr(key string, target string) string {
-	var hash hash.Hash
-
-	if key == "" {
-		hash = sha256.New()
-	} else {
-		hash = hmac.New(sha256.New, []byte(key))
-	}
-	hash.Write([]byte(target))
-	return string(hash.Sum(nil))
+func HMac(key, message string) []byte {
+	hash := hmac.New(sha256.New, []byte(key))
+	hash.Write([]byte(message))
+	return hash.Sum(nil)
 }
 
-func hashAsHex(key string, target string) string {
-	var hash hash.Hash
-
-	if key == "" {
-		hash = sha256.New()
-	} else {
-		hash = hmac.New(sha256.New, []byte(key))
-	}
-	hash.Write([]byte(target))
-	return hex.EncodeToString(hash.Sum(nil))
+func Sha256(message string) []byte {
+	hash := sha256.New()
+	hash.Write([]byte(message))
+	return hash.Sum(nil)
 }
 
-func getSignatureKey(securityKey string, datestamp string, region aws.Region, serviceName string) string {
-	signedDate := HashAsStr("AWS4"+securityKey, datestamp)
-	signRegion := HashAsStr(signedDate, region.Name)
-	signSrv := HashAsStr(signRegion, serviceName)
-	return HashAsStr(signSrv, "aws4_request")
+func signatureKey(securityKey string, datestamp string, region aws.Region, serviceName string) string {
+	signedDate := string(HMac("AWS4"+securityKey, datestamp))
+	signRegion := string(HMac(signedDate, region.Name))
+	signSrv := string(HMac(signRegion, serviceName))
+	return string(HMac(signSrv, "aws4_request"))
 }
