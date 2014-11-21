@@ -128,7 +128,7 @@ var timeNow = time.Now
 
 func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
 	params["Version"] = "2014-06-15"
-	params["Timestamp"] = timeNow().In(time.UTC).Format(time.RFC3339)
+	//params["Timestamp"] = timeNow().In(time.UTC).Format(time.RFC3339)
 	endpoint, err := url.Parse(ec2.Region.EC2Endpoint)
 	if err != nil {
 		return err
@@ -137,12 +137,11 @@ func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
 		endpoint.Path = "/"
 	}
 	sign(ec2.Auth, "GET", endpoint.Path, params, endpoint.Host)
-	endpoint.RawQuery = multimap(params).Encode()
-	if debug {
-		log.Printf("get { %v } -> {\n", endpoint.String())
-	}
-
-	r, err := ec2.httpClient.Get(endpoint.String())
+	sig := params["X-Amz-Signature"]
+	delete(params, "X-Amz-Signature")
+	x := endpoint.Scheme + "://" + endpoint.Host + "?" + sorted(params)
+	x += "&X-Amz-Signature=" + sig
+	r, err := ec2.httpClient.Get(x)
 	if err != nil {
 		return err
 	}
