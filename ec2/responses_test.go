@@ -1047,3 +1047,33 @@ var DescribeAvailabilityZonesExample2 = `
    </availabilityZoneInfo>
 </DescribeAvailabilityZonesResponse>
 `
+
+// http://goo.gl/sdomyE
+var CreateNetworkAclExample = `
+<CreateNetworkAclResponse xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <networkAcl>
+      <networkAclId>acl-5fb85d36</networkAclId>
+      <vpcId>vpc-11ad4878</vpcId>
+      <default>false</default>
+      <entrySet>
+         <item>
+            <ruleNumber>32767</ruleNumber>
+            <protocol>all</protocol>
+            <ruleAction>deny</ruleAction>
+            <egress>true</egress>
+            <cidrBlock>0.0.0.0/0</cidrBlock>
+         </item>
+         <item>
+            <ruleNumber>32767</ruleNumber>
+            <protocol>all</protocol>
+            <ruleAction>deny</ruleAction>
+            <egress>false</egress>
+            <cidrBlock>0.0.0.0/0</cidrBlock>
+         </item>
+      </entrySet>
+      <associationSet/>
+      <tagSet/>
+   </networkAcl>
+</CreateNetworkAclResponse>
+`
