@@ -1357,3 +1357,28 @@ func (s *S) TestDescribeAvailabilityZonesExample2(c *C) {
 	c.Assert(z1.State, Equals, "unavailable")
 	c.Assert(z1.MessageSet, DeepEquals, []string{"us-east-1b is currently down for maintenance."})
 }
+
+func (s *S) TestCreateNetworkAcl(c *C) {
+	testServer.Response(200, nil, CreateNetworkAclExample)
+
+	options := &ec2.CreateNetworkAcl{
+		VpcId:            "vpc-11ad4878",
+	}
+
+	resp, err := s.ec2.CreateNetworkAcl(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["VpcId"], DeepEquals, []string{"vpc-11ad4878"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.NetworkAcl.VpcId, Equals, "vpc-11ad4878")
+	c.Assert(resp.NetworkAcl.NetworkAclId, Equals, "acl-5fb85d36")
+	c.Assert(resp.NetworkAcl.Default, Equals, "false")
+	c.Assert(resp.NetworkAcl.EntrySet, HasLen, 2)
+	c.Assert(resp.NetworkAcl.EntrySet[0].RuleNumber, Equals, 32767)
+	c.Assert(resp.NetworkAcl.EntrySet[0].Protocol, Equals, "all")
+	c.Assert(resp.NetworkAcl.EntrySet[0].RuleAction, Equals, "deny")
+	c.Assert(resp.NetworkAcl.EntrySet[0].Egress, Equals, true)
+	c.Assert(resp.NetworkAcl.EntrySet[0].CidrBlock, Equals, "0.0.0.0/0")
+}

@@ -2399,6 +2399,19 @@ type ModifySubnetAttributeResp struct {
 	Return    bool   `xml:"return"`
 }
 
+// The CreateNetworkAcl request parameters
+//
+// http://goo.gl/BZmCRF
+type CreateNetworkAcl struct {
+	VpcId string
+}
+
+// Response to a CreateNetworkAcl request
+type CreateNetworkAclResp struct {
+	RequestId  string     `xml:"requestId"`
+	NetworkAcl NetworkAcl `xml:"networkAcl"`
+}
+
 // Response to a DescribeInternetGateways request.
 type InternetGatewaysResp struct {
 	RequestId        string            `xml:"requestId"`
@@ -2467,6 +2480,46 @@ type Subnet struct {
 	DefaultForAZ            bool   `xml:"defaultForAz"`
 	MapPublicIpOnLaunch     bool   `xml:"mapPublicIpOnLaunch"`
 	Tags                    []Tag  `xml:"tagSet>item"`
+}
+
+// NetworkAcl
+type NetworkAcl struct {
+	NetworkAclId   string                  `xml:"networkAclId"`
+	VpcId          string                  `xml:"vpcId"`
+	Default        string                  `xml:"default"`
+	EntrySet       []NetworkAclEntry       `xml:"entrySet>item"`
+	AssociationSet []NetworkAclAssociation `xml:"AssociationSet>item"`
+	Tags           []Tag                   `xml:"tagSet>item"`
+}
+
+// NetworkAclEntry
+type NetworkAclEntry struct {
+	RuleNumber int       `xml:"ruleNumber"`
+	Protocol   string    `xml:"protocol"`
+	RuleAction string    `xml:"ruleAction"`
+	Egress     bool      `xml:"egress"`
+	CidrBlock  string    `xml:"cidrBlock"`
+	IcmpCode   IcmpCode  `xml:"icmpTypeCode"`
+	PortRanged PortRange `xml:"portRange"`
+}
+
+// IcmpCode
+type IcmpCode struct {
+	Code int `xml:"code"`
+	Type int `xml:"type"`
+}
+
+// PortRange
+type PortRange struct {
+	from int `xml:"from"`
+	to   int `xml:"to"`
+}
+
+// NetworkAclAssociation
+type NetworkAclAssociation struct {
+	NetworkAclAssociationId string `xml:"networkAclAssociationId"`
+	NetworkAclId            string `xml:"networkAclId"`
+	SubnetId                string `xml:"subnetId"`
 }
 
 // VPC represents a single VPC.
@@ -2634,6 +2687,20 @@ func (ec2 *EC2) DescribeSubnets(ids []string, filter *Filter) (resp *SubnetsResp
 	filter.addParams(params)
 
 	resp = &SubnetsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// CreateNetworkAcl.
+func (ec2 *EC2) CreateNetworkAcl(options *CreateNetworkAcl) (resp *CreateNetworkAclResp, err error) {
+	params := makeParams("CreateNetworkAcl")
+	params["VpcId"] = options.VpcId
+
+	resp = &CreateNetworkAclResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
