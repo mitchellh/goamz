@@ -1382,3 +1382,34 @@ func (s *S) TestCreateNetworkAcl(c *C) {
 	c.Assert(resp.NetworkAcl.EntrySet[0].Egress, Equals, true)
 	c.Assert(resp.NetworkAcl.EntrySet[0].CidrBlock, Equals, "0.0.0.0/0")
 }
+
+func (s *S) TestCreateNetworkAclEntry(c *C) {
+	testServer.Response(200, nil, CreateNetworkAclEntryRespExample)
+
+	options := &ec2.NetworkAclEntry{
+		RuleNumber: 32767,
+		Protocol: "all",
+		RuleAction: "deny",
+		Egress: true,
+		CidrBlock: "0.0.0.0/0",
+		PortRange: ec2.PortRange{
+			To: 22,
+			From:22,
+		},
+
+	}
+
+	resp, err := s.ec2.CreateNetworkAclEntry("acl-11ad4878", options)
+
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["NetworkAclId"], DeepEquals, []string{"acl-11ad4878"})
+	c.Assert(req.Form["RuleNumber"], DeepEquals, []string{"32767"})
+	c.Assert(req.Form["Protocol"], DeepEquals, []string{"all"})
+	c.Assert(req.Form["RuleAction"], DeepEquals, []string{"deny"})
+	c.Assert(req.Form["Egress"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["CidrBlock"], DeepEquals, []string{"0.0.0.0/0"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+

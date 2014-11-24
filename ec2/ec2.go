@@ -2412,6 +2412,12 @@ type CreateNetworkAclResp struct {
 	NetworkAcl NetworkAcl `xml:"networkAcl"`
 }
 
+// Response to CreateNetworkAclEntry request
+type CreateNetworkAclEntryResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
 // Response to a DescribeInternetGateways request.
 type InternetGatewaysResp struct {
 	RequestId        string            `xml:"requestId"`
@@ -2500,7 +2506,7 @@ type NetworkAclEntry struct {
 	Egress     bool      `xml:"egress"`
 	CidrBlock  string    `xml:"cidrBlock"`
 	IcmpCode   IcmpCode  `xml:"icmpTypeCode"`
-	PortRanged PortRange `xml:"portRange"`
+	PortRange  PortRange `xml:"portRange"`
 }
 
 // IcmpCode
@@ -2511,8 +2517,8 @@ type IcmpCode struct {
 
 // PortRange
 type PortRange struct {
-	from int `xml:"from"`
-	to   int `xml:"to"`
+	From int `xml:"from"`
+	To   int `xml:"to"`
 }
 
 // NetworkAclAssociation
@@ -2701,6 +2707,34 @@ func (ec2 *EC2) CreateNetworkAcl(options *CreateNetworkAcl) (resp *CreateNetwork
 	params["VpcId"] = options.VpcId
 
 	resp = &CreateNetworkAclResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// CreateNetworkAclEntry.
+func (ec2 *EC2) CreateNetworkAclEntry(networkAclId string, options *NetworkAclEntry) (resp *CreateNetworkAclEntryResp, err error) {
+	params := makeParams("CreateNetworkAclEntry")
+	params["NetworkAclId"] = networkAclId
+	params["RuleNumber"] = strconv.Itoa(options.RuleNumber)
+	params["Protocol"] = options.Protocol
+	params["RuleAction"] = options.RuleAction
+	if options.Egress {
+		params["Egress"] = strconv.FormatBool(options.Egress)
+	}
+	params["CidrBlock"] = options.CidrBlock
+	fmt.Printf("%v\n", params)
+	if params["Protocol"] == "-1" {
+		params["Icmp.Type"] = strconv.Itoa(options.IcmpCode.Type)
+		params["Icmp.Code"] = strconv.Itoa(options.IcmpCode.Code)
+	}
+	params["PortRange.From"] = strconv.Itoa(options.PortRange.From)
+	params["PortRange.To"] = strconv.Itoa(options.PortRange.To)
+
+	resp = &CreateNetworkAclEntryResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
