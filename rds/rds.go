@@ -4,11 +4,12 @@ package rds
 
 import (
 	"encoding/xml"
-	"github.com/mitchellh/goamz/aws"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/mitchellh/goamz/aws"
 )
 
 // The Rds type encapsulates operations operations with the Rds endpoint.
@@ -114,6 +115,7 @@ type DBInstance struct {
 type DBSecurityGroup struct {
 	Description              string   `xml:"DBSecurityGroupDescription"`
 	Name                     string   `xml:"DBSecurityGroupName"`
+	EC2SecurityGroupNames    []string `xml:"EC2SecurityGroups>EC2SecurityGroup>EC2SecurityGroupName"`
 	EC2SecurityGroupIds      []string `xml:"EC2SecurityGroups>EC2SecurityGroup>EC2SecurityGroupId"`
 	EC2SecurityGroupOwnerIds []string `xml:"EC2SecurityGroups>EC2SecurityGroup>EC2SecurityGroupOwnerId"`
 	EC2SecurityGroupStatuses []string `xml:"EC2SecurityGroups>EC2SecurityGroup>Status"`
@@ -274,8 +276,8 @@ func (rds *Rds) CreateDBInstance(options *CreateDBInstance) (resp *SimpleResp, e
 	}
 
 	if options.DBParameterGroupName != "" {
-                params["DBParameterGroupName"] = options.DBParameterGroupName
-        }
+		params["DBParameterGroupName"] = options.DBParameterGroupName
+	}
 
 	resp = &SimpleResp{}
 
@@ -382,9 +384,9 @@ func (rds *Rds) AuthorizeDBSecurityGroupIngress(options *AuthorizeDBSecurityGrou
 
 // The CreateDBParameterGroup request parameters
 type CreateDBParameterGroup struct {
-        DBParameterGroupFamily string
-        DBParameterGroupName   string
-        Description            string
+	DBParameterGroupFamily string
+	DBParameterGroupName   string
+	Description            string
 }
 
 func (rds *Rds) CreateDBParameterGroup(options *CreateDBParameterGroup) (resp *SimpleResp, err error) {
