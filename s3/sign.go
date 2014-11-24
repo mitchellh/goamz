@@ -87,6 +87,10 @@ func sign(auth aws.Auth, method, canonicalPath string, params, headers map[strin
 		expires = true
 		date = v[0]
 		params["AWSAccessKeyId"] = []string{auth.AccessKey}
+		// When using temporary credentials the token must be included in the URL
+		if auth.Token != "" {
+			params["x-amz-security-token"] = []string{auth.Token}
+		}
 	}
 
 	sarray = sarray[0:0]
