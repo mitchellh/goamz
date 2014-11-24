@@ -2,7 +2,6 @@ package ec2_test
 
 import (
 	"testing"
-
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/ec2"
 	"github.com/mitchellh/goamz/testutil"
@@ -1411,5 +1410,19 @@ func (s *S) TestCreateNetworkAclEntry(c *C) {
 	c.Assert(req.Form["CidrBlock"], DeepEquals, []string{"0.0.0.0/0"})
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
+func (s *S) TestDescribeNetworkAcls(c *C) {
+	testServer.Response(200, nil, DescribeNetworkAclsExample)
+
+	filter := ec2.NewFilter()
+	filter.Add("vpc-id", "vpc-5266953b")
+	
+	resp, err := s.ec2.DescribeNetworkAcls([]string{"acl-5566953c", "acl-5d659634"}, filter)
+	
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.NetworkAcls, HasLen, 2)
+
 }
 
