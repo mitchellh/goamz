@@ -995,7 +995,7 @@ var ResetImageAttributeExample = `
 // http://goo.gl/ylxT4R
 var DescribeAvailabilityZonesExample1 = `
 <DescribeAvailabilityZonesResponse xmlns="http://ec2.amazonaws.com/doc/2014-05-01/">
-   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
    <availabilityZoneInfo>
    <item>
       <zoneName>us-east-1a</zoneName>
@@ -1028,7 +1028,7 @@ var DescribeAvailabilityZonesExample1 = `
 // http://goo.gl/ylxT4R
 var DescribeAvailabilityZonesExample2 = `
 <DescribeAvailabilityZonesResponse xmlns="http://ec2.amazonaws.com/doc/2014-05-01/">
-   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
    <availabilityZoneInfo>
    <item>
       <zoneName>us-east-1a</zoneName>
@@ -1046,4 +1046,34 @@ var DescribeAvailabilityZonesExample2 = `
    </item>
    </availabilityZoneInfo>
 </DescribeAvailabilityZonesResponse>
+`
+
+// http://goo.gl/JbCCoM
+var DescribeRegionsExample1 = `
+<DescribeRegionsResponse xmlns="http://ec2.amazonaws.com/doc/2014-09-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+   <regionInfo>
+      <item>
+         <regionName>us-east-1</regionName>
+         <regionEndpoint>ec2.us-east-1.amazonaws.com</regionEndpoint>
+      </item>
+      <item>
+         <regionName>eu-west-1</regionName>
+         <regionEndpoint>ec2.eu-west-1.amazonaws.com</regionEndpoint>
+      </item>
+   </regionInfo>
+</DescribeRegionsResponse>
+`
+
+// http://goo.gl/ylxT4R
+var DescribeRegionsExample2 = `
+<DescribeRegionsResponse xmlns="http://ec2.amazonaws.com/doc/2014-09-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+   <regionInfo>
+      <item>
+         <regionName>ap-southeast-1</regionName>
+         <regionEndpoint>ec2.ap-southeast-1.amazonaws.com</regionEndpoint>
+      </item>
+   </regionInfo>
+</DescribeRegionsResponse>
 `

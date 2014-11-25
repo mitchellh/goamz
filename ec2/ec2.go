@@ -1096,6 +1096,45 @@ func (ec2 *EC2) DescribeAvailabilityZones(filter *Filter) (resp *DescribeAvailab
 }
 
 // ----------------------------------------------------------------------------
+// Regions management functions and types.
+// See http://goo.gl/JbCCoM for more details.
+
+// DescribeRegionsResp represents a response to a DescribeRegions
+// request in EC2.
+type DescribeRegionsResp struct {
+	RequestId string   `xml:"requestId"`
+	Regions   []Region `xml:"regionInfo>item"`
+}
+
+// RegionInfo encapsulates details for an Region in EC2.
+type RegionInfo struct {
+	Region
+}
+
+// Region represents an EC2 region.
+type Region struct {
+	Name     string `xml:"regionName"`
+	Endpoint string `xml:"regionEndpoint"`
+}
+
+// DescribeRegions returns details about Regions in EC2.
+// The filter parameter is optional, and if provided will limit the
+// Regions returned to those matching the given filtering
+// rules.
+//
+// See http://goo.gl/ylxT4R for more details.
+func (ec2 *EC2) DescribeRegions(filter *Filter) (resp *DescribeRegionsResp, err error) {
+	params := makeParams("DescribeRegions")
+	filter.addParams(params)
+	resp = &DescribeRegionsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// ----------------------------------------------------------------------------
 // ElasticIp management (for VPC)
 
 // The AllocateAddress request parameters
