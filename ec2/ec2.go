@@ -2761,6 +2761,25 @@ func (ec2 *EC2) NetworkAcls(networkAclIds []string, filter *Filter) (*NetworkAcl
 	return resp, nil
 }
 
+// Response to a DeleteNetworkAcl request.
+type DeleteNetworkAclResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
+// Delete network acl.
+func (ec2 *EC2) DeleteNetworkAcl(id string) (*DeleteNetworkAclResp, error) {
+	params := makeParams("DeleteNetworkAcl")
+	params["NetworkAclId"] = id
+
+	resp := &DeleteNetworkAclResp{}
+	err := ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // Create a new internet gateway.
 func (ec2 *EC2) CreateInternetGateway(
 	options *CreateInternetGateway) (resp *CreateInternetGatewayResp, err error) {
