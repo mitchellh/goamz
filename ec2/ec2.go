@@ -2522,8 +2522,8 @@ type PortRange struct {
 }
 
 type NetworkAclsResp struct {
-	RequestId          string              `xml:"requestId"`
-	NetworkAcls 	   []NetworkAcl        `xml:"networkAclSet>item"`
+	RequestId   string       `xml:"requestId"`
+	NetworkAcls []NetworkAcl `xml:"networkAclSet>item"`
 }
 
 // NetworkAclAssociation
@@ -2749,9 +2749,9 @@ func (ec2 *EC2) CreateNetworkAclEntry(networkAclId string, options *NetworkAclEn
 }
 
 // Describe network acls for given filter.
-func (ec2 *EC2) DescribeNetworkAcls(networkAclIds []string, filter *Filter) (*NetworkAclsResp, error) {
+func (ec2 *EC2) NetworkAcls(networkAclIds []string, filter *Filter) (*NetworkAclsResp, error) {
 	params := makeParams("DescribeNetworkAcls")
-	addParamsList(params, "InstanceId", networkAclIds)
+	addParamsList(params, "NetworkAclId", networkAclIds)
 	filter.addParams(params)
 	resp := &NetworkAclsResp{}
 	if err := ec2.query(params, resp); err != nil {
