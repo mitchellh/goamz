@@ -1425,4 +1425,3 @@ func (s *S) TestDescribeNetworkAcls(c *C) {
 	c.Assert(resp.NetworkAcls, HasLen, 2)
 
 }
-
