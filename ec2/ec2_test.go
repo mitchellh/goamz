@@ -1,11 +1,11 @@
 package ec2_test
 
 import (
-	"testing"
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/ec2"
 	"github.com/mitchellh/goamz/testutil"
 	. "github.com/motain/gocheck"
+	"testing"
 )
 
 func Test(t *testing.T) {
@@ -1361,7 +1361,7 @@ func (s *S) TestCreateNetworkAcl(c *C) {
 	testServer.Response(200, nil, CreateNetworkAclExample)
 
 	options := &ec2.CreateNetworkAcl{
-		VpcId:            "vpc-11ad4878",
+		VpcId: "vpc-11ad4878",
 	}
 
 	resp, err := s.ec2.CreateNetworkAcl(options)
@@ -1387,15 +1387,14 @@ func (s *S) TestCreateNetworkAclEntry(c *C) {
 
 	options := &ec2.NetworkAclEntry{
 		RuleNumber: 32767,
-		Protocol: "all",
+		Protocol:   "all",
 		RuleAction: "deny",
-		Egress: true,
-		CidrBlock: "0.0.0.0/0",
+		Egress:     true,
+		CidrBlock:  "0.0.0.0/0",
 		PortRange: ec2.PortRange{
-			To: 22,
-			From:22,
+			To:   22,
+			From: 22,
 		},
-
 	}
 
 	resp, err := s.ec2.CreateNetworkAclEntry("acl-11ad4878", options)
@@ -1417,9 +1416,9 @@ func (s *S) TestDescribeNetworkAcls(c *C) {
 
 	filter := ec2.NewFilter()
 	filter.Add("vpc-id", "vpc-5266953b")
-	
+
 	resp, err := s.ec2.DescribeNetworkAcls([]string{"acl-5566953c", "acl-5d659634"}, filter)
-	
+
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 	c.Assert(resp.NetworkAcls, HasLen, 2)
