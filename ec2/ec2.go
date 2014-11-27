@@ -2488,7 +2488,7 @@ type Subnet struct {
 	Tags                    []Tag  `xml:"tagSet>item"`
 }
 
-// NetworkAcl
+// NetworkAcl represent network acl
 type NetworkAcl struct {
 	NetworkAclId   string                  `xml:"networkAclId"`
 	VpcId          string                  `xml:"vpcId"`
@@ -2498,10 +2498,10 @@ type NetworkAcl struct {
 	Tags           []Tag                   `xml:"tagSet>item"`
 }
 
-// NetworkAclEntry
+// NetworkAclEntry represent a rule within NetworkAcl
 type NetworkAclEntry struct {
 	RuleNumber int       `xml:"ruleNumber"`
-	Protocol   string    `xml:"protocol"`
+	Protocol   int       `xml:"protocol"`
 	RuleAction string    `xml:"ruleAction"`
 	Egress     bool      `xml:"egress"`
 	CidrBlock  string    `xml:"cidrBlock"`
@@ -2521,6 +2521,7 @@ type PortRange struct {
 	To   int `xml:"to"`
 }
 
+// Response to describe NetworkAcls
 type NetworkAclsResp struct {
 	RequestId   string       `xml:"requestId"`
 	NetworkAcls []NetworkAcl `xml:"networkAclSet>item"`
@@ -2706,7 +2707,9 @@ func (ec2 *EC2) DescribeSubnets(ids []string, filter *Filter) (resp *SubnetsResp
 	return
 }
 
-// CreateNetworkAcl.
+// CreateNetworkAcl creates a network ACL in a VPC.
+//
+// http://goo.gl/51X7db
 func (ec2 *EC2) CreateNetworkAcl(options *CreateNetworkAcl) (resp *CreateNetworkAclResp, err error) {
 	params := makeParams("CreateNetworkAcl")
 	params["VpcId"] = options.VpcId
@@ -2720,18 +2723,18 @@ func (ec2 *EC2) CreateNetworkAcl(options *CreateNetworkAcl) (resp *CreateNetwork
 	return
 }
 
-// CreateNetworkAclEntry.
+// CreateNetworkAclEntry creates an entry (a rule) in a network ACL with the specified rule number.
+//
+// http://goo.gl/BtXhtj
 func (ec2 *EC2) CreateNetworkAclEntry(networkAclId string, options *NetworkAclEntry) (resp *CreateNetworkAclEntryResp, err error) {
+
 	params := makeParams("CreateNetworkAclEntry")
 	params["NetworkAclId"] = networkAclId
 	params["RuleNumber"] = strconv.Itoa(options.RuleNumber)
-	params["Protocol"] = options.Protocol
+	params["Protocol"] = strconv.Itoa(options.Protocol)
 	params["RuleAction"] = options.RuleAction
-	if options.Egress {
-		params["Egress"] = strconv.FormatBool(options.Egress)
-	}
+	params["Egress"] = strconv.FormatBool(options.Egress)
 	params["CidrBlock"] = options.CidrBlock
-	fmt.Printf("%v\n", params)
 	if params["Protocol"] == "-1" {
 		params["Icmp.Type"] = strconv.Itoa(options.IcmpCode.Type)
 		params["Icmp.Code"] = strconv.Itoa(options.IcmpCode.Code)
@@ -2745,16 +2748,18 @@ func (ec2 *EC2) CreateNetworkAclEntry(networkAclId string, options *NetworkAclEn
 		return nil, err
 	}
 
-	return
+	return resp, nil
 }
 
-// Describe network acls for given filter.
-func (ec2 *EC2) NetworkAcls(networkAclIds []string, filter *Filter) (*NetworkAclsResp, error) {
+// NetworkAcls describes one or more of your network ACLs for given filter.
+//
+// http://goo.gl/mk9RsV
+func (ec2 *EC2) NetworkAcls(networkAclIds []string, filter *Filter) (resp *NetworkAclsResp, err error) {
 	params := makeParams("DescribeNetworkAcls")
 	addParamsList(params, "NetworkAclId", networkAclIds)
 	filter.addParams(params)
-	resp := &NetworkAclsResp{}
-	if err := ec2.query(params, resp); err != nil {
+	resp = &NetworkAclsResp{}
+	if err = ec2.query(params, resp); err != nil {
 		return nil, err
 	}
 
@@ -2767,13 +2772,15 @@ type DeleteNetworkAclResp struct {
 	Return    bool   `xml:"return"`
 }
 
-// Delete network acl.
-func (ec2 *EC2) DeleteNetworkAcl(id string) (*DeleteNetworkAclResp, error) {
+// DeleteNetworkAcl deletes the network ACL with specified id.
+//
+// http://goo.gl/nC78Wx
+func (ec2 *EC2) DeleteNetworkAcl(id string) (resp *DeleteNetworkAclResp, err error) {
 	params := makeParams("DeleteNetworkAcl")
 	params["NetworkAclId"] = id
 
-	resp := &DeleteNetworkAclResp{}
-	err := ec2.query(params, resp)
+	resp = &DeleteNetworkAclResp{}
+	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -2786,14 +2793,17 @@ type DeleteNetworkAclEntryResp struct {
 	Return    bool   `xml:"return"`
 }
 
-// Delete network acl.
-func (ec2 *EC2) DeleteNetworkAclEntry(id string, rule_number string) (*DeleteNetworkAclEntryResp, error) {
+// DeleteNetworkAclEntry deletes the specified ingress or egress entry (rule) from the specified network ACL.
+//
+// http://goo.gl/moQbE2
+func (ec2 *EC2) DeleteNetworkAclEntry(id string, rule_number int, egress bool) (resp *DeleteNetworkAclEntryResp, err error) {
 	params := makeParams("DeleteNetworkAclEntry")
 	params["NetworkAclId"] = id
-	params["Egress"] = rule_number
+	params["RuleNumber"] = string(rule_number)
+	params["Egress"] = egress
 
-	resp := &DeleteNetworkAclEntryResp{}
-	err := ec2.query(params, resp)
+	resp = &DeleteNetworkAclEntryResp{}
+	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
 	}
