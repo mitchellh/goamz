@@ -4,11 +4,12 @@ package elb
 
 import (
 	"encoding/xml"
-	"github.com/mitchellh/goamz/aws"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/mitchellh/goamz/aws"
 )
 
 // The ELB type encapsulates operations operations with the elb endpoint.
@@ -281,6 +282,7 @@ type LoadBalancer struct {
 	Instances         []Instance         `xml:"Instances>member"`
 	HealthCheck       HealthCheck        `xml:"HealthCheck"`
 	AvailabilityZones []AvailabilityZone `xml:"AvailabilityZones"`
+	HostedZoneNameID  string             `xml:"CanonicalHostedZoneNameID"`
 	DNSName           string             `xml:"DNSName"`
 	SecurityGroups    []string           `xml:"SecurityGroups>member"`
 	Scheme            string             `xml:"Scheme"`
