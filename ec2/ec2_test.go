@@ -1376,7 +1376,7 @@ func (s *S) TestCreateNetworkAcl(c *C) {
 	c.Assert(resp.NetworkAcl.Default, Equals, "false")
 	c.Assert(resp.NetworkAcl.EntrySet, HasLen, 2)
 	c.Assert(resp.NetworkAcl.EntrySet[0].RuleNumber, Equals, 32767)
-	c.Assert(resp.NetworkAcl.EntrySet[0].Protocol, Equals, "all")
+	c.Assert(resp.NetworkAcl.EntrySet[0].Protocol, Equals, -1)
 	c.Assert(resp.NetworkAcl.EntrySet[0].RuleAction, Equals, "deny")
 	c.Assert(resp.NetworkAcl.EntrySet[0].Egress, Equals, true)
 	c.Assert(resp.NetworkAcl.EntrySet[0].CidrBlock, Equals, "0.0.0.0/0")
@@ -1387,7 +1387,7 @@ func (s *S) TestCreateNetworkAclEntry(c *C) {
 
 	options := &ec2.NetworkAclEntry{
 		RuleNumber: 32767,
-		Protocol:   "all",
+		Protocol:   6,
 		RuleAction: "deny",
 		Egress:     true,
 		CidrBlock:  "0.0.0.0/0",
@@ -1403,7 +1403,7 @@ func (s *S) TestCreateNetworkAclEntry(c *C) {
 
 	c.Assert(req.Form["NetworkAclId"], DeepEquals, []string{"acl-11ad4878"})
 	c.Assert(req.Form["RuleNumber"], DeepEquals, []string{"32767"})
-	c.Assert(req.Form["Protocol"], DeepEquals, []string{"all"})
+	c.Assert(req.Form["Protocol"], DeepEquals, []string{ "6" })
 	c.Assert(req.Form["RuleAction"], DeepEquals, []string{"deny"})
 	c.Assert(req.Form["Egress"], DeepEquals, []string{"true"})
 	c.Assert(req.Form["CidrBlock"], DeepEquals, []string{"0.0.0.0/0"})
@@ -1417,7 +1417,7 @@ func (s *S) TestDescribeNetworkAcls(c *C) {
 	filter := ec2.NewFilter()
 	filter.Add("vpc-id", "vpc-5266953b")
 
-	resp, err := s.ec2.DescribeNetworkAcls([]string{"acl-5566953c", "acl-5d659634"}, filter)
+	resp, err := s.ec2.NetworkAcls([]string{"acl-5566953c", "acl-5d659634"}, filter)
 
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")

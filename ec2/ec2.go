@@ -2796,11 +2796,11 @@ type DeleteNetworkAclEntryResp struct {
 // DeleteNetworkAclEntry deletes the specified ingress or egress entry (rule) from the specified network ACL.
 //
 // http://goo.gl/moQbE2
-func (ec2 *EC2) DeleteNetworkAclEntry(id string, rule_number int, egress bool) (resp *DeleteNetworkAclEntryResp, err error) {
+func (ec2 *EC2) DeleteNetworkAclEntry(id string, ruleNumber int, egress bool) (resp *DeleteNetworkAclEntryResp, err error) {
 	params := makeParams("DeleteNetworkAclEntry")
 	params["NetworkAclId"] = id
-	params["RuleNumber"] = string(rule_number)
-	params["Egress"] = egress
+	params["RuleNumber"] = string(ruleNumber)
+	params["Egress"] = strconv.FormatBool(egress)
 
 	resp = &DeleteNetworkAclEntryResp{}
 	err = ec2.query(params, resp)

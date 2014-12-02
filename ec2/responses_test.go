@@ -1059,14 +1059,14 @@ var CreateNetworkAclExample = `
       <entrySet>
          <item>
             <ruleNumber>32767</ruleNumber>
-            <protocol>all</protocol>
+            <protocol>-1</protocol>
             <ruleAction>deny</ruleAction>
             <egress>true</egress>
             <cidrBlock>0.0.0.0/0</cidrBlock>
          </item>
          <item>
             <ruleNumber>32767</ruleNumber>
-            <protocol>all</protocol>
+            <protocol>-1</protocol>
             <ruleAction>deny</ruleAction>
             <egress>false</egress>
             <cidrBlock>0.0.0.0/0</cidrBlock>
@@ -1098,28 +1098,28 @@ var DescribeNetworkAclsExample = `
      <entrySet>
        <item>
          <ruleNumber>100</ruleNumber>
-         <protocol>all</protocol>
+         <protocol>-1</protocol>
          <ruleAction>allow</ruleAction>
          <egress>true</egress>
          <cidrBlock>0.0.0.0/0</cidrBlock>
        </item>
        <item>
          <ruleNumber>32767</ruleNumber>
-         <protocol>all</protocol>
+         <protocol>-1</protocol>
          <ruleAction>deny</ruleAction>
          <egress>true</egress>
          <cidrBlock>0.0.0.0/0</cidrBlock>
        </item>
        <item>
          <ruleNumber>100</ruleNumber>
-         <protocol>all</protocol>
+         <protocol>-1</protocol>
          <ruleAction>allow</ruleAction>
          <egress>false</egress>
          <cidrBlock>0.0.0.0/0</cidrBlock>
        </item>
        <item>
          <ruleNumber>32767</ruleNumber>
-         <protocol>all</protocol>
+         <protocol>-1</protocol>
          <ruleAction>deny</ruleAction>
          <egress>false</egress>
          <cidrBlock>0.0.0.0/0</cidrBlock>
@@ -1146,7 +1146,7 @@ var DescribeNetworkAclsExample = `
        </item>
        <item>
          <ruleNumber>32767</ruleNumber>
-         <protocol>all</protocol>
+         <protocol>-1</protocol>
          <ruleAction>deny</ruleAction>
          <egress>true</egress>
          <cidrBlock>0.0.0.0/0</cidrBlock>
@@ -1175,7 +1175,7 @@ var DescribeNetworkAclsExample = `
        </item>
        <item>
          <ruleNumber>32767</ruleNumber>
-         <protocol>all</protocol>
+         <protocol>-1</protocol>
          <ruleAction>deny</ruleAction>
          <egress>false</egress>
          <cidrBlock>0.0.0.0/0</cidrBlock>
