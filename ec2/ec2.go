@@ -300,6 +300,7 @@ type Instance struct {
 	AvailZone          string          `xml:"placement>availabilityZone"`
 	Tenancy            string          `xml:"placement>tenancy"`
 	PlacementGroupName string          `xml:"placement>groupName"`
+	Platform           string          `xml:"platform"`
 	State              InstanceState   `xml:"instanceState"`
 	Tags               []Tag           `xml:"tagSet>item"`
 	VpcId              string          `xml:"vpcId"`
