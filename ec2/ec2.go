@@ -2494,8 +2494,15 @@ type NetworkAcl struct {
 	VpcId          string                  `xml:"vpcId"`
 	Default        string                  `xml:"default"`
 	EntrySet       []NetworkAclEntry       `xml:"entrySet>item"`
-	AssociationSet []NetworkAclAssociation `xml:"AssociationSet>item"`
+	AssociationSet []NetworkAclAssociation `xml:"associationSet>item"`
 	Tags           []Tag                   `xml:"tagSet>item"`
+}
+
+// NetworkAclAssociation
+type NetworkAclAssociation struct {
+	NetworkAclAssociationId string `xml:"networkAclAssociationId"`
+	NetworkAclId            string `xml:"networkAclId"`
+	SubnetId                string `xml:"subnetId"`
 }
 
 // NetworkAclEntry represent a rule within NetworkAcl
@@ -2525,13 +2532,6 @@ type PortRange struct {
 type NetworkAclsResp struct {
 	RequestId   string       `xml:"requestId"`
 	NetworkAcls []NetworkAcl `xml:"networkAclSet>item"`
-}
-
-// NetworkAclAssociation
-type NetworkAclAssociation struct {
-	NetworkAclAssociationId string `xml:"networkAclAssociationId"`
-	NetworkAclId            string `xml:"networkAclId"`
-	SubnetId                string `xml:"subnetId"`
 }
 
 // VPC represents a single VPC.
@@ -2803,6 +2803,27 @@ func (ec2 *EC2) DeleteNetworkAclEntry(id string, ruleNumber int, egress bool) (r
 	params["Egress"] = strconv.FormatBool(egress)
 
 	resp = &DeleteNetworkAclEntryResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+type ReplaceNetworkAclAssociationResponse struct {
+	RequestId        string `xml:"requestId"`
+	NewAssociationId string `xml:"newAssociationId"`
+}
+
+// ReplaceNetworkAclAssociation changes which network ACL a subnet is associated with.
+//
+// http://goo.gl/ar0MH5
+func (ec2 *EC2) ReplaceNetworkAclAssociation(associationId string, networkAclId string) (resp *ReplaceNetworkAclAssociationResponse, err error) {
+	params := makeParams("ReplaceNetworkAclAssociation")
+	params["NetworkAclId"] = networkAclId
+	params["AssociationId"] = associationId
+
+	resp = &ReplaceNetworkAclAssociationResponse{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
