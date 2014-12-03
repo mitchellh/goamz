@@ -1047,3 +1047,161 @@ var DescribeAvailabilityZonesExample2 = `
    </availabilityZoneInfo>
 </DescribeAvailabilityZonesResponse>
 `
+
+// http://goo.gl/sdomyE
+var CreateNetworkAclExample = `
+<CreateNetworkAclResponse xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <networkAcl>
+      <networkAclId>acl-5fb85d36</networkAclId>
+      <vpcId>vpc-11ad4878</vpcId>
+      <default>false</default>
+      <entrySet>
+         <item>
+            <ruleNumber>32767</ruleNumber>
+            <protocol>-1</protocol>
+            <ruleAction>deny</ruleAction>
+            <egress>true</egress>
+            <cidrBlock>0.0.0.0/0</cidrBlock>
+         </item>
+         <item>
+            <ruleNumber>32767</ruleNumber>
+            <protocol>-1</protocol>
+            <ruleAction>deny</ruleAction>
+            <egress>false</egress>
+            <cidrBlock>0.0.0.0/0</cidrBlock>
+         </item>
+      </entrySet>
+      <associationSet/>
+      <tagSet/>
+   </networkAcl>
+</CreateNetworkAclResponse>
+`
+
+// http://goo.gl/6sYloC
+var CreateNetworkAclEntryRespExample = `
+<CreateNetworkAclEntryResponse xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+   <return>true</return>
+</CreateNetworkAclEntryResponse>
+`
+
+// http://goo.gl/5tqceF
+var DescribeNetworkAclsExample = `
+<DescribeNetworkAclsResponse xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <networkAclSet>
+   <item>
+     <networkAclId>acl-5566953c</networkAclId>
+     <vpcId>vpc-5266953b</vpcId>
+     <default>true</default>
+     <entrySet>
+       <item>
+         <ruleNumber>100</ruleNumber>
+         <protocol>-1</protocol>
+         <ruleAction>allow</ruleAction>
+         <egress>true</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+       </item>
+       <item>
+         <ruleNumber>32767</ruleNumber>
+         <protocol>-1</protocol>
+         <ruleAction>deny</ruleAction>
+         <egress>true</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+       </item>
+       <item>
+         <ruleNumber>100</ruleNumber>
+         <protocol>-1</protocol>
+         <ruleAction>allow</ruleAction>
+         <egress>false</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+       </item>
+       <item>
+         <ruleNumber>32767</ruleNumber>
+         <protocol>-1</protocol>
+         <ruleAction>deny</ruleAction>
+         <egress>false</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+       </item>
+     </entrySet>
+     <associationSet/>
+     <tagSet/>
+   </item>
+   <item>
+     <networkAclId>acl-5d659634</networkAclId>
+     <vpcId>vpc-5266953b</vpcId>
+     <default>false</default>
+     <entrySet>
+       <item>
+         <ruleNumber>110</ruleNumber>
+         <protocol>6</protocol>
+         <ruleAction>allow</ruleAction>
+         <egress>true</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+         <portRange>
+           <from>49152</from>
+           <to>65535</to>
+         </portRange>
+       </item>
+       <item>
+         <ruleNumber>32767</ruleNumber>
+         <protocol>-1</protocol>
+         <ruleAction>deny</ruleAction>
+         <egress>true</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+       </item>
+       <item>
+         <ruleNumber>110</ruleNumber>
+         <protocol>6</protocol>
+         <ruleAction>allow</ruleAction>
+         <egress>false</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+         <portRange>
+           <from>80</from>
+           <to>80</to>
+         </portRange>
+       </item>
+       <item>
+         <ruleNumber>120</ruleNumber>
+         <protocol>6</protocol>
+         <ruleAction>allow</ruleAction>
+         <egress>false</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+         <portRange>
+           <from>443</from>
+           <to>443</to>
+         </portRange>
+       </item>
+       <item>
+         <ruleNumber>32767</ruleNumber>
+         <protocol>-1</protocol>
+         <ruleAction>deny</ruleAction>
+         <egress>false</egress>
+         <cidrBlock>0.0.0.0/0</cidrBlock>
+       </item>
+     </entrySet>
+     <associationSet>
+       <item>
+         <networkAclAssociationId>aclassoc-5c659635</networkAclAssociationId>
+         <networkAclId>acl-5d659634</networkAclId>
+         <subnetId>subnet-ff669596</subnetId>
+       </item>
+       <item>
+         <networkAclAssociationId>aclassoc-c26596ab</networkAclAssociationId>
+         <networkAclId>acl-5d659634</networkAclId>
+         <subnetId>subnet-f0669599</subnetId>
+       </item>
+     </associationSet>
+     <tagSet/>
+   </item>
+ </networkAclSet>
+</DescribeNetworkAclsResponse>
+`
+
+var ReplaceNetworkAclAssociationResponseExample = `
+<ReplaceNetworkAclAssociationResponse xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <newAssociationId>aclassoc-17b85d7e</newAssociationId>
+</ReplaceNetworkAclAssociationResponse>
+`

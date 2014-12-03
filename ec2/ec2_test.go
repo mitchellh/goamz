@@ -1,12 +1,11 @@
 package ec2_test
 
 import (
-	"testing"
-
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/ec2"
 	"github.com/mitchellh/goamz/testutil"
 	. "github.com/motain/gocheck"
+	"testing"
 )
 
 func Test(t *testing.T) {
@@ -1356,4 +1355,84 @@ func (s *S) TestDescribeAvailabilityZonesExample2(c *C) {
 	c.Assert(z1.Region, Equals, "us-east-1")
 	c.Assert(z1.State, Equals, "unavailable")
 	c.Assert(z1.MessageSet, DeepEquals, []string{"us-east-1b is currently down for maintenance."})
+}
+
+func (s *S) TestCreateNetworkAcl(c *C) {
+	testServer.Response(200, nil, CreateNetworkAclExample)
+
+	options := &ec2.CreateNetworkAcl{
+		VpcId: "vpc-11ad4878",
+	}
+
+	resp, err := s.ec2.CreateNetworkAcl(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["VpcId"], DeepEquals, []string{"vpc-11ad4878"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.NetworkAcl.VpcId, Equals, "vpc-11ad4878")
+	c.Assert(resp.NetworkAcl.NetworkAclId, Equals, "acl-5fb85d36")
+	c.Assert(resp.NetworkAcl.Default, Equals, "false")
+	c.Assert(resp.NetworkAcl.EntrySet, HasLen, 2)
+	c.Assert(resp.NetworkAcl.EntrySet[0].RuleNumber, Equals, 32767)
+	c.Assert(resp.NetworkAcl.EntrySet[0].Protocol, Equals, -1)
+	c.Assert(resp.NetworkAcl.EntrySet[0].RuleAction, Equals, "deny")
+	c.Assert(resp.NetworkAcl.EntrySet[0].Egress, Equals, true)
+	c.Assert(resp.NetworkAcl.EntrySet[0].CidrBlock, Equals, "0.0.0.0/0")
+}
+
+func (s *S) TestCreateNetworkAclEntry(c *C) {
+	testServer.Response(200, nil, CreateNetworkAclEntryRespExample)
+
+	options := &ec2.NetworkAclEntry{
+		RuleNumber: 32767,
+		Protocol:   6,
+		RuleAction: "deny",
+		Egress:     true,
+		CidrBlock:  "0.0.0.0/0",
+		PortRange: ec2.PortRange{
+			To:   22,
+			From: 22,
+		},
+	}
+
+	resp, err := s.ec2.CreateNetworkAclEntry("acl-11ad4878", options)
+
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["NetworkAclId"], DeepEquals, []string{"acl-11ad4878"})
+	c.Assert(req.Form["RuleNumber"], DeepEquals, []string{"32767"})
+	c.Assert(req.Form["Protocol"], DeepEquals, []string{"6"})
+	c.Assert(req.Form["RuleAction"], DeepEquals, []string{"deny"})
+	c.Assert(req.Form["Egress"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["CidrBlock"], DeepEquals, []string{"0.0.0.0/0"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
+func (s *S) TestDescribeNetworkAcls(c *C) {
+	testServer.Response(200, nil, DescribeNetworkAclsExample)
+
+	filter := ec2.NewFilter()
+	filter.Add("vpc-id", "vpc-5266953b")
+
+	resp, err := s.ec2.NetworkAcls([]string{"acl-5566953c", "acl-5d659634"}, filter)
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.NetworkAcls, HasLen, 2)
+	c.Assert(resp.NetworkAcls[1].AssociationSet, HasLen, 2)
+	c.Assert(resp.NetworkAcls[1].AssociationSet[0].NetworkAclAssociationId, Equals, "aclassoc-5c659635")
+	c.Assert(resp.NetworkAcls[1].AssociationSet[0].NetworkAclId, Equals, "acl-5d659634")
+	c.Assert(resp.NetworkAcls[1].AssociationSet[0].SubnetId, Equals, "subnet-ff669596")
+}
+
+func (s *S) TestReplaceNetworkAclAssociation(c *C) {
+	testServer.Response(200, nil, ReplaceNetworkAclAssociationResponseExample)
+
+	resp, err := s.ec2.ReplaceNetworkAclAssociation("aclassoc-e5b95c8c", "acl-5fb85d36")
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.NewAssociationId, Equals, "aclassoc-17b85d7e")
 }

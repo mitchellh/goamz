@@ -2399,6 +2399,25 @@ type ModifySubnetAttributeResp struct {
 	Return    bool   `xml:"return"`
 }
 
+// The CreateNetworkAcl request parameters
+//
+// http://goo.gl/BZmCRF
+type CreateNetworkAcl struct {
+	VpcId string
+}
+
+// Response to a CreateNetworkAcl request
+type CreateNetworkAclResp struct {
+	RequestId  string     `xml:"requestId"`
+	NetworkAcl NetworkAcl `xml:"networkAcl"`
+}
+
+// Response to CreateNetworkAclEntry request
+type CreateNetworkAclEntryResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
 // Response to a DescribeInternetGateways request.
 type InternetGatewaysResp struct {
 	RequestId        string            `xml:"requestId"`
@@ -2467,6 +2486,52 @@ type Subnet struct {
 	DefaultForAZ            bool   `xml:"defaultForAz"`
 	MapPublicIpOnLaunch     bool   `xml:"mapPublicIpOnLaunch"`
 	Tags                    []Tag  `xml:"tagSet>item"`
+}
+
+// NetworkAcl represent network acl
+type NetworkAcl struct {
+	NetworkAclId   string                  `xml:"networkAclId"`
+	VpcId          string                  `xml:"vpcId"`
+	Default        string                  `xml:"default"`
+	EntrySet       []NetworkAclEntry       `xml:"entrySet>item"`
+	AssociationSet []NetworkAclAssociation `xml:"associationSet>item"`
+	Tags           []Tag                   `xml:"tagSet>item"`
+}
+
+// NetworkAclAssociation
+type NetworkAclAssociation struct {
+	NetworkAclAssociationId string `xml:"networkAclAssociationId"`
+	NetworkAclId            string `xml:"networkAclId"`
+	SubnetId                string `xml:"subnetId"`
+}
+
+// NetworkAclEntry represent a rule within NetworkAcl
+type NetworkAclEntry struct {
+	RuleNumber int       `xml:"ruleNumber"`
+	Protocol   int       `xml:"protocol"`
+	RuleAction string    `xml:"ruleAction"`
+	Egress     bool      `xml:"egress"`
+	CidrBlock  string    `xml:"cidrBlock"`
+	IcmpCode   IcmpCode  `xml:"icmpTypeCode"`
+	PortRange  PortRange `xml:"portRange"`
+}
+
+// IcmpCode
+type IcmpCode struct {
+	Code int `xml:"code"`
+	Type int `xml:"type"`
+}
+
+// PortRange
+type PortRange struct {
+	From int `xml:"from"`
+	To   int `xml:"to"`
+}
+
+// Response to describe NetworkAcls
+type NetworkAclsResp struct {
+	RequestId   string       `xml:"requestId"`
+	NetworkAcls []NetworkAcl `xml:"networkAclSet>item"`
 }
 
 // VPC represents a single VPC.
@@ -2640,6 +2705,130 @@ func (ec2 *EC2) DescribeSubnets(ids []string, filter *Filter) (resp *SubnetsResp
 	}
 
 	return
+}
+
+// CreateNetworkAcl creates a network ACL in a VPC.
+//
+// http://goo.gl/51X7db
+func (ec2 *EC2) CreateNetworkAcl(options *CreateNetworkAcl) (resp *CreateNetworkAclResp, err error) {
+	params := makeParams("CreateNetworkAcl")
+	params["VpcId"] = options.VpcId
+
+	resp = &CreateNetworkAclResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// CreateNetworkAclEntry creates an entry (a rule) in a network ACL with the specified rule number.
+//
+// http://goo.gl/BtXhtj
+func (ec2 *EC2) CreateNetworkAclEntry(networkAclId string, options *NetworkAclEntry) (resp *CreateNetworkAclEntryResp, err error) {
+
+	params := makeParams("CreateNetworkAclEntry")
+	params["NetworkAclId"] = networkAclId
+	params["RuleNumber"] = strconv.Itoa(options.RuleNumber)
+	params["Protocol"] = strconv.Itoa(options.Protocol)
+	params["RuleAction"] = options.RuleAction
+	params["Egress"] = strconv.FormatBool(options.Egress)
+	params["CidrBlock"] = options.CidrBlock
+	if params["Protocol"] == "-1" {
+		params["Icmp.Type"] = strconv.Itoa(options.IcmpCode.Type)
+		params["Icmp.Code"] = strconv.Itoa(options.IcmpCode.Code)
+	}
+	params["PortRange.From"] = strconv.Itoa(options.PortRange.From)
+	params["PortRange.To"] = strconv.Itoa(options.PortRange.To)
+
+	resp = &CreateNetworkAclEntryResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// NetworkAcls describes one or more of your network ACLs for given filter.
+//
+// http://goo.gl/mk9RsV
+func (ec2 *EC2) NetworkAcls(networkAclIds []string, filter *Filter) (resp *NetworkAclsResp, err error) {
+	params := makeParams("DescribeNetworkAcls")
+	addParamsList(params, "NetworkAclId", networkAclIds)
+	filter.addParams(params)
+	resp = &NetworkAclsResp{}
+	if err = ec2.query(params, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// Response to a DeleteNetworkAcl request.
+type DeleteNetworkAclResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
+// DeleteNetworkAcl deletes the network ACL with specified id.
+//
+// http://goo.gl/nC78Wx
+func (ec2 *EC2) DeleteNetworkAcl(id string) (resp *DeleteNetworkAclResp, err error) {
+	params := makeParams("DeleteNetworkAcl")
+	params["NetworkAclId"] = id
+
+	resp = &DeleteNetworkAclResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// Response to a DeleteNetworkAclEntry request.
+type DeleteNetworkAclEntryResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
+// DeleteNetworkAclEntry deletes the specified ingress or egress entry (rule) from the specified network ACL.
+//
+// http://goo.gl/moQbE2
+func (ec2 *EC2) DeleteNetworkAclEntry(id string, ruleNumber int, egress bool) (resp *DeleteNetworkAclEntryResp, err error) {
+	params := makeParams("DeleteNetworkAclEntry")
+	params["NetworkAclId"] = id
+	params["RuleNumber"] = string(ruleNumber)
+	params["Egress"] = strconv.FormatBool(egress)
+
+	resp = &DeleteNetworkAclEntryResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+type ReplaceNetworkAclAssociationResponse struct {
+	RequestId        string `xml:"requestId"`
+	NewAssociationId string `xml:"newAssociationId"`
+}
+
+// ReplaceNetworkAclAssociation changes which network ACL a subnet is associated with.
+//
+// http://goo.gl/ar0MH5
+func (ec2 *EC2) ReplaceNetworkAclAssociation(associationId string, networkAclId string) (resp *ReplaceNetworkAclAssociationResponse, err error) {
+	params := makeParams("ReplaceNetworkAclAssociation")
+	params["NetworkAclId"] = networkAclId
+	params["AssociationId"] = associationId
+
+	resp = &ReplaceNetworkAclAssociationResponse{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // Create a new internet gateway.
