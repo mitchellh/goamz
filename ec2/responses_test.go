@@ -1198,3 +1198,10 @@ var DescribeNetworkAclsExample = `
  </networkAclSet>
 </DescribeNetworkAclsResponse>
 `
+
+var ReplaceNetworkAclAssociationResponseExample = `
+<ReplaceNetworkAclAssociationResponse xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <newAssociationId>aclassoc-17b85d7e</newAssociationId>
+</ReplaceNetworkAclAssociationResponse>
+`

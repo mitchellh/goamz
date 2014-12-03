@@ -1403,7 +1403,7 @@ func (s *S) TestCreateNetworkAclEntry(c *C) {
 
 	c.Assert(req.Form["NetworkAclId"], DeepEquals, []string{"acl-11ad4878"})
 	c.Assert(req.Form["RuleNumber"], DeepEquals, []string{"32767"})
-	c.Assert(req.Form["Protocol"], DeepEquals, []string{ "6" })
+	c.Assert(req.Form["Protocol"], DeepEquals, []string{"6"})
 	c.Assert(req.Form["RuleAction"], DeepEquals, []string{"deny"})
 	c.Assert(req.Form["Egress"], DeepEquals, []string{"true"})
 	c.Assert(req.Form["CidrBlock"], DeepEquals, []string{"0.0.0.0/0"})
@@ -1422,5 +1422,17 @@ func (s *S) TestDescribeNetworkAcls(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 	c.Assert(resp.NetworkAcls, HasLen, 2)
+	c.Assert(resp.NetworkAcls[1].AssociationSet, HasLen, 2)
+	c.Assert(resp.NetworkAcls[1].AssociationSet[0].NetworkAclAssociationId, Equals, "aclassoc-5c659635")
+	c.Assert(resp.NetworkAcls[1].AssociationSet[0].NetworkAclId, Equals, "acl-5d659634")
+	c.Assert(resp.NetworkAcls[1].AssociationSet[0].SubnetId, Equals, "subnet-ff669596")
+}
 
+func (s *S) TestReplaceNetworkAclAssociation(c *C) {
+	testServer.Response(200, nil, ReplaceNetworkAclAssociationResponseExample)
+
+	resp, err := s.ec2.ReplaceNetworkAclAssociation("aclassoc-e5b95c8c", "acl-5fb85d36")
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.NewAssociationId, Equals, "aclassoc-17b85d7e")
 }
