@@ -2799,7 +2799,7 @@ type DeleteNetworkAclEntryResp struct {
 func (ec2 *EC2) DeleteNetworkAclEntry(id string, ruleNumber int, egress bool) (resp *DeleteNetworkAclEntryResp, err error) {
 	params := makeParams("DeleteNetworkAclEntry")
 	params["NetworkAclId"] = id
-	params["RuleNumber"] = string(ruleNumber)
+	params["RuleNumber"] = strconv.Itoa(ruleNumber)
 	params["Egress"] = strconv.FormatBool(egress)
 
 	resp = &DeleteNetworkAclEntryResp{}
