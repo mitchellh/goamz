@@ -99,8 +99,11 @@ type Tag struct {
 
 type LaunchConfiguration struct {
 	AssociatePublicIpAddress bool     `xml:"AssociatePublicIpAddress"`
+	EbsOptimized             bool     `xml:"EbsOptimized"`
 	IamInstanceProfile       string   `xml:"IamInstanceProfile"`
 	ImageId                  string   `xml:"ImageId"`
+	InstanceId               string   `xml:"InstanceId"`
+	InstanceMonitoring       bool     `xml:"InstanceMonitoring"`
 	InstanceType             string   `xml:"InstanceType"`
 	KernelId                 string   `xml:"KernelId"`
 	KeyName                  string   `xml:"KeyName"`
@@ -242,9 +245,11 @@ func (autoscaling *AutoScaling) CreateAutoScalingGroup(options *CreateAutoScalin
 // The CreateLaunchConfiguration request parameters
 type CreateLaunchConfiguration struct {
 	AssociatePublicIpAddress bool
+	EbsOptimized             bool
 	IamInstanceProfile       string
 	ImageId                  string
 	InstanceId               string
+	InstanceMonitoring       bool
 	InstanceType             string
 	KernelId                 string
 	KeyName                  string
@@ -263,6 +268,10 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 		params["AssociatePublicIpAddress"] = "true"
 	}
 
+	if options.EbsOptimized {
+		params["EbsOptimized"] = "true"
+	}
+
 	if options.IamInstanceProfile != "" {
 		params["IamInstanceProfile"] = options.IamInstanceProfile
 	}
@@ -270,12 +279,19 @@ func (autoscaling *AutoScaling) CreateLaunchConfiguration(options *CreateLaunchC
 	if options.ImageId != "" {
 		params["ImageId"] = options.ImageId
 	}
+
 	if options.InstanceType != "" {
 		params["InstanceType"] = options.InstanceType
 	}
+
 	if options.InstanceId != "" {
 		params["InstanceId"] = options.InstanceId
 	}
+
+	if options.InstanceMonitoring != "" {
+		params["InstanceMonitoring"] = "true"
+	}
+
 	if options.KernelId != "" {
 		params["KernelId"] = options.KernelId
 	}
