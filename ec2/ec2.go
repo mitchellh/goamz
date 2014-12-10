@@ -272,6 +272,7 @@ type RunInstancesResp struct {
 	OwnerId        string          `xml:"ownerId"`
 	SecurityGroups []SecurityGroup `xml:"groupSet>item"`
 	Instances      []Instance      `xml:"instancesSet>item"`
+	Platform       string          `xml:"platform"`
 }
 
 // BlockDevice represents the association of a block device with an instance.
@@ -313,6 +314,7 @@ type Instance struct {
 	SecurityGroups     []SecurityGroup `xml:"groupSet>item"`
 	EbsOptimized       string          `xml:"ebsOptimized"`
 	BlockDevices       []BlockDevice   `xml:"blockDeviceMapping>item"`
+	Platform           string          `xml:"platform"` 			
 }
 
 // RunInstances starts new instances in EC2.
@@ -2799,7 +2801,7 @@ type DeleteNetworkAclEntryResp struct {
 func (ec2 *EC2) DeleteNetworkAclEntry(id string, ruleNumber int, egress bool) (resp *DeleteNetworkAclEntryResp, err error) {
 	params := makeParams("DeleteNetworkAclEntry")
 	params["NetworkAclId"] = id
-	params["RuleNumber"] = strconv.Itoa(ruleNumber)
+	params["RuleNumber"] = string(ruleNumber)
 	params["Egress"] = strconv.FormatBool(egress)
 
 	resp = &DeleteNetworkAclEntryResp{}
