@@ -314,7 +314,7 @@ type Instance struct {
 	SecurityGroups     []SecurityGroup `xml:"groupSet>item"`
 	EbsOptimized       string          `xml:"ebsOptimized"`
 	BlockDevices       []BlockDevice   `xml:"blockDeviceMapping>item"`
-	Platform           string          `xml:"platform"` 			
+	Platform           string          `xml:"platform"`
 }
 
 // RunInstances starts new instances in EC2.
