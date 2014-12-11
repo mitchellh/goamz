@@ -526,7 +526,7 @@ func (ec2 *EC2) DescribeInstanceStatus(options *DescribeInstanceStatus, filter *
 		params["IncludeAllInstances"] = "true"
 	}
 	if len(options.InstanceIds) > 0 {
-		addParamsList(params, "InstanceIds", options.InstanceIds)
+		addParamsList(params, "InstanceId", options.InstanceIds)
 	}
 	if options.MaxResults > 0 {
 		params["MaxResults"] = strconv.FormatInt(options.MaxResults, 10)
