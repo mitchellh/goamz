@@ -317,14 +317,14 @@ func GetAuth(accessKey string, secretKey string) (auth Auth, err error) {
 	}
 
 	// Next try to get auth from the environment
-	auth, err = SharedAuth()
+	auth, err = EnvAuth()
 	if err == nil {
 		// Found auth, return
 		return
 	}
 
 	// Next try to get auth from the environment
-	auth, err = EnvAuth()
+	auth, err = SharedAuth()
 	if err == nil {
 		// Found auth, return
 		return
