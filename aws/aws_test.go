@@ -191,6 +191,31 @@ func (s *S) TestGetAuthEnv(c *C) {
 	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
 }
 
+func (s *S) TestGetAuthWithTokenAndShared(c *C) {
+	os.Clearenv()
+	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
+	os.Setenv("AWS_ACCESS_KEY_ID", "access")
+	os.Setenv("AWS_SECURITY_TOKEN", "token")
+
+	d, err := ioutil.TempDir("", "")
+	if err != nil {
+		panic(err)
+	}
+	defer os.RemoveAll(d)
+
+	err = os.Mkdir(d+"/.aws", 0755)
+	if err != nil {
+		panic(err)
+	}
+
+	ioutil.WriteFile(d+"/.aws/credentials", []byte("[default]\naws_access_key_id = other_access\naws_secret_access_key = other_secret\n"), 0644)
+	os.Setenv("HOME", d)
+
+	auth, err := aws.GetAuth("","")
+	c.Assert(err, IsNil)
+	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
+}
+
 func (s *S) TestEncode(c *C) {
 	c.Assert(aws.Encode("foo"), Equals, "foo")
 	c.Assert(aws.Encode("/"), Equals, "%2F")
