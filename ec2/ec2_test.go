@@ -1477,3 +1477,16 @@ func (s *S) TestDescribeCustomerGateways(c *C) {
 	c.Assert(resp.CustomerGateways[0].CustomerGatewayId, Equals, "cgw-b4dc3961")
 	c.Assert(resp.CustomerGateways[1].CustomerGatewayId, Equals, "cgw-b4dc3962")
 }
+
+func (s *S) TestDeleteCustomerGateways(c *C) {
+	testServer.Response(200, nil, DeleteCustomerGatewayResponseExample)
+
+	resp, err := s.ec2.DeleteCustomerGateways("cgw-b4dc3961")
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["CustomerGatewayId"], DeepEquals, []string{"cgw-b4dc3961"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7a62c49f-347e-4fc4-9331-6e8eEXAMPLE")
+	c.Assert(resp.Return, Equals, true)
+}
