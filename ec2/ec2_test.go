@@ -1441,9 +1441,9 @@ func (s *S) TestCreateCustomerGateway(c *C) {
 	testServer.Response(200, nil, CreateCustomerGatewayResponseExample)
 
 	options := &ec2.CreateCustomerGateway{
-		Type: "ipsec.1",
+		Type:      "ipsec.1",
 		IpAddress: "10.0.0.20",
-		BgpAsn: 65534,
+		BgpAsn:    65534,
 	}
 
 	resp, err := s.ec2.CreateCustomerGateway(options)
@@ -1457,4 +1457,23 @@ func (s *S) TestCreateCustomerGateway(c *C) {
 	c.Assert(resp.CustomerGateway.State, Equals, "pending")
 	c.Assert(resp.CustomerGateway.BgpAsn, Equals, 65534)
 	c.Assert(resp.CustomerGateway.IpAddress, Equals, "10.0.0.20")
+}
+
+func (s *S) TestDescribeCustomerGateways(c *C) {
+	testServer.Response(200, nil, DescribeCustomerGatewaysResponseExample)
+
+	filter := ec2.NewFilter()
+	filter.Add("state", "pending")
+
+	resp, err := s.ec2.DescribeCustomerGateways([]string{"cgw-b4dc3961", "cgw-b4dc3962"}, filter)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Filter.1.Name"], DeepEquals, []string{"state"})
+	c.Assert(req.Form["Filter.1.Value.1"], DeepEquals, []string{"pending"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7a62c49f-347e-4fc4-9331-6e8eEXAMPLE")
+	c.Assert(resp.CustomerGateways, HasLen, 2)
+	c.Assert(resp.CustomerGateways[0].CustomerGatewayId, Equals, "cgw-b4dc3961")
+	c.Assert(resp.CustomerGateways[1].CustomerGatewayId, Equals, "cgw-b4dc3962")
 }

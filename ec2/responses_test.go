@@ -1219,3 +1219,27 @@ var CreateCustomerGatewayResponseExample = `
    </customerGateway>
 </CreateCustomerGatewayResponse>
 `
+
+var DescribeCustomerGatewaysResponseExample = `
+<DescribeCustomerGatewaysResponse xmlns="http://ec2.amazonaws.com/doc/2014-06-15/">
+  <requestId>7a62c49f-347e-4fc4-9331-6e8eEXAMPLE</requestId>
+  <customerGatewaySet>
+    <item>
+      <customerGatewayId>cgw-b4dc3961</customerGatewayId>
+      <state>available</state>
+      <type>ipsec.1</type>
+      <ipAddress>12.1.2.3</ipAddress>
+      <bgpAsn>65534</bgpAsn>
+      <tagSet/>
+    </item>
+    <item>
+      <customerGatewayId>cgw-b4dc3962</customerGatewayId>
+      <state>pending</state>
+      <type>ipsec.1</type>
+      <ipAddress>12.1.2.4</ipAddress>
+      <bgpAsn>65500</bgpAsn>
+      <tagSet/>
+    </item>
+  </customerGatewaySet>
+</DescribeCustomerGatewaysResponse>
+`
