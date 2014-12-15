@@ -1436,3 +1436,25 @@ func (s *S) TestReplaceNetworkAclAssociation(c *C) {
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 	c.Assert(resp.NewAssociationId, Equals, "aclassoc-17b85d7e")
 }
+
+func (s *S) TestCreateCustomerGateway(c *C) {
+	testServer.Response(200, nil, CreateCustomerGatewayResponseExample)
+
+	options := &ec2.CreateCustomerGateway{
+		Type: "ipsec.1",
+		IpAddress: "10.0.0.20",
+		BgpAsn: 65534,
+	}
+
+	resp, err := s.ec2.CreateCustomerGateway(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Type"], DeepEquals, []string{"ipsec.1"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7a62c49f-347e-4fc4-9331-6e8eEXAMPLE")
+	c.Assert(resp.CustomerGateway.Type, Equals, "ipsec.1")
+	c.Assert(resp.CustomerGateway.State, Equals, "pending")
+	c.Assert(resp.CustomerGateway.BgpAsn, Equals, 65534)
+	c.Assert(resp.CustomerGateway.IpAddress, Equals, "10.0.0.20")
+}
