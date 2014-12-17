@@ -28,7 +28,10 @@ var testServer = testutil.NewHTTPServer()
 
 func (s *S) SetUpSuite(c *C) {
 	testServer.Start()
-	auth := aws.Auth{"abc", "123", ""}
+	auth := aws.Auth{
+		AccessKey: "abc",
+		SecretKey: "123",
+	}
 	s.s3 = s3.New(auth, aws.Region{Name: "faux-region-1", S3Endpoint: testServer.URL})
 }
 

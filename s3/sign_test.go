@@ -4,12 +4,19 @@ import (
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	. "github.com/motain/gocheck"
+	"os"
 )
 
 // S3 ReST authentication docs: http://goo.gl/G1LrK
 
-var testAuth = aws.Auth{"0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o", ""}
-var emptyAuth = aws.Auth{"", "", ""}
+var testAuth = aws.Auth{
+	AccessKey: "0PN5J17HBGZHT7JJ3X82",
+	SecretKey: "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
+}
+var emptyAuth = aws.Auth{
+	AccessKey: "",
+	SecretKey: "",
+}
 
 func (s *S) TestSignExampleObjectGet(c *C) {
 	method := "GET"
@@ -184,11 +191,14 @@ func (s *S) TestSignWithIAMToken(c *C) {
 		"Date": {"Wed, 28 Mar 2007 01:29:59 +0000"},
 	}
 
-	authWithToken := testAuth
-	authWithToken.Token = "totallysecret"
+	os.Setenv("AWS_ACCESS_KEY_ID", testAuth.AccessKey)
+	os.Setenv("AWS_SECRET_ACCESS_KEY", testAuth.SecretKey)
+	os.Setenv("AWS_SECURITY_TOKEN", "totallysecret")
+
+	authWithToken, _ := aws.EnvAuth()
 
 	s3.Sign(authWithToken, method, path, nil, headers)
 	expected := "AWS 0PN5J17HBGZHT7JJ3X82:SJ0yQO7NpHyXJ7zkxY+/fGQ6aUw="
 	c.Assert(headers["Authorization"], DeepEquals, []string{expected})
-	c.Assert(headers["x-amz-security-token"], DeepEquals, []string{authWithToken.Token})
+	c.Assert(headers["x-amz-security-token"], DeepEquals, []string{authWithToken.Token()})
 }

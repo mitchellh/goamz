@@ -23,7 +23,10 @@ var testServer = testutil.NewHTTPServer()
 
 func (s *S) SetUpSuite(c *C) {
 	testServer.Start()
-	auth := aws.Auth{"abc", "123", ""}
+	auth := aws.Auth{
+		AccessKey: "abc",
+		SecretKey: "123",
+	}
 	u, err := url.Parse(testServer.URL)
 	if err != nil {
 		panic(err.Error())

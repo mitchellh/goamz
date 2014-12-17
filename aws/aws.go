@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/vaughan0/go-ini"
 )
@@ -241,11 +242,22 @@ var Regions = map[string]Region{
 }
 
 type Auth struct {
-	AccessKey, SecretKey, Token string
+	AccessKey, SecretKey string
+	token                string
+	expiration           time.Time
+}
+
+func (a *Auth) Token() string {
+	if a.token != "" && a.expiration != invalidAuthExpiration && time.Since(a.expiration) >= -30*time.Second { //in an ideal world this should be zero assuming the instance is synching it's clock
+		*a, _ = RoleAuth()
+	}
+
+	return a.token
 }
 
 var unreserved = make([]bool, 128)
 var hex = "0123456789ABCDEF"
+var invalidAuthExpiration = time.Unix(0, 0)
 
 func init() {
 	// RFC3986
@@ -270,6 +282,10 @@ type credentials struct {
 // See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html for more details.
 func GetMetaData(path string) (contents []byte, err error) {
 	url := "http://169.254.169.254/latest/meta-data/" + path
+
+	if metadataUrl := os.Getenv("GOAWS_INSTANCE_METADATA_URL"); metadataUrl != "" {
+		url = metadataUrl + "/" + path
+	}
 
 	resp, err := RetryingClient.Get(url)
 	if err != nil {
@@ -313,7 +329,7 @@ func getInstanceCredentials() (cred credentials, err error) {
 func GetAuth(accessKey string, secretKey string) (auth Auth, err error) {
 	// First try passed in credentials
 	if accessKey != "" && secretKey != "" {
-		return Auth{accessKey, secretKey, ""}, nil
+		return Auth{AccessKey: accessKey, SecretKey: secretKey}, nil
 	}
 
 	// Next try to get auth from the environment
@@ -399,7 +415,8 @@ func EnvAuth() (auth Auth, err error) {
 		auth.SecretKey = os.Getenv("AWS_SECRET_KEY")
 	}
 
-	auth.Token = os.Getenv("AWS_SECURITY_TOKEN")
+	auth.token = os.Getenv("AWS_SECURITY_TOKEN")
+	auth.expiration = invalidAuthExpiration
 
 	if auth.AccessKey == "" {
 		err = errors.New("AWS_ACCESS_KEY_ID or AWS_ACCESS_KEY not found in environment")
@@ -422,7 +439,13 @@ func RoleAuth() (auth Auth, err error) {
 	// Found auth, return
 	auth.AccessKey = cred.AccessKeyId
 	auth.SecretKey = cred.SecretAccessKey
-	auth.Token = cred.Token
+	auth.token = cred.Token
+	auth.expiration, err = time.Parse("2006-01-02T15:04:05Z", cred.Expiration)
+
+	if err != nil {
+		err = errors.New("Cannot parse token expiration date: " + err.Error())
+		return
+	}
 
 	return
 }
