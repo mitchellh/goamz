@@ -331,14 +331,11 @@ func GetAuth(accessKey string, secretKey string) (auth Auth, err error) {
 	}
 
 	// Next try getting auth from the instance role
-	cred, err := getInstanceCredentials()
+	auth, err = RoleAuth()
 	if err == nil {
-		// Found auth, return
-		auth.AccessKey = cred.AccessKeyId
-		auth.SecretKey = cred.SecretAccessKey
-		auth.Token = cred.Token
 		return
 	}
+
 	err = errors.New("No valid AWS authentication found")
 	return
 }
@@ -410,6 +407,23 @@ func EnvAuth() (auth Auth, err error) {
 	if auth.SecretKey == "" {
 		err = errors.New("AWS_SECRET_ACCESS_KEY or AWS_SECRET_KEY not found in environment")
 	}
+	return
+}
+
+func RoleAuth() (auth Auth, err error) {
+	var cred credentials
+
+	cred, err = getInstanceCredentials()
+
+	if err != nil {
+		return
+	}
+
+	// Found auth, return
+	auth.AccessKey = cred.AccessKeyId
+	auth.SecretKey = cred.SecretAccessKey
+	auth.Token = cred.Token
+
 	return
 }
 
