@@ -277,6 +277,7 @@ type LoadBalancer struct {
 	Instances         []Instance  `xml:"Instances>member"`
 	HealthCheck       HealthCheck `xml:"HealthCheck"`
 	AvailabilityZones []string    `xml:"AvailabilityZones>member"`
+	HostedZoneNameID  string      `xml:"CanonicalHostedZoneNameID"`
 	DNSName           string      `xml:"DNSName"`
 	SecurityGroups    []string    `xml:"SecurityGroups>member"`
 	Scheme            string      `xml:"Scheme"`
