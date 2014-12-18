@@ -1759,6 +1759,11 @@ type KeyPairsResp struct {
 	Keys      []KeyPair `xml:"keySet>item"`
 }
 
+type DescribeKeyPairsResp struct {
+	RequestId string    `xml:"requestId"`
+	KeyPairs  []KeyPair `xml:"keySet>item"`
+}
+
 type CreateKeyPairResp struct {
 	RequestId      string `xml:"requestId"`
 	KeyName        string `xml:"keyName"`
@@ -1770,6 +1775,18 @@ type ImportKeyPairResponse struct {
 	RequestId      string `xml:"requestId"`
 	KeyName        string `xml:"keyName"`
 	KeyFingerprint string `xml:"keyFingerprint"`
+}
+
+// DescribeKeyPairs returns all the key pairs for the current region
+//
+// See http://goo.gl/pTMbH0
+func (ec2 *EC2) DescribeKeyPairs() (resp *DescribeKeyPairsResp, err error) {
+	params := makeParams("DescribeKeyPairs")
+
+	resp = &DescribeKeyPairsResp{}
+	err = ec2.query(params, resp)
+
+	return
 }
 
 // CreateKeyPair creates a new key pair and returns the private key contents.
