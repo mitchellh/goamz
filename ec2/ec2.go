@@ -1121,6 +1121,7 @@ type AssociateAddress struct {
 	PublicIp           string
 	AllocationId       string
 	AllowReassociation bool
+	PrivateIpAddress   string
 }
 
 // Response to an AssociateAddress request
@@ -1202,6 +1203,9 @@ func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddr
 	}
 	if options.AllowReassociation {
 		params["AllowReassociation"] = "true"
+	}
+	if options.PrivateIpAddress != "" {
+		params["PrivateIpAddress"] = options.PrivateIpAddress
 	}
 
 	resp = &AssociateAddressResp{}
