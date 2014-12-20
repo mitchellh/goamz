@@ -1115,6 +1115,25 @@ func (s *S) TestReleaseAddressExample(c *C) {
 	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
 }
 
+func (s *S) TestAssignPrivateIpAddressesExample(c *C) {
+	testServer.Response(200, nil, AssignPrivateIpAddressesExample)
+
+	options := &ec2.AssignPrivateIpAddresses{
+		NetworkInterfaceId:             "eni-d83388b1",
+		SecondaryPrivateIpAddressCount: 2,
+	}
+
+	resp, err := s.ec2.AssignPrivateIpAddresses(options)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"AssignPrivateIpAddresses"})
+	c.Assert(req.Form["NetworkInterfaceId"], DeepEquals, []string{"eni-d83388b1"})
+	c.Assert(req.Form["SecondaryPrivateIpAddressCount"], DeepEquals, []string{"2"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+}
+
 func (s *S) TestAssociateAddressExample(c *C) {
 	testServer.Response(200, nil, AssociateAddressExample)
 

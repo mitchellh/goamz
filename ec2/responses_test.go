@@ -905,6 +905,14 @@ var ReleaseAddressExample = `
 </ReleaseAddressResponse>
 `
 
+// http://goo.gl/i00gqC
+var AssignPrivateIpAddressesExample = `
+<AssignPrivateIpAddresses xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+   <return>true</return>
+</AssignPrivateIpAddresses>
+`
+
 // http://goo.gl/uOSQE
 var AssociateAddressExample = `
 <AssociateAddressResponse xmlns="http://ec2.amazonaws.com/doc/2013-10-15/">
