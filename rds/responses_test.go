@@ -581,7 +581,6 @@ var DescribeDBParameterGroupsExample = `
 </DescribeDBParameterGroupsResponse>
 `
 
-
 var DeleteDBParameterGroupExample = `
 <DeleteDBParameterGroupResponse xmlns="http://rds.amazonaws.com/doc/2014-09-01/">
   <ResponseMetadata>
