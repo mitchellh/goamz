@@ -1,5 +1,7 @@
 # goamz - An Amazon Library for Go 
 
+[![Build Status](https://travis-ci.org/mitchellh/goamz.svg)](https://travis-ci.org/mitchellh/goamz)
+
 Current API documentation: [![GoDoc](https://godoc.org/github.com/mitchellh/goamz?status.svg)](https://godoc.org/github.com/mitchellh/goamz)
 
 This is a fork of [https://launchpad.net/goamz](https://launchpad.net/goamz)
