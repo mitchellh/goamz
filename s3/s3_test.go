@@ -11,7 +11,7 @@ import (
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"github.com/mitchellh/goamz/testutil"
-	. "github.com/motain/gocheck"
+	. "gopkg.in/check.v1"
 )
 
 func Test(t *testing.T) {

@@ -1,11 +1,12 @@
 package iam_test
 
 import (
+	"net/url"
+
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/iam"
 	"github.com/mitchellh/goamz/testutil"
-	. "github.com/motain/gocheck"
-	"net/url"
+	. "gopkg.in/check.v1"
 )
 
 // AmazonServer represents an Amazon AWS server.
