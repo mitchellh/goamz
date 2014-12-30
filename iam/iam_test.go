@@ -163,6 +163,30 @@ func (s *S) TestListGroupsWithoutPathPrefix(c *C) {
 	c.Assert(ok, Equals, false)
 }
 
+func (s *S) TestListUsers(c *C) {
+	testServer.Response(200, nil, ListUsersExample)
+	resp, err := s.iam.Users()
+	values := testServer.WaitRequest().URL.Query()
+	c.Assert(values.Get("Action"), Equals, "ListUsers")
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "7a62c49f-347e-4fc4-9331-6e8eEXAMPLE")
+	expected := []iam.User{
+		{
+			Path: "/division_abc/subdivision_xyz/engineering/",
+			Name: "Andrew",
+			Id:   "AID2MAB8DPLSRHEXAMPLE",
+			Arn:  "arn:aws:iam::123456789012:user/division_abc/subdivision_xyz/engineering/Andrew",
+		},
+		{
+			Path: "/division_abc/subdivision_xyz/engineering/",
+			Name: "Jackie",
+			Id:   "AIDIODR4TAW7CSEXAMPLE",
+			Arn:  "arn:aws:iam::123456789012:user/division_abc/subdivision_xyz/engineering/Jackie",
+		},
+	}
+	c.Assert(resp.Users, DeepEquals, expected)
+}
+
 func (s *S) TestCreateAccessKey(c *C) {
 	testServer.Response(200, nil, CreateAccessKeyExample)
 	resp, err := s.iam.CreateAccessKey("Bob")

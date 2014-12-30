@@ -134,6 +134,28 @@ func (iam *IAM) CreateUser(name, path string) (*CreateUserResp, error) {
 	return resp, nil
 }
 
+// UsersResp Response to a ListUsers request.
+//
+// See http://goo.gl/iBxBBb for more details.
+type UsersResp struct {
+	Users     []User `xml:"ListUsersResult>Users>member"`
+	RequestId string `xml:"ResponseMetadata>RequestId"`
+}
+
+// Users list all the users.
+//
+// See http://goo.gl/iBxBBb for more details.
+func (iam *IAM) Users() (*UsersResp, error) {
+	params := map[string]string{
+		"Action": "ListUsers",
+	}
+	resp := new(UsersResp)
+	if err := iam.query(params, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // Response for GetUser requests.
 //
 // See http://goo.gl/ZnzRN for more details.
