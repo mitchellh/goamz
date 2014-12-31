@@ -1264,6 +1264,36 @@ func (s *S) TestCreateSubnet(c *C) {
 	c.Assert(resp.Subnet.AvailableIpAddressCount, Equals, 251)
 }
 
+func (s *S) TestEnableVgwRoutePropagation(c *C) {
+	testServer.Response(200, nil, EnableVgwRoutePropagationExample)
+
+	options := &ec2.VgwRoutePropagation{
+		RouteTableId: "rtb-foo",
+		GatewayId:    "vgw-bar",
+	}
+
+	resp, err := s.ec2.EnableVgwRoutePropagation(options)
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.Return, Equals, true)
+	c.Assert(resp.RequestId, Equals, "4f35a1b2-c2c3-4093-b51f-abb9d7311990EXAMPLE")
+}
+
+func (s *S) TestDisableVgwRoutePropagation(c *C) {
+	testServer.Response(200, nil, DisableVgwRoutePropagationExample)
+
+	options := &ec2.VgwRoutePropagation{
+		RouteTableId: "rtb-foo",
+		GatewayId:    "vgw-bar",
+	}
+
+	resp, err := s.ec2.DisableVgwRoutePropagation(options)
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.Return, Equals, true)
+	c.Assert(resp.RequestId, Equals, "4f35a1b2-c2c3-4093-b51f-abb9d7311991EXAMPLE")
+}
+
 func (s *S) TestModifySubnetAttribute(c *C) {
 	testServer.Response(200, nil, ModifySubnetAttributeExample)
 
