@@ -382,6 +382,10 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 		params["NetworkInterface.0.AssociatePublicIpAddress"] = "true"
 		params["NetworkInterface.0.SubnetId"] = options.SubnetId
 
+		if options.PrivateIPAddress != "" {
+			params["NetworkInterface.0.PrivateIpAddress"] = options.PrivateIPAddress
+		}
+
 		i := 1
 		for _, g := range options.SecurityGroups {
 			// We only have SecurityGroupId's on NetworkInterface's, no SecurityGroup params.
@@ -393,6 +397,10 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	} else {
 		if options.SubnetId != "" {
 			params["SubnetId"] = options.SubnetId
+		}
+
+		if options.PrivateIPAddress != "" {
+			params["PrivateIpAddress"] = options.PrivateIPAddress
 		}
 
 		i, j := 1, 1
@@ -417,9 +425,6 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	}
 	if options.ShutdownBehavior != "" {
 		params["InstanceInitiatedShutdownBehavior"] = options.ShutdownBehavior
-	}
-	if options.PrivateIPAddress != "" {
-		params["PrivateIpAddress"] = options.PrivateIPAddress
 	}
 	addBlockDeviceParams("", params, options.BlockDevices)
 
