@@ -35,24 +35,55 @@ func NewWithClient(auth aws.Auth, region aws.Region, httpClient *http.Client) *R
 	return &Route53{auth, region, httpClient}
 }
 
-type CreateHostedZoneRequest struct {
+type CreatePublicHostedZoneRequest struct {
 	Name            string `xml:"Name"`
 	CallerReference string `xml:"CallerReference"`
 	Comment         string `xml:"HostedZoneConfig>Comment"`
 }
 
-type CreateHostedZoneResponse struct {
-	HostedZone    HostedZone    `xml:"HostedZone"`
-	ChangeInfo    ChangeInfo    `xml:"ChangeInfo"`
-	DelegationSet DelegationSet `xml:"DelegationSet"`
+type CreatePublicHostedZoneResponse struct {
+	PublicHostedZone    PublicHostedZone `xml:"HostedZone"`
+	ChangeInfo          ChangeInfo       `xml:"ChangeInfo"`
+	DelegationSet       DelegationSet    `xml:"DelegationSet"`
 }
 
-type HostedZone struct {
+type CreatePrivateHostedZoneRequest struct {
+	Name            string `xml:"Name"`
+	VPCId           string `xml:"VPC>VPCId"`
+	VPCRegion       string `xml:"VPC>VPCRegion"`
+	CallerReference string `xml:"CallerReference"`
+	Comment         string `xml:"HostedZoneConfig>Comment"`
+}
+
+type CreatePrivateHostedZoneResponse struct {
+	PrivateHostedZone    PrivateHostedZone  `xml:"HostedZone"`
+	VPC                  VPC                `xml:"VPC"`
+	ChangeInfo           ChangeInfo         `xml:"ChangeInfo"`
+}
+
+type PublicHostedZone struct {
 	ID              string `xml:"Id"`
 	Name            string `xml:"Name"`
 	CallerReference string `xml:"CallerReference"`
 	Comment         string `xml:"Config>Comment"`
+	PrivateZone     string `xml:"Config>PrivateZone"`
 	ResourceCount   int    `xml:"ResourceRecordSetCount"`
+}
+
+type PrivateHostedZone struct {
+	ID              string `xml:"Id"`
+	Name            string `xml:"Name"`
+	CallerReference string `xml:"CallerReference"`
+	VPCId           string `xml:"VPC>VPCId"`
+	VPCRegion       string `xml:"VPC>VPCRegion"`
+	Comment         string `xml:"Config>Comment"`
+	PrivateZone     string `xml:"Config>PrivateZone"`
+	ResourceCount   int    `xml:"ResourceRecordSetCount"`
+}
+
+type VPC struct {
+	VPCId     string `xml:"VPC>VPCId"`
+	VPCRegion string `xml:"VPC>VPCRegion"`
 }
 
 type ChangeInfo struct {
@@ -158,13 +189,31 @@ func multimap(p map[string]string) url.Values {
 	return q
 }
 
-// CreateHostedZone is used to create a new hosted zone
-func (r *Route53) CreateHostedZone(req *CreateHostedZoneRequest) (*CreateHostedZoneResponse, error) {
+// CreateHostedZone is kept for backwards compatibility
+func (r *Route53) CreateHostedZone(req *CreatePublicHostedZoneRequest) (*CreatePublicHostedZoneResponse, error) {
+	return CreatePublicHostedZone(req)
+}
+
+// CreatePublicHostedZone is used to create a new hosted zone
+func (r *Route53) CreatePublicHostedZone(req *CreatePublicHostedZoneRequest) (*CreatePublicHostedZoneResponse, error) {
 	// Generate a unique caller reference if none provided
 	if req.CallerReference == "" {
 		req.CallerReference = time.Now().Format(time.RFC3339Nano)
 	}
-	out := &CreateHostedZoneResponse{}
+	out := &CreatePublicHostedZoneResponse{}
+	if err := r.query("POST", fmt.Sprintf("/%s/hostedzone", APIVersion), req, out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// CreatePrivateHostedZone is used to create a new hosted zone
+func (r *Route53) CreatePrivateHostedZone(req *CreatePrivateHostedZoneRequest) (*CreatePrivateHostedZoneResponse, error) {
+	// Generate a unique caller reference if none provided
+	if req.CallerReference == "" {
+		req.CallerReference = time.Now().Format(time.RFC3339Nano)
+	}
+	out := &CreatePublicHostedZoneResponse{}
 	if err := r.query("POST", fmt.Sprintf("/%s/hostedzone", APIVersion), req, out); err != nil {
 		return nil, err
 	}
