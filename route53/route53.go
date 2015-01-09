@@ -61,6 +61,17 @@ type CreatePrivateHostedZoneResponse struct {
 	ChangeInfo           ChangeInfo         `xml:"ChangeInfo"`
 }
 
+// kept for backwards compatibility
+type HostedZone struct {
+	ID              string `xml:"Id"`
+	Name            string `xml:"Name"`
+	CallerReference string `xml:"CallerReference"`
+	Comment         string `xml:"Config>Comment"`
+	PrivateZone     string `xml:"Config>PrivateZone"`
+	ResourceCount   int    `xml:"ResourceRecordSetCount"`
+}
+
+
 type PublicHostedZone struct {
 	ID              string `xml:"Id"`
 	Name            string `xml:"Name"`
