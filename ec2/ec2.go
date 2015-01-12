@@ -3085,3 +3085,78 @@ func (ec2 *EC2) ResetImageAttribute(imageId string, options *ResetImageAttribute
 	}
 	return
 }
+
+type CreateCustomerGateway struct {
+	Type      string
+	IpAddress string
+	BgpAsn    int
+}
+
+// Response to a CreateCustomerGateway request
+type CreateCustomerGatewayResp struct {
+	RequestId       string          `xml:"requestId"`
+	CustomerGateway CustomerGateway `xml:"customerGateway"`
+}
+
+type CustomerGateway struct {
+	CustomerGatewayId string `xml:"customerGatewayId"`
+	State             string `xml:"state"`
+	Type              string `xml:"type"`
+	IpAddress         string `xml:"ipAddress"`
+	BgpAsn            int    `xml:"bgpAsn"`
+	Tags              []Tag  `xml:"tagSet>item"`
+}
+
+type DescribeCustomerGatewaysResp struct {
+	RequestId        string            `xml:"requestId"`
+	CustomerGateways []CustomerGateway `xml:"customerGatewaySet>item"`
+}
+
+//Create a customer gateway
+func (ec2 *EC2) CreateCustomerGateway(options *CreateCustomerGateway) (resp *CreateCustomerGatewayResp, err error) {
+	params := makeParams("CreateCustomerGateway")
+	params["Type"] = options.Type
+	params["IpAddress"] = options.IpAddress
+	if options.BgpAsn != 0 {
+		params["BgpAsn"] = strconv.Itoa(options.BgpAsn)
+	}
+
+	resp = &CreateCustomerGatewayResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (ec2 *EC2) DescribeCustomerGateways(ids []string, filter *Filter) (resp *DescribeCustomerGatewaysResp, err error) {
+	params := makeParams("DescribeCustomerGateways")
+	addParamsList(params, "CustomerGatewayId", ids)
+	filter.addParams(params)
+
+	resp = &DescribeCustomerGatewaysResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+type DeleteCustomerGatewaysResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
+func (ec2 *EC2) DeleteCustomerGateways(customerGatewayId string) (resp *DeleteCustomerGatewaysResp, err error) {
+	params := makeParams("DeleteCustomerGateways")
+	params["CustomerGatewayId"] = customerGatewayId
+
+	resp = &DeleteCustomerGatewaysResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
