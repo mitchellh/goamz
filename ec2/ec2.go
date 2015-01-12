@@ -2376,6 +2376,23 @@ type ReassociateRouteTableResp struct {
 	AssociationId string `xml:"newAssociationId"`
 }
 
+// The CreateDhcpOptions request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateDhcpOptions.html
+type CreateDhcpOptions struct {
+	DomainNameServers  string
+	DomainName         string
+	NtpServers         string
+	NetbiosNameServers string
+	NetbiosNodeType    string
+}
+
+// Response to a CreateDhcpOptions request
+type CreateDhcpOptionsResp struct {
+	RequestId   string      `xml:"requestId"`
+	DhcpOptions DhcpOptions `xml:"dhcpOptions"`
+}
+
 // The CreateSubnet request parameters
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateSubnet.html
@@ -2491,6 +2508,16 @@ type Subnet struct {
 	DefaultForAZ            bool   `xml:"defaultForAz"`
 	MapPublicIpOnLaunch     bool   `xml:"mapPublicIpOnLaunch"`
 	Tags                    []Tag  `xml:"tagSet>item"`
+}
+
+// DhcpOptions
+type DhcpOptions struct {
+	DhcpOptionsId         string               `xml:"dhcpOptionsId"`
+	DhcpConfigurationSets DhcpConfigurationSet `xml:"dhcpConfigurationSet"`
+}
+
+type DhcpConfigurationSet struct {
+	Tags []Tag `xml:"dhcpConfigurationSet>item"`
 }
 
 // NetworkAcl represent network acl
@@ -2709,6 +2736,51 @@ func (ec2 *EC2) DescribeSubnets(ids []string, filter *Filter) (resp *SubnetsResp
 		return nil, err
 	}
 
+	return
+}
+
+// Create DhcpOptions.
+func (ec2 *EC2) CreateDhcpOptions(options *CreateDhcpOptions) (resp *CreateDhcpOptionsResp, err error) {
+	params := makeParams("CreateDhcpOptions")
+	params["DomainNameServers"] = options.DomainNameServers
+	params["DomainName"] = options.DomainName
+	params["NtpServers"] = options.NtpServers
+	params["NetbiosNameServers"] = options.NetbiosNameServers
+	params["NetbiosNodeType"] = options.NetbiosNodeType
+
+	resp = &CreateDhcpOptionsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Delete DhcpOptions.
+func (ec2 *EC2) DeleteDhcpOptions(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteDhcpOptions")
+	params["DhcpOptionsId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Associate DhcpOptions to a VPC.
+func (ec2 *EC2) AssociateDhcpOptions(dhcpOptionsId string, vpcId string) (resp *SimpleResp, err error) {
+	params := makeParams("AssociateDhcpOptions")
+	params["DhcpOptionsId"] = dhcpOptionsId
+	params["VpcId"] = vpcId
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
 	return
 }
 
