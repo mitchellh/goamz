@@ -3215,16 +3215,16 @@ func (ec2 *EC2) DescribeCustomerGateways(ids []string, filter *Filter) (resp *De
 	return
 }
 
-type DeleteCustomerGatewaysResp struct {
+type DeleteCustomerGatewayResp struct {
 	RequestId string `xml:"requestId"`
 	Return    bool   `xml:"return"`
 }
 
-func (ec2 *EC2) DeleteCustomerGateways(customerGatewayId string) (resp *DeleteCustomerGatewaysResp, err error) {
-	params := makeParams("DeleteCustomerGateways")
+func (ec2 *EC2) DeleteCustomerGateway(customerGatewayId string) (resp *DeleteCustomerGatewayResp, err error) {
+	params := makeParams("DeleteCustomerGateway")
 	params["CustomerGatewayId"] = customerGatewayId
 
-	resp = &DeleteCustomerGatewaysResp{}
+	resp = &DeleteCustomerGatewayResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err

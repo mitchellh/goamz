@@ -1478,7 +1478,7 @@ func (s *S) TestDescribeCustomerGateways(c *C) {
 	c.Assert(resp.CustomerGateways[1].CustomerGatewayId, Equals, "cgw-b4dc3962")
 }
 
-func (s *S) TestDeleteCustomerGateways(c *C) {
+func (s *S) TestDeleteCustomerGateway(c *C) {
 	testServer.Response(200, nil, DeleteCustomerGatewayResponseExample)
 
 	resp, err := s.ec2.DeleteCustomerGateways("cgw-b4dc3961")
