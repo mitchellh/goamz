@@ -1,11 +1,12 @@
 package rds_test
 
 import (
+	"testing"
+
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/rds"
 	"github.com/mitchellh/goamz/testutil"
-	. "github.com/motain/gocheck"
-	"testing"
+	. "gopkg.in/check.v1"
 )
 
 func Test(t *testing.T) {
@@ -206,7 +207,7 @@ func (s *S) Test_DescribeDBParameters(c *C) {
 
 	options := rds.DescribeDBParameters{
 		DBParameterGroupName: "mydbparamgroup3",
-		Source: "user",
+		Source:               "user",
 	}
 
 	resp, err := s.rds.DescribeDBParameters(&options)
@@ -379,7 +380,7 @@ func (s *S) Test_ModifyDBParameterGroup(c *C) {
 
 	options := rds.ModifyDBParameterGroup{
 		DBParameterGroupName: "mydbparamgroup3",
-		Parameters:           []rds.Parameter{
+		Parameters: []rds.Parameter{
 			rds.Parameter{
 				ApplyMethod:    "immediate",
 				ParameterName:  "character_set_server",

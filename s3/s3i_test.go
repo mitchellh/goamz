@@ -8,13 +8,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mitchellh/goamz/aws"
-	"github.com/mitchellh/goamz/s3"
-	"github.com/mitchellh/goamz/testutil"
-	. "github.com/motain/gocheck"
 	"net"
 	"sort"
 	"time"
+
+	"github.com/mitchellh/goamz/aws"
+	"github.com/mitchellh/goamz/s3"
+	"github.com/mitchellh/goamz/testutil"
+	. "gopkg.in/check.v1"
 )
 
 // AmazonServer represents an Amazon S3 server.

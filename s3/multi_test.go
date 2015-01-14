@@ -3,7 +3,7 @@ package s3_test
 import (
 	"encoding/xml"
 	"github.com/mitchellh/goamz/s3"
-	. "github.com/motain/gocheck"
+	. "gopkg.in/check.v1"
 	"io"
 	"io/ioutil"
 	"strings"
