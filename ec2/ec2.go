@@ -382,6 +382,10 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 		params["NetworkInterface.0.AssociatePublicIpAddress"] = "true"
 		params["NetworkInterface.0.SubnetId"] = options.SubnetId
 
+		if options.PrivateIPAddress != "" {
+			params["NetworkInterface.0.PrivateIpAddress"] = options.PrivateIPAddress
+		}
+
 		i := 1
 		for _, g := range options.SecurityGroups {
 			// We only have SecurityGroupId's on NetworkInterface's, no SecurityGroup params.
@@ -393,6 +397,10 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	} else {
 		if options.SubnetId != "" {
 			params["SubnetId"] = options.SubnetId
+		}
+
+		if options.PrivateIPAddress != "" {
+			params["PrivateIpAddress"] = options.PrivateIPAddress
 		}
 
 		i, j := 1, 1
@@ -417,9 +425,6 @@ func (ec2 *EC2) RunInstances(options *RunInstances) (resp *RunInstancesResp, err
 	}
 	if options.ShutdownBehavior != "" {
 		params["InstanceInitiatedShutdownBehavior"] = options.ShutdownBehavior
-	}
-	if options.PrivateIPAddress != "" {
-		params["PrivateIpAddress"] = options.PrivateIPAddress
 	}
 	addBlockDeviceParams("", params, options.BlockDevices)
 
@@ -526,7 +531,7 @@ func (ec2 *EC2) DescribeInstanceStatus(options *DescribeInstanceStatus, filter *
 		params["IncludeAllInstances"] = "true"
 	}
 	if len(options.InstanceIds) > 0 {
-		addParamsList(params, "InstanceIds", options.InstanceIds)
+		addParamsList(params, "InstanceId", options.InstanceIds)
 	}
 	if options.MaxResults > 0 {
 		params["MaxResults"] = strconv.FormatInt(options.MaxResults, 10)
@@ -2371,6 +2376,23 @@ type ReassociateRouteTableResp struct {
 	AssociationId string `xml:"newAssociationId"`
 }
 
+// The CreateDhcpOptions request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateDhcpOptions.html
+type CreateDhcpOptions struct {
+	DomainNameServers  string
+	DomainName         string
+	NtpServers         string
+	NetbiosNameServers string
+	NetbiosNodeType    string
+}
+
+// Response to a CreateDhcpOptions request
+type CreateDhcpOptionsResp struct {
+	RequestId   string      `xml:"requestId"`
+	DhcpOptions DhcpOptions `xml:"dhcpOptions"`
+}
+
 // The CreateSubnet request parameters
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateSubnet.html
@@ -2486,6 +2508,16 @@ type Subnet struct {
 	DefaultForAZ            bool   `xml:"defaultForAz"`
 	MapPublicIpOnLaunch     bool   `xml:"mapPublicIpOnLaunch"`
 	Tags                    []Tag  `xml:"tagSet>item"`
+}
+
+// DhcpOptions
+type DhcpOptions struct {
+	DhcpOptionsId         string               `xml:"dhcpOptionsId"`
+	DhcpConfigurationSets DhcpConfigurationSet `xml:"dhcpConfigurationSet"`
+}
+
+type DhcpConfigurationSet struct {
+	Tags []Tag `xml:"dhcpConfigurationSet>item"`
 }
 
 // NetworkAcl represent network acl
@@ -2704,6 +2736,51 @@ func (ec2 *EC2) DescribeSubnets(ids []string, filter *Filter) (resp *SubnetsResp
 		return nil, err
 	}
 
+	return
+}
+
+// Create DhcpOptions.
+func (ec2 *EC2) CreateDhcpOptions(options *CreateDhcpOptions) (resp *CreateDhcpOptionsResp, err error) {
+	params := makeParams("CreateDhcpOptions")
+	params["DomainNameServers"] = options.DomainNameServers
+	params["DomainName"] = options.DomainName
+	params["NtpServers"] = options.NtpServers
+	params["NetbiosNameServers"] = options.NetbiosNameServers
+	params["NetbiosNodeType"] = options.NetbiosNodeType
+
+	resp = &CreateDhcpOptionsResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// Delete DhcpOptions.
+func (ec2 *EC2) DeleteDhcpOptions(id string) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteDhcpOptions")
+	params["DhcpOptionsId"] = id
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Associate DhcpOptions to a VPC.
+func (ec2 *EC2) AssociateDhcpOptions(dhcpOptionsId string, vpcId string) (resp *SimpleResp, err error) {
+	params := makeParams("AssociateDhcpOptions")
+	params["DhcpOptionsId"] = dhcpOptionsId
+	params["VpcId"] = vpcId
+
+	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
 	return
 }
 
@@ -3079,5 +3156,80 @@ func (ec2 *EC2) ResetImageAttribute(imageId string, options *ResetImageAttribute
 	if err != nil {
 		return nil, err
 	}
+	return
+}
+
+type CreateCustomerGateway struct {
+	Type      string
+	IpAddress string
+	BgpAsn    int
+}
+
+// Response to a CreateCustomerGateway request
+type CreateCustomerGatewayResp struct {
+	RequestId       string          `xml:"requestId"`
+	CustomerGateway CustomerGateway `xml:"customerGateway"`
+}
+
+type CustomerGateway struct {
+	CustomerGatewayId string `xml:"customerGatewayId"`
+	State             string `xml:"state"`
+	Type              string `xml:"type"`
+	IpAddress         string `xml:"ipAddress"`
+	BgpAsn            int    `xml:"bgpAsn"`
+	Tags              []Tag  `xml:"tagSet>item"`
+}
+
+type DescribeCustomerGatewaysResp struct {
+	RequestId        string            `xml:"requestId"`
+	CustomerGateways []CustomerGateway `xml:"customerGatewaySet>item"`
+}
+
+//Create a customer gateway
+func (ec2 *EC2) CreateCustomerGateway(options *CreateCustomerGateway) (resp *CreateCustomerGatewayResp, err error) {
+	params := makeParams("CreateCustomerGateway")
+	params["Type"] = options.Type
+	params["IpAddress"] = options.IpAddress
+	if options.BgpAsn != 0 {
+		params["BgpAsn"] = strconv.Itoa(options.BgpAsn)
+	}
+
+	resp = &CreateCustomerGatewayResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (ec2 *EC2) DescribeCustomerGateways(ids []string, filter *Filter) (resp *DescribeCustomerGatewaysResp, err error) {
+	params := makeParams("DescribeCustomerGateways")
+	addParamsList(params, "CustomerGatewayId", ids)
+	filter.addParams(params)
+
+	resp = &DescribeCustomerGatewaysResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+type DeleteCustomerGatewayResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
+func (ec2 *EC2) DeleteCustomerGateway(customerGatewayId string) (resp *DeleteCustomerGatewayResp, err error) {
+	params := makeParams("DeleteCustomerGateway")
+	params["CustomerGatewayId"] = customerGatewayId
+
+	resp = &DeleteCustomerGatewayResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
 	return
 }
