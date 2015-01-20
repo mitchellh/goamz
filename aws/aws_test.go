@@ -150,7 +150,7 @@ func (s *S) TestSharedAuthCredentialsWithToken(c *C) {
                 panic(err)
         }
 
-        ioutil.WriteFile(d+"/.aws/credentials", []byte("[bar]\naws_access_key_id = access\naws_secret_access_key = secret\naws_session_token = token\n", 0644)
+        ioutil.WriteFile(d+"/.aws/credentials", []byte("[bar]\naws_access_key_id = access\naws_secret_access_key = secret\naws_session_token = token\n"), 0644)
         os.Setenv("HOME", d)
 
         auth, err := aws.SharedAuth()
