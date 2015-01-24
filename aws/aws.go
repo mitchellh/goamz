@@ -313,7 +313,7 @@ func EnvRegion() (region Region, err error) {
 }
 
 // GetRegionFromInstance retrieves the region from the instance metadata service
-func getInstanceRegion() (region string, err error) {
+func GetInstanceRegion() (region string, err error) {
 
 	regionMatch := regexp.MustCompile(`^(\w+-\w+-\d+)`)
 	regionPath := "placement/availability-zone/"
@@ -341,16 +341,12 @@ func getInstanceRegion() (region string, err error) {
 func GetRegion(r string) (region Region, err error) {
 	if r != "" {
 		region = Regions[r]
-		if region.Name == "" {
-			err = fmt.Errorf("%v is not a valid region", r)
+		if region.Name != "" {
+			return
 		}
-		return
 	}
 
 	region, err = EnvRegion()
-	if err == nil {
-		return
-	}
 
 	return
 }
