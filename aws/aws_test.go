@@ -1,12 +1,14 @@
 package aws_test
 
 import (
-	"github.com/mitchellh/goamz/aws"
-	. "github.com/motain/gocheck"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/mitchellh/goamz/aws"
+	. "github.com/motain/gocheck"
 )
 
 func Test(t *testing.T) {
@@ -200,4 +202,47 @@ func (s *S) TestRegionsAreNamed(c *C) {
 	for n, r := range aws.Regions {
 		c.Assert(n, Equals, r.Name)
 	}
+}
+
+func (s *S) TestEnvRegionNoRegion(c *C) {
+	_, err := aws.EnvRegion()
+	c.Assert(err, ErrorMatches, "AWS_REGION or aws_region not found in environment")
+}
+
+func (s *S) TestEnvRegion(c *C) {
+	os.Clearenv()
+	os.Setenv("AWS_REGION", "eu-west-1")
+	region, err := aws.EnvRegion()
+	c.Assert(err, IsNil)
+	c.Assert(region.Name, Equals, "eu-west-1")
+}
+
+func (s *S) TestEnvRegionAlt(c *C) {
+	os.Clearenv()
+	os.Setenv("aws_region", "eu-west-1")
+	region, err := aws.EnvRegion()
+	c.Assert(err, IsNil)
+	c.Assert(region.Name, Equals, "eu-west-1")
+}
+
+func (s *S) TestEnvRegionInvalid(c *C) {
+	os.Clearenv()
+	os.Setenv("AWS_REGION", "eu-west-never")
+	_, err := aws.EnvRegion()
+	errorString := fmt.Sprintf("%v region not found", os.Getenv("AWS_REGION"))
+	c.Assert(err, ErrorMatches, errorString)
+}
+
+func (s *S) TestGetRegionStatic(c *C) {
+	region, err := aws.GetRegion("eu-west-1")
+	c.Assert(err, IsNil)
+	c.Assert(region.Name, Equals, "eu-west-1")
+}
+
+func (s *S) TestGetRegionEnv(c *C) {
+	os.Clearenv()
+	os.Setenv("AWS_REGION", "eu-west-1")
+	region, err := aws.GetRegion("")
+	c.Assert(err, IsNil)
+	c.Assert(region.Name, Equals, "eu-west-1")
 }
