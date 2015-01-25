@@ -313,7 +313,7 @@ func EnvRegion() (region Region, err error) {
 }
 
 // GetRegionFromInstance retrieves the region from the instance metadata service
-func GetInstanceRegion() (region string, err error) {
+func GetInstanceRegion() (region Region, err error) {
 
 	regionMatch := regexp.MustCompile(`^(\w+-\w+-\d+)`)
 	regionPath := "placement/availability-zone/"
@@ -330,23 +330,39 @@ func GetInstanceRegion() (region string, err error) {
 
 	if extracted == nil {
 		err = fmt.Errorf("invalid region from metadata service - availability-zone")
+		return
 	}
 
-	region = extracted[1]
+	r := extracted[1]
+
+	region, ok := Regions[r]
+	if ok == false{
+		err = fmt.Errorf("cannot find region %s", r)
+	}
 
 	return
 }
 
 // GetRegion tires to get the region from either environment variables or metadata service if available
 func GetRegion(r string) (region Region, err error) {
-	if r != "" {
-		region = Regions[r]
-		if region.Name != "" {
+
+	region, ok := Regions[r]
+	if ok == true {
 			return
-		}
 	}
 
+	//if not passed in, check ENV
 	region, err = EnvRegion()
+	if err == nil {
+		return
+	}
+
+	region, err = GetInstanceRegion()
+	if err == nil {
+		return
+	}
+
+	err = errors.New("Cloud not find a valid AWS region")
 
 	return
 }
