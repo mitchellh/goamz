@@ -375,6 +375,7 @@ func (s *S) TestDescribeInstancesExample1(c *C) {
 	c.Assert(r0i.PrivateDNSName, Equals, "domU-12-31-39-10-56-34.compute-1.internal")
 	c.Assert(r0i.DNSName, Equals, "ec2-174-129-165-232.compute-1.amazonaws.com")
 	c.Assert(r0i.AvailZone, Equals, "us-east-1b")
+	c.Assert(r0i.RootDeviceName, Equals, "/dev/sda1")
 
 	b0 := r0i.BlockDevices[0]
 	c.Assert(b0.DeviceName, Equals, "/dev/sda1")
