@@ -1481,7 +1481,7 @@ func (s *S) TestDescribeCustomerGateways(c *C) {
 func (s *S) TestDeleteCustomerGateway(c *C) {
 	testServer.Response(200, nil, DeleteCustomerGatewayResponseExample)
 
-	resp, err := s.ec2.DeleteCustomerGateways("cgw-b4dc3961")
+	resp, err := s.ec2.DeleteCustomerGateway("cgw-b4dc3961")
 
 	req := testServer.WaitRequest()
 	c.Assert(req.Form["CustomerGatewayId"], DeepEquals, []string{"cgw-b4dc3961"})
