@@ -19,7 +19,7 @@ type Rds struct {
 	httpClient *http.Client
 }
 
-const APIVersion = "2013-09-09"
+const APIVersion = "2014-10-31"
 
 // New creates a new Rds instance.
 func New(auth aws.Auth, region aws.Region) *Rds {

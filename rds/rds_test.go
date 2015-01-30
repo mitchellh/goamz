@@ -138,7 +138,7 @@ func (s *S) Test_DescribeDBInstances(c *C) {
 	c.Assert(resp.RequestId, Equals, "01b2685a-b978-11d3-f272-7cd6cce12cc5")
 	c.Assert(resp.DBInstances[0].DBName, Equals, "mysampledb")
 	c.Assert(resp.DBInstances[0].DBSecurityGroupNames, DeepEquals, []string{"my-db-secgroup"})
-	c.Assert(resp.DBInstances[0].DBParameterGroupName, Equals, "my-db-paramgroup")
+	c.Assert(resp.DBInstances[0].DBParameterGroupName, Equals, "default.mysql5.6")
 	c.Assert(resp.DBInstances[1].VpcSecurityGroupIds, DeepEquals, []string{"my-vpc-secgroup"})
 }
 
@@ -206,7 +206,7 @@ func (s *S) Test_DescribeDBParameters(c *C) {
 
 	options := rds.DescribeDBParameters{
 		DBParameterGroupName: "mydbparamgroup3",
-		Source: "user",
+		Source:               "user",
 	}
 
 	resp, err := s.rds.DescribeDBParameters(&options)
@@ -379,7 +379,7 @@ func (s *S) Test_ModifyDBParameterGroup(c *C) {
 
 	options := rds.ModifyDBParameterGroup{
 		DBParameterGroupName: "mydbparamgroup3",
-		Parameters:           []rds.Parameter{
+		Parameters: []rds.Parameter{
 			rds.Parameter{
 				ApplyMethod:    "immediate",
 				ParameterName:  "character_set_server",
