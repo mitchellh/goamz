@@ -93,6 +93,7 @@ func makeParams(action string) map[string]string {
 type DBInstance struct {
 	Address                    string        `xml:"Endpoint>Address"`
 	AllocatedStorage           int           `xml:"AllocatedStorage"`
+	StorageType                string        `xml:"StorageType"`
 	AvailabilityZone           string        `xml:"AvailabilityZone"`
 	BackupRetentionPeriod      int           `xml:"BackupRetentionPeriod"`
 	DBInstanceClass            string        `xml:"DBInstanceClass"`
@@ -170,6 +171,7 @@ type Parameter struct {
 // The CreateDBInstance request parameters
 type CreateDBInstance struct {
 	AllocatedStorage           int
+	StorageType                string
 	AvailabilityZone           string
 	BackupRetentionPeriod      int
 	DBInstanceClass            string
@@ -201,6 +203,10 @@ func (rds *Rds) CreateDBInstance(options *CreateDBInstance) (resp *SimpleResp, e
 
 	if options.SetAllocatedStorage {
 		params["AllocatedStorage"] = strconv.Itoa(options.AllocatedStorage)
+	}
+
+	if options.StorageType != "" {
+		params["StorageType"] = options.StorageType
 	}
 
 	if options.SetBackupRetentionPeriod {

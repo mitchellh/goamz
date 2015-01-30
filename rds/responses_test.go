@@ -54,6 +54,7 @@ var DescribeDBInstancesExample = `
         <AutoMinorVersionUpgrade>true</AutoMinorVersionUpgrade>
         <InstanceCreateTime>2014-01-29T22:58:24.231Z</InstanceCreateTime>
         <AllocatedStorage>5</AllocatedStorage>
+        <StorageType>gp2</StorageType>
         <MasterUsername>myawsuser</MasterUsername>
         <DBInstanceClass>db.t1.micro</DBInstanceClass>
       </DBInstance>
