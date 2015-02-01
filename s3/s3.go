@@ -331,9 +331,11 @@ func (b *Bucket) PutReaderHeader(path string, r io.Reader, length int64, customH
 }
 
 /*
-Copy - copy objects inside bucket
+copyObject - copy objects.
+oldPath should begin with /<bucket-name>.
+newPath should not include the bucket name.
 */
-func (b *Bucket) Copy(oldPath, newPath string, perm ACL) error {
+func (b *Bucket) copyObject(oldPath, newPath string, perm ACL) error {
 	if !strings.HasPrefix(oldPath, "/") {
 		oldPath = "/" + oldPath
 	}
@@ -343,7 +345,7 @@ func (b *Bucket) Copy(oldPath, newPath string, perm ACL) error {
 		bucket: b.Name,
 		path:   newPath,
 		headers: map[string][]string{
-			"x-amz-copy-source": {amazonEscape("/" + b.Name + oldPath)},
+			"x-amz-copy-source": {amazonEscape(oldPath)},
 			"x-amz-acl":         {string(perm)},
 		},
 	}
@@ -364,6 +366,26 @@ func (b *Bucket) Copy(oldPath, newPath string, perm ACL) error {
 		return nil
 	}
 	panic("unreachable")
+}
+
+/*
+Copy - copy objects inside bucket
+*/
+func (b *Bucket) Copy(oldPath, newPath string, perm ACL) error {
+  if !strings.HasPrefix(oldPath, "/") {
+    oldPath = "/" + oldPath
+  }
+  return b.copyObject("/" + b.Name + oldPath, newPath, perm)
+}
+
+/*
+CopyToAnotherBucket - copy objects from this bucket to another
+*/
+func (b *Bucket) CopyToAnotherBucket(oldPath string, newBucket *Bucket, newPath string, perm ACL) error {
+  if !strings.HasPrefix(oldPath, "/") {
+    oldPath = "/" + oldPath
+  }
+  return newBucket.copyObject("/" + b.Name + oldPath, newPath, perm)
 }
 
 // Del removes an object from the S3 bucket.
