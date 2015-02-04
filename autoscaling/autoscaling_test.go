@@ -108,6 +108,7 @@ func (s *S) Test_DescribeAutoScalingGroups(c *C) {
 	c.Assert(resp.RequestId, Equals, "0f02a07d-b677-11e2-9eb0-dd50EXAMPLE")
 	c.Assert(resp.AutoScalingGroups[0].Name, Equals, "my-test-asg-lbs")
 	c.Assert(resp.AutoScalingGroups[0].LaunchConfigurationName, Equals, "my-test-lc")
+	c.Assert(resp.AutoScalingGroups[0].TerminationPolicies[0], Equals, "Default")
 }
 
 func (s *S) Test_DescribeLaunchConfigurations(c *C) {
