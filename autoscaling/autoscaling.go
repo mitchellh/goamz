@@ -135,6 +135,7 @@ type AutoScalingGroup struct {
 	Status                  string     `xml:"Status"`
 	Tags                    []Tag      `xml:"Tags>member"`
 	VPCZoneIdentifier       string     `xml:"VPCZoneIdentifier"`
+	TerminationPolicies     []string   `xml:"TerminationPolicies>member"`
 }
 
 // ----------------------------------------------------------------------------
