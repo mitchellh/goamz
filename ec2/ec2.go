@@ -2335,6 +2335,64 @@ type CreateInternetGatewayResp struct {
 	InternetGateway InternetGateway `xml:"internetGateway"`
 }
 
+// The CreateVpcPeeringConnection request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateVpcPeeringConnection.html
+type CreateVpcPeeringConnection struct {
+	PeerOwnerId string
+	PeerVpcId   string
+	VpcId       string
+}
+
+// Response to a CreateVpcPeeringConnection
+type CreateVpcPeeringConnectionResp struct {
+	RequestId            string               `xml:"requestId"`
+	VpcPeeringConnection VpcPeeringConnection `xml:"vpcPeeringConnection"`
+}
+
+// The AcceptVpcPeeringConnection request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_AcceptVpcPeeringConnection.html
+type AcceptVpcPeeringConnection struct {
+	VpcPeeringConnectionId string `xml:"vpcPeeringConnectionId"`
+}
+
+// Response to a AcceptVpcPeeringConnection request.
+type AcceptVpcPeeringConnectionResp struct {
+	RequestId            string               `xml:"requestId"`
+	VpcPeeringConnection VpcPeeringConnection `xml:"vpcPeeringConnection"`
+}
+
+// The DeleteVpcPeeringConnection request
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DeleteVpcPeeringConnection.html
+type DeleteVpcPeeringConnection struct {
+	VpcPeeringConnectionId string `xml:"vpcPeeringConnectionId"`
+}
+
+// Response to a DeleteVpcPeeringConnection request.
+type DeleteVpcPeeringConnectionResp struct {
+	RequestId string `xml:"requestId"`
+}
+
+// Response to a DescribeVpcPeeringConnection request.
+type DescribeVpcPeeringConnectionResp struct {
+	RequestId             string                 `xml:"requestId"`
+	VpcPeeringConnections []VpcPeeringConnection `xml:"vpcPeeringConnectionSet>item"`
+}
+
+// The RejectVpcPeeringConnection request
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_RejectVpcPeeringConnection.html
+type RejectVpcPeeringConnection struct {
+	VpcPeeringConnectionId string `xml:"vpcPeeringConnectionId"`
+}
+
+// Response to a RejectVpcPeeringConnection request.
+type RejectVpcPeeringConnectionResp struct {
+	RequestId string `xml:"requestId"`
+}
+
 // The CreateRouteTable request parameters.
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-CreateRouteTable.html
@@ -2469,6 +2527,27 @@ type InternetGateway struct {
 type InternetGatewayAttachment struct {
 	VpcId string `xml:"vpcId"`
 	State string `xml:"state"`
+}
+
+// vpc peering
+type VpcPeeringConnection struct {
+	AccepterVpcInfo        VpcPeeringConnectionVpcInfo     `xml:"accepterVpcInfo"`
+	ExpirationTime         string                          `xml:"expirationTime"`
+	RequesterVpcInfo       VpcPeeringConnectionVpcInfo     `xml:"requesterVpcInfo"`
+	Status                 VpcPeeringConnectionStateReason `xml:"status"`
+	Tags                   []Tag                           `xml:"tagSet>item"`
+	VpcPeeringConnectionId string                          `xml:"vpcPeeringConnectionId"`
+}
+
+type VpcPeeringConnectionVpcInfo struct {
+	CidrBlock string `xml:"cidrBlock"`
+	OwnerId   string `xml:"ownerId"`
+	VpcId     string `xml:"vpcId"`
+}
+
+type VpcPeeringConnectionStateReason struct {
+	Code    string `xml:"code"`
+	Message string `xml:"message"`
 }
 
 // Routing Table
@@ -3128,6 +3207,74 @@ func (ec2 *EC2) ReplaceRoute(options *ReplaceRoute) (resp *SimpleResp, err error
 	}
 
 	resp = &SimpleResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Create a vpc peering connection
+func (ec2 *EC2) CreateVpcPeeringConnection(
+	options *CreateVpcPeeringConnection) (resp *CreateVpcPeeringConnectionResp, err error) {
+	params := makeParams("CreateVpcPeeringConnection")
+	params["PeerOwnerId"] = options.PeerOwnerId
+	params["PeerVpcId"] = options.PeerVpcId
+	params["VpcId"] = options.VpcId
+
+	resp = &CreateVpcPeeringConnectionResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// AcceptVpcPeeringConnection
+func (ec2 *EC2) AcceptVpcPeeringConnection(id string) (resp *AcceptVpcPeeringConnectionResp, err error) {
+	params := makeParams("AcceptVpcPeeringConnection")
+	params["VpcPeeringConnectionId"] = id
+
+	resp = &AcceptVpcPeeringConnectionResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (ec2 *EC2) DeleteVpcPeeringConnection(id string) (resp *DeleteVpcPeeringConnectionResp, err error) {
+	params := makeParams("DeleteVpcPeeringConnection")
+	params["VpcPeeringConnectionId"] = id
+
+	resp = &DeleteVpcPeeringConnectionResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// DescribeVpcPeeringConnection
+func (ec2 *EC2) DescribeVpcPeeringConnection(ids []string, filter *Filter) (resp *DescribeVpcPeeringConnectionResp, err error) {
+	params := makeParams("DescribeVpcPeeringConnections")
+	addParamsList(params, "VpcPeeringConnectionId", ids)
+	filter.addParams(params)
+	resp = &DescribeVpcPeeringConnectionResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+// RejectVpcPeeringConnection
+func (ec2 *EC2) RejectVpcPeeringConnection(id string) (resp *RejectVpcPeeringConnectionResp, err error) {
+	params := makeParams("RejectVpcPeeringConnection")
+	params["VpcPeeringConnectionId"] = id
+
+	resp = &RejectVpcPeeringConnectionResp{}
 	err = ec2.query(params, resp)
 	if err != nil {
 		return nil, err
