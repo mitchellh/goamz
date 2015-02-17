@@ -1895,9 +1895,10 @@ type SecurityGroupsResp struct {
 // See http://goo.gl/CIdyP for more details.
 type SecurityGroupInfo struct {
 	SecurityGroup
-	OwnerId     string   `xml:"ownerId"`
-	Description string   `xml:"groupDescription"`
-	IPPerms     []IPPerm `xml:"ipPermissions>item"`
+	OwnerId       string   `xml:"ownerId"`
+	Description   string   `xml:"groupDescription"`
+	IPPerms       []IPPerm `xml:"ipPermissions>item"`
+	IPPermsEgress []IPPerm `xml:"ipPermissionsEgress>item"`
 }
 
 // IPPerm represents an allowance within an EC2 security group.
@@ -2017,6 +2018,13 @@ func (ec2 *EC2) AuthorizeSecurityGroupEgress(group SecurityGroup, perms []IPPerm
 // See http://goo.gl/ZgdxA for more details.
 func (ec2 *EC2) RevokeSecurityGroup(group SecurityGroup, perms []IPPerm) (resp *SimpleResp, err error) {
 	return ec2.authOrRevoke("RevokeSecurityGroupIngress", group, perms)
+}
+
+// RevokeSecurityGroupEgress revokes egress permissions from a group
+//
+// see http://goo.gl/Zv4wh8
+func (ec2 *EC2) RevokeSecurityGroupEgress(group SecurityGroup, perms []IPPerm) (resp *SimpleResp, err error) {
+	return ec2.authOrRevoke("RevokeSecurityGroupEgress", group, perms)
 }
 
 func (ec2 *EC2) authOrRevoke(op string, group SecurityGroup, perms []IPPerm) (resp *SimpleResp, err error) {
