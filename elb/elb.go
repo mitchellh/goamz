@@ -4,6 +4,7 @@ package elb
 
 import (
 	"encoding/xml"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -369,7 +370,96 @@ func (elb *ELB) ModifyLoadBalancerAttributes(options *ModifyLoadBalancerAttribut
 	return
 }
 
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Policies
+type CreateLoadBalancerPolicy struct {
+	LoadBalancerName string
+	PolicyName       string
+	PolicyTypeName   string
+	PolicyAttributes []PolicyAttribute
+}
+
+type PolicyAttribute struct {
+	AttributeName  string
+	AttributeValue string
+}
+
+func (elb *ELB) CreateLoadBalancerPolicy(options *CreateLoadBalancerPolicy) (resp *SimpleResp, err error) {
+	params := makeParams("CreateLoadBalancerPolicy")
+
+	params["LoadBalancerName"] = options.LoadBalancerName
+	params["PolicyName"] = options.PolicyName
+	params["PolicyTypeName"] = options.PolicyTypeName
+	for i := 0; i <= len(options.PolicyAttributes); i++ {
+		attributeName := fmt.Sprintf("PolicyAttributes.member.%d.AttributeName", i+1)
+		attributeValue := fmt.Sprintf("PolicyAttributes.member.%d.AttributeValue", i+1)
+		params[attributeName] = options.PolicyAttributes[i].AttributeName
+		params[attributeValue] = options.PolicyAttributes[i].AttributeValue
+	}
+	resp = &SimpleResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+type SetLoadBalancerPoliciesOfListener struct {
+	LoadBalancerName string
+	LoadBalancerPort int64
+	PolicyNames      []string
+}
+
+func (elb *ELB) SetLoadBalancerPoliciesOfListener(options *SetLoadBalancerPoliciesOfListener) (resp *SimpleResp, err error) {
+	params := makeParams("SetLoadBalancerPoliciesOfListener")
+
+	params["LoadBalancerName"] = options.LoadBalancerName
+	params["LoadBalancerPort"] = strconv.Itoa(int(options.LoadBalancerPort))
+	for i := 0; i <= len(options.PolicyNames); i++ {
+		member := fmt.Sprintf("PolicyNames.member.%d", i+1)
+		params[member] = options.PolicyNames[i]
+	}
+	resp = &SimpleResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+type SetLoadBalancerPoliciesForBackendServer struct {
+	LoadBalancerName string
+	InstancePort     int64
+	PolicyNames      []string
+}
+
+func (elb *ELB) SetLoadBalancerPoliciesForBackendServer(options *SetLoadBalancerPoliciesForBackendServer) (resp *SimpleResp, err error) {
+	params := makeParams("SetLoadBalancerPoliciesForBackendServer")
+
+	params["LoadBalancerName"] = options.LoadBalancerName
+	params["InstancePort"] = strconv.Itoa(int(options.InstancePort))
+	for i := 0; i <= len(options.PolicyNames); i++ {
+		member := fmt.Sprintf("PolicyNames.member.%d", i+1)
+		params[member] = options.PolicyNames[i]
+	}
+	resp = &SimpleResp{}
+
+	err = elb.query(params, resp)
+
+	if err != nil {
+		resp = nil
+	}
+
+	return
+}
+
+// ---------------------------------------------------------------------------
 // Instance Registration / deregistration
 
 // The RegisterInstancesWithLoadBalancer request parameters
