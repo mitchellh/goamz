@@ -161,7 +161,23 @@ func (s *S) TestEnvAuthWithToken(c *C) {
 	os.Clearenv()
 	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
 	os.Setenv("AWS_ACCESS_KEY_ID", "access")
-	os.Setenv("AWS_SECURITY_TOKEN", "token")
+	os.Setenv("AWS_SESSION_TOKEN", "token")
+	auth, err := aws.EnvAuth()
+	c.Assert(err, IsNil)
+	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
+}
+
+func (s *S) TestEnvAuthWithDeprecatedVars(c *C) {
+	os.Clearenv()
+	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
+	os.Setenv("AWS_SECRET_KEY", "old_secret")
+
+	os.Setenv("AWS_ACCESS_KEY_ID", "access")
+	os.Setenv("AWS_ACCESS_KEY", "old_access")
+
+	os.Setenv("AWS_SESSION_TOKEN", "token")
+	os.Setenv("AWS_SECURITY_TOKEN", "old_token")
+
 	auth, err := aws.EnvAuth()
 	c.Assert(err, IsNil)
 	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
@@ -171,9 +187,10 @@ func (s *S) TestEnvAuthAlt(c *C) {
 	os.Clearenv()
 	os.Setenv("AWS_SECRET_KEY", "secret")
 	os.Setenv("AWS_ACCESS_KEY", "access")
+	os.Setenv("AWS_SECURITY_TOKEN", "token")
 	auth, err := aws.EnvAuth()
 	c.Assert(err, IsNil)
-	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
+	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
 }
 
 func (s *S) TestGetAuthStatic(c *C) {
