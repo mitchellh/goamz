@@ -390,7 +390,7 @@ func (elb *ELB) CreateLoadBalancerPolicy(options *CreateLoadBalancerPolicy) (res
 	params["LoadBalancerName"] = options.LoadBalancerName
 	params["PolicyName"] = options.PolicyName
 	params["PolicyTypeName"] = options.PolicyTypeName
-	for i := 0; i <= len(options.PolicyAttributes); i++ {
+	for i := 0; i < len(options.PolicyAttributes); i++ {
 		attributeName := fmt.Sprintf("PolicyAttributes.member.%d.AttributeName", i+1)
 		attributeValue := fmt.Sprintf("PolicyAttributes.member.%d.AttributeValue", i+1)
 		params[attributeName] = options.PolicyAttributes[i].AttributeName
@@ -418,7 +418,7 @@ func (elb *ELB) SetLoadBalancerPoliciesOfListener(options *SetLoadBalancerPolici
 
 	params["LoadBalancerName"] = options.LoadBalancerName
 	params["LoadBalancerPort"] = strconv.Itoa(int(options.LoadBalancerPort))
-	for i := 0; i <= len(options.PolicyNames); i++ {
+	for i := 0; i < len(options.PolicyNames); i++ {
 		member := fmt.Sprintf("PolicyNames.member.%d", i+1)
 		params[member] = options.PolicyNames[i]
 	}
