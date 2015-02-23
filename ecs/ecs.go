@@ -171,6 +171,7 @@ type ListClusters struct {
 type ListClustersResp struct {
 	RequestId   string   `xml:"ResponseMetadata>RequestId" json:"requestId"`
 	ClusterArns []string `xml:"ListClustersResult>clusterArns>member"  json:"clusterArns"`
+	NextToken   string   `xml:"ListClustersResult>nextToken" json:"nextToken"`
 }
 
 // See http://goo.gl/WXV8cC for more details
@@ -179,6 +180,116 @@ func (e *ECS) ListClusters(options *ListClusters) (*ListClustersResp, error) {
 	params.Set(options)
 
 	resp := &ListClustersResp{}
+	err := e.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
+}
+
+// ------------------------------------------------------
+
+type ListContainerInstances struct {
+	Cluster    string `form:"cluster"`
+	MaxResults int    `form:"maxResults"`
+	NextToken  string `form:"nextToken"`
+}
+
+type ListContainerInstancesResp struct {
+	RequestId             string   `xml:"ResponseMetadata>RequestId" json:"requestId"`
+	ContainerInstanceArns []string `xml:"ListContainerInstancesResult>containerInstanceArns>member" json:"containerInstanceArns"`
+	NextToken             string   `xml:"ListContainerInstancesResult>nextToken" json:"nextToken"`
+}
+
+// See http://goo.gl/cYoTSL for more details
+func (e *ECS) ListContainerInstances(options *ListContainerInstances) (*ListContainerInstancesResp, error) {
+	params := makeParams("ListContainerInstances")
+	params.Set(options)
+
+	resp := &ListContainerInstancesResp{}
+	err := e.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
+}
+
+// ------------------------------------------------------
+
+type ListTaskDefinitionFamilies struct {
+	FamilyPrefix string `form:"familyPrefix"`
+	MaxResults   int    `form:"maxResults"`
+	NextToken    string `form:"nextToken"`
+}
+
+type ListTaskDefinitionFamiliesResp struct {
+	RequestId string   `xml:"ResponseMetadata>RequestId" json:"requestId"`
+	Families  []string `xml:"ListTaskDefinitionFamiliesResult>families>member" json:"families"`
+	NextToken string   `xml:"ListTaskDefinitionFamiliesResult>nextToken" json:"nextToken"`
+}
+
+// See http://goo.gl/kZKRR1 for more details
+func (e *ECS) ListTaskDefinitionFamilies(options *ListTaskDefinitionFamilies) (*ListTaskDefinitionFamiliesResp, error) {
+	params := makeParams("ListTaskDefinitionFamilies")
+	params.Set(options)
+
+	resp := &ListTaskDefinitionFamiliesResp{}
+	err := e.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
+}
+
+// ------------------------------------------------------
+
+type ListTaskDefinitions struct {
+	FamilyPrefix string `form:"familyPrefix"`
+	MaxResults   int    `form:"maxResults"`
+	NextToken    string `form:"nextToken"`
+}
+
+type ListTaskDefinitionsResp struct {
+	RequestId          string   `xml:"ResponseMetadata>RequestId" json:"requestId"`
+	TaskDefinitionArns []string `xml:"ListTaskDefinitionsResult>taskDefinitionArns>member" json:"taskDefinitionArns"`
+	NextToken          string   `xml:"ListTaskDefinitionsResult>nextToken" json:"nextToken"`
+}
+
+// See http://goo.gl/7ukY3J for more details
+func (e *ECS) ListTaskDefinitions(options *ListTaskDefinitions) (*ListTaskDefinitionsResp, error) {
+	params := makeParams("ListTaskDefinitions")
+	params.Set(options)
+
+	resp := &ListTaskDefinitionsResp{}
+	err := e.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
+}
+
+// ------------------------------------------------------
+
+type ListTasks struct {
+	Cluster           string `form:"cluster"`
+	ContainerInstance string `form:"containerInstance"`
+	Family            string `form:"family"`
+	MaxResults        int    `form:"maxResults"`
+	NextToken         string `form:"nextToken"`
+}
+
+type ListTasksResp struct {
+	RequestId string   `xml:"ResponseMetadata>RequestId" json:"requestId"`
+	TaskArns  []string `xml:"ListTasksResult>taskArns>member" json:"taskArns"`
+	NextToken string   `xml:"ListTasksResult>nextToken" json:"nextToken"`
+}
+
+// See http://goo.gl/dc8QGQ for more details
+func (e *ECS) ListTasks(options *ListTasks) (*ListTasksResp, error) {
+	params := makeParams("ListTasks")
+	params.Set(options)
+
+	resp := &ListTasksResp{}
 	err := e.query(params, resp)
 	if err != nil {
 		return nil, err

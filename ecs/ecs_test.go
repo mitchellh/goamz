@@ -154,3 +154,107 @@ func (s *S) TestListClusters(c *C) {
 
 	c.Assert(resp.ClusterArns, DeepEquals, []string{"arn:aws:ecs:us-east-1:012345678910:cluster/default", "arn:aws:ecs:us-east-1:012345678910:cluster/ecs-preview"})
 }
+
+func (s *S) TestListContainerInstances(c *C) {
+	body := `<ListContainerInstancesResponse xmlns="http://ecs.amazonaws.com/doc/2014-11-13/">
+  <ListContainerInstancesResult>
+    <containerInstanceArns>
+      <member>arn:aws:ecs:us-east-1:012345678910:container-instance/b0d69404-4bba-4ad8-96f7-2fa6b6a79c1c</member>
+    </containerInstanceArns>
+  </ListContainerInstancesResult>
+  <ResponseMetadata>
+    <RequestId>123a4b56-7c89-01d2-3ef4-example5678f</RequestId>
+  </ResponseMetadata>
+</ListContainerInstancesResponse>`
+	client, mock := mockClient(body)
+
+	// When
+	resp, err := client.ListContainerInstances(&ListContainerInstances{})
+
+	// Then
+	c.Assert(err, Equals, nil)
+
+	c.Assert(mock.Query.Get("Action"), Equals, "ListContainerInstances")
+
+	c.Assert(resp.ContainerInstanceArns, DeepEquals, []string{"arn:aws:ecs:us-east-1:012345678910:container-instance/b0d69404-4bba-4ad8-96f7-2fa6b6a79c1c"})
+}
+
+func (s *S) TestListTaskDefinitionFamilies(c *C) {
+	body := `<ListTaskDefinitionFamiliesResponse xmlns="http://ecs.amazonaws.com/doc/2014-11-13/">
+  <ListTaskDefinitionFamiliesResult>
+    <families>
+      <member>hpcc</member>
+      <member>hpcc-t2-medium</member>
+    </families>
+  </ListTaskDefinitionFamiliesResult>
+  <ResponseMetadata>
+    <RequestId>526f0836-b6ed-11e4-87f7-b9d2e0bd52a5</RequestId>
+  </ResponseMetadata>
+</ListTaskDefinitionFamiliesResponse>`
+	client, mock := mockClient(body)
+
+	// When
+	resp, err := client.ListTaskDefinitionFamilies(&ListTaskDefinitionFamilies{FamilyPrefix: "hp"})
+
+	// Then
+	c.Assert(err, Equals, nil)
+
+	c.Assert(mock.Query.Get("Action"), Equals, "ListTaskDefinitionFamilies")
+	c.Assert(mock.Query.Get("familyPrefix"), Equals, "hp")
+
+	c.Assert(resp.Families, DeepEquals, []string{"hpcc", "hpcc-t2-medium"})
+}
+
+func (s *S) TestListTaskDefinitions(c *C) {
+	body := `<ListTaskDefinitionsResponse xmlns="http://ecs.amazonaws.com/doc/2014-11-13/">
+  <ListTaskDefinitionsResult>
+    <taskDefinitionArns>
+      <member>arn:aws:ecs:us-east-1:012345678910:task-definition/hello_world:1</member>
+      <member>arn:aws:ecs:us-east-1:012345678910:task-definition/hello_world:2</member>
+    </taskDefinitionArns>
+  </ListTaskDefinitionsResult>
+  <ResponseMetadata>
+    <RequestId>123a4b56-7c89-01d2-3ef4-example5678f</RequestId>
+  </ResponseMetadata>
+</ListTaskDefinitionsResponse>`
+	client, mock := mockClient(body)
+
+	// When
+	resp, err := client.ListTaskDefinitions(&ListTaskDefinitions{FamilyPrefix: "hp"})
+
+	// Then
+	c.Assert(err, Equals, nil)
+
+	c.Assert(mock.Query.Get("Action"), Equals, "ListTaskDefinitions")
+	c.Assert(resp.TaskDefinitionArns, DeepEquals, []string{"arn:aws:ecs:us-east-1:012345678910:task-definition/hello_world:1", "arn:aws:ecs:us-east-1:012345678910:task-definition/hello_world:2"})
+}
+
+func (s *S) TestListTasks(c *C) {
+	body := `<ListTasksResponse xmlns="http://ecs.amazonaws.com/doc/2014-11-13/">
+  <ListTasksResult>
+    <taskArns>
+      <member>arn:aws:ecs:us-east-1:012345678910:task/0c399d42-0b06-4a82-8794-d593fe68411f</member>
+    </taskArns>
+  </ListTasksResult>
+  <ResponseMetadata>
+    <RequestId>123a4b56-7c89-01d2-3ef4-example5678f</RequestId>
+  </ResponseMetadata>
+</ListTasksResponse>`
+	client, mock := mockClient(body)
+
+	// When
+	resp, err := client.ListTasks(&ListTasks{
+		Cluster:           "my-cluster",
+		ContainerInstance: "my-instance",
+		Family:            "my-family",
+	})
+
+	// Then
+	c.Assert(err, Equals, nil)
+
+	c.Assert(mock.Query.Get("Action"), Equals, "ListTasks")
+	c.Assert(mock.Query.Get("cluster"), Equals, "my-cluster")
+	c.Assert(mock.Query.Get("containerInstance"), Equals, "my-instance")
+	c.Assert(mock.Query.Get("family"), Equals, "my-family")
+	c.Assert(resp.TaskArns, DeepEquals, []string{"arn:aws:ecs:us-east-1:012345678910:task/0c399d42-0b06-4a82-8794-d593fe68411f"})
+}
