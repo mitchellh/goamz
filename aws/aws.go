@@ -37,6 +37,7 @@ type Region struct {
 	AutoScalingEndpoint  string
 	RdsEndpoint          string
 	Route53Endpoint      string
+	ECSEndpoint          string
 }
 
 var USGovWest = Region{
@@ -54,6 +55,7 @@ var USGovWest = Region{
 	AutoScalingEndpoint:  "https://autoscaling.us-gov-west-1.amazonaws.com",
 	RdsEndpoint:          "https://rds.us-gov-west-1.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var USEast = Region{
@@ -71,6 +73,7 @@ var USEast = Region{
 	AutoScalingEndpoint:  "https://autoscaling.us-east-1.amazonaws.com",
 	RdsEndpoint:          "https://rds.us-east-1.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "https://ecs.us-east-1.amazonaws.com",
 }
 
 var USWest = Region{
@@ -88,6 +91,7 @@ var USWest = Region{
 	AutoScalingEndpoint:  "https://autoscaling.us-west-1.amazonaws.com",
 	RdsEndpoint:          "https://rds.us-west-1.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var USWest2 = Region{
@@ -105,6 +109,7 @@ var USWest2 = Region{
 	AutoScalingEndpoint:  "https://autoscaling.us-west-2.amazonaws.com",
 	RdsEndpoint:          "https://rds.us-west-2.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var EUWest = Region{
@@ -122,6 +127,7 @@ var EUWest = Region{
 	AutoScalingEndpoint:  "https://autoscaling.eu-west-1.amazonaws.com",
 	RdsEndpoint:          "https://rds.eu-west-1.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var EUCentral = Region{
@@ -139,6 +145,7 @@ var EUCentral = Region{
 	AutoScalingEndpoint:  "https://autoscaling.eu-central-1.amazonaws.com",
 	RdsEndpoint:          "https://rds.eu-central-1.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var APSoutheast = Region{
@@ -156,6 +163,7 @@ var APSoutheast = Region{
 	AutoScalingEndpoint:  "https://autoscaling.ap-southeast-1.amazonaws.com",
 	RdsEndpoint:          "https://rds.ap-southeast-1.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var APSoutheast2 = Region{
@@ -173,6 +181,7 @@ var APSoutheast2 = Region{
 	AutoScalingEndpoint:  "https://autoscaling.ap-southeast-2.amazonaws.com",
 	RdsEndpoint:          "https://rds.ap-southeast-2.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var APNortheast = Region{
@@ -190,6 +199,7 @@ var APNortheast = Region{
 	AutoScalingEndpoint:  "https://autoscaling.ap-northeast-1.amazonaws.com",
 	RdsEndpoint:          "https://rds.ap-northeast-1.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var SAEast = Region{
@@ -207,6 +217,7 @@ var SAEast = Region{
 	AutoScalingEndpoint:  "https://autoscaling.sa-east-1.amazonaws.com",
 	RdsEndpoint:          "https://rds.sa-east-1.amazonaws.com",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var CNNorth = Region{
@@ -224,6 +235,7 @@ var CNNorth = Region{
 	AutoScalingEndpoint:  "https://autoscaling.cn-north-1.amazonaws.com.cn",
 	RdsEndpoint:          "https://rds.cn-north-1.amazonaws.com.cn",
 	Route53Endpoint:      "https://route53.amazonaws.com",
+	ECSEndpoint:          "",
 }
 
 var Regions = map[string]Region{
