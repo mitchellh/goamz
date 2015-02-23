@@ -15,9 +15,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/user"
 	"path/filepath"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/vaughan0/go-ini"
 )
 
@@ -359,12 +359,12 @@ func SharedAuth() (auth Auth, err error) {
 	if credentialsFile == "" {
 		// Don't hard-code HOME env var, on Windows it's USERPROFILE, HOME may not be defined
 		// Use os/user instead for platform consistency
-		usr, usrerr := user.Current()
-		if usrerr != nil {
+		home, herr := homedir.Dir()
+		if herr != nil {
 			err = errors.New("Could not get user home directory")
 			return
 		}
-		credentialsFile = filepath.Join(usr.HomeDir, ".aws", "credentials")
+		credentialsFile = filepath.Join(home, ".aws", "credentials")
 	}
 
 	file, err := ini.LoadFile(credentialsFile)
