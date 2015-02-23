@@ -97,6 +97,39 @@ func (s *S) TestDeleteCluster(c *C) {
 	c.Assert(resp.Cluster.Status, Equals, "INACTIVE")
 }
 
+func (s *S) TestDescribeClusters(c *C) {
+	body := `<DescribeClustersResponse xmlns="http://ecs.amazonaws.com/doc/2014-11-13/">
+  <DescribeClustersResult>
+    <failures/>
+    <clusters>
+      <member>
+        <clusterName>default</clusterName>
+        <clusterArn>arn:aws:ecs:us-east-1:012345678910:cluster/default</clusterArn>
+        <status>ACTIVE</status>
+      </member>
+    </clusters>
+  </DescribeClustersResult>
+  <ResponseMetadata>
+    <RequestId>123a4b56-7c89-01d2-3ef4-example5678f</RequestId>
+  </ResponseMetadata>
+</DescribeClustersResponse>`
+	client, mock := mockClient(body)
+
+	// When
+	resp, err := client.DescribeClusters(&DescribeClusters{ClusterName: []string{"default"}})
+
+	// Then
+	c.Assert(err, Equals, nil)
+
+	c.Assert(mock.Query.Get("Action"), Equals, "DescribeClusters")
+	c.Assert(mock.Query.Get("clusters.member.1"), Equals, "default")
+
+	c.Assert(len(resp.Clusters), Equals, 1)
+	c.Assert(resp.Clusters[0].ClusterName, Equals, "default")
+	c.Assert(resp.Clusters[0].ClusterArn, Equals, "arn:aws:ecs:us-east-1:012345678910:cluster/default")
+	c.Assert(resp.Clusters[0].Status, Equals, "ACTIVE")
+}
+
 func (s *S) TestListClusters(c *C) {
 	body := `<ListClustersResponse xmlns="http://ecs.amazonaws.com/doc/2014-11-13/">
   <ListClustersResult>

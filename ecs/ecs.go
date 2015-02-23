@@ -148,6 +148,7 @@ type DescribeClustersResp struct {
 	Failures  []Failure `xml:"DescribeClustersResult>failures>member" json:"failures,omitempty"`
 }
 
+// See http://goo.gl/X4ayOD for more details
 func (e *ECS) DescribeClusters(options *DescribeClusters) (*DescribeClustersResp, error) {
 	params := makeParams("DescribeClusters")
 	params.Set(options)
@@ -172,6 +173,7 @@ type ListClustersResp struct {
 	ClusterArns []string `xml:"ListClustersResult>clusterArns>member"  json:"clusterArns"`
 }
 
+// See http://goo.gl/WXV8cC for more details
 func (e *ECS) ListClusters(options *ListClusters) (*ListClustersResp, error) {
 	params := makeParams("ListClusters")
 	params.Set(options)
