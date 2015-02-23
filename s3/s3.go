@@ -29,7 +29,7 @@ import (
 	"time"
 )
 
-const debug = false
+const debug = true
 
 // The S3 type encapsulates operations with an S3 region.
 type S3 struct {
@@ -37,6 +37,7 @@ type S3 struct {
 	aws.Region
 	HTTPClient func() *http.Client
 
+	signer  *V4Signer
 	private byte // Reserve the right of using private data.
 }
 
@@ -60,13 +61,16 @@ var attempts = aws.AttemptStrategy{
 
 // New creates a new S3.
 func New(auth aws.Auth, region aws.Region) *S3 {
-	return &S3{
+	s3 := &S3{
 		Auth:   auth,
 		Region: region,
 		HTTPClient: func() *http.Client {
 			return http.DefaultClient
 		},
+		signer:  NewV4Signer(auth, "s3", region),
 		private: 0}
+	s3.signer.IncludeXAmzContentSha256 = true
+	return s3
 }
 
 // Bucket returns a Bucket with the given name.
@@ -769,7 +773,8 @@ func (s3 *S3) prepare(req *request) error {
 	}
 	req.headers["Host"] = []string{u.Host}
 	req.headers["Date"] = []string{time.Now().In(time.UTC).Format(time.RFC1123)}
-	sign(s3.Auth, req.method, amazonEscape(req.signpath), req.params, req.headers)
+	// old signer; sign in run()
+	//sign(s3.Auth, req.method, amazonEscape(req.signpath), req.params, req.headers)
 	return nil
 }
 
@@ -803,6 +808,8 @@ func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
 		hreq.Body = ioutil.NopCloser(req.payload)
 	}
 
+	hreq.Host = s3.Region.S3Endpoint[len("https://"):]
+	s3.signer.Sign(&hreq)
 	hresp, err := s3.HTTPClient().Do(&hreq)
 	if err != nil {
 		return nil, err
