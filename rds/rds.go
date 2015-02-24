@@ -102,6 +102,7 @@ type DBInstance struct {
 	DBName                     string        `xml:"DBName"`
 	Engine                     string        `xml:"Engine"`
 	EngineVersion              string        `xml:"EngineVersion"`
+	StorageEncrypted           bool          `xml:"StorageEncrypted"`
 	MasterUsername             string        `xml:"MasterUsername"`
 	MultiAZ                    bool          `xml:"MultiAZ"`
 	Port                       int           `xml:"Endpoint>Port"`
@@ -180,6 +181,7 @@ type CreateDBInstance struct {
 	DBSubnetGroupName          string
 	Engine                     string
 	EngineVersion              string
+	StorageEncrypted           bool
 	Iops                       int
 	MasterUsername             string
 	MasterUserPassword         string
@@ -247,6 +249,10 @@ func (rds *Rds) CreateDBInstance(options *CreateDBInstance) (resp *SimpleResp, e
 
 	if options.EngineVersion != "" {
 		params["EngineVersion"] = options.EngineVersion
+	}
+
+	if options.StorageEncrypted {
+		params["StorageEncrypted"] = "true"
 	}
 
 	if options.MasterUsername != "" {
