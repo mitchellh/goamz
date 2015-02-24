@@ -273,6 +273,7 @@ func (b *Bucket) Head(path string) (*http.Response, error) {
 }
 
 // Put inserts an object into the S3 bucket.
+// contType and perm can be left blank to use the defaults
 //
 // See http://goo.gl/FEBPD for details.
 func (b *Bucket) Put(path string, data []byte, contType string, perm ACL) error {
@@ -282,6 +283,7 @@ func (b *Bucket) Put(path string, data []byte, contType string, perm ACL) error 
 
 /*
 PutHeader - like Put, inserts an object into the S3 bucket.
+perm can be left blank to use the default
 Instead of Content-Type string, pass in custom headers to override defaults.
 */
 func (b *Bucket) PutHeader(path string, data []byte, customHeaders map[string][]string, perm ACL) error {
@@ -291,11 +293,19 @@ func (b *Bucket) PutHeader(path string, data []byte, customHeaders map[string][]
 
 // PutReader inserts an object into the S3 bucket by consuming data
 // from r until EOF.
+// contType and perm can be left blank to use the defaults
 func (b *Bucket) PutReader(path string, r io.Reader, length int64, contType string, perm ACL) error {
+
 	headers := map[string][]string{
 		"Content-Length": {strconv.FormatInt(length, 10)},
-		"Content-Type":   {contType},
-		"x-amz-acl":      {string(perm)},
+	}
+
+	// Content-Type and x-amz-acl are optional
+	if contType != "" {
+		headers["Content-Type"] = []string{contType}
+	}
+	if perm != "" {
+		headers["x-amz-acl"] = []string{string(perm)}
 	}
 	req := &request{
 		method:  "PUT",
@@ -316,7 +326,10 @@ func (b *Bucket) PutReaderHeader(path string, r io.Reader, length int64, customH
 	headers := map[string][]string{
 		"Content-Length": {strconv.FormatInt(length, 10)},
 		"Content-Type":   {"application/text"},
-		"x-amz-acl":      {string(perm)},
+	}
+	// x-amz-acl is optional
+	if perm != "" {
+		headers["x-amz-acl"] = []string{string(perm)}
 	}
 
 	// Override with custom headers
