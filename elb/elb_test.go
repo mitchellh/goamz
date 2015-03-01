@@ -132,7 +132,7 @@ func (s *S) TestDescribeLoadBalancers(c *C) {
 	c.Assert(resp.LoadBalancers[0].LoadBalancerName, Equals, "MyLoadBalancer")
 	c.Assert(resp.LoadBalancers[0].Listeners[0].Protocol, Equals, "HTTP")
 	c.Assert(resp.LoadBalancers[0].Instances[0].InstanceId, Equals, "i-e4cbe38d")
-	c.Assert(resp.LoadBalancers[0].AvailabilityZones[0].AvailabilityZone, Equals, "us-east-1a")
+	c.Assert(resp.LoadBalancers[0].AvailabilityZones[0], Equals, "us-east-1a")
 	c.Assert(resp.LoadBalancers[0].Scheme, Equals, "internet-facing")
 	c.Assert(resp.LoadBalancers[0].DNSName, Equals, "MyLoadBalancer-123456789.us-east-1.elb.amazonaws.com")
 	c.Assert(resp.LoadBalancers[0].HealthCheck.HealthyThreshold, Equals, int64(2))
