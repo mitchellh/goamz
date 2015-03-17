@@ -33,6 +33,7 @@ type Region struct {
 	SNSEndpoint          string
 	SQSEndpoint          string
 	IAMEndpoint          string
+	EBEndpoint           string
 	ELBEndpoint          string
 	AutoScalingEndpoint  string
 	RdsEndpoint          string
@@ -50,6 +51,7 @@ var USGovWest = Region{
 	"https://sns.us-gov-west-1.amazonaws.com",
 	"https://sqs.us-gov-west-1.amazonaws.com",
 	"https://iam.us-gov.amazonaws.com",
+	"",
 	"https://elasticloadbalancing.us-gov-west-1.amazonaws.com",
 	"https://autoscaling.us-gov-west-1.amazonaws.com",
 	"https://rds.us-gov-west-1.amazonaws.com",
@@ -67,6 +69,7 @@ var USEast = Region{
 	"https://sns.us-east-1.amazonaws.com",
 	"https://sqs.us-east-1.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.us-east-1.amazonaws.com",
 	"https://elasticloadbalancing.us-east-1.amazonaws.com",
 	"https://autoscaling.us-east-1.amazonaws.com",
 	"https://rds.us-east-1.amazonaws.com",
@@ -84,6 +87,7 @@ var USWest = Region{
 	"https://sns.us-west-1.amazonaws.com",
 	"https://sqs.us-west-1.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.us-west-1.amazonaws.com",
 	"https://elasticloadbalancing.us-west-1.amazonaws.com",
 	"https://autoscaling.us-west-1.amazonaws.com",
 	"https://rds.us-west-1.amazonaws.com",
@@ -101,6 +105,7 @@ var USWest2 = Region{
 	"https://sns.us-west-2.amazonaws.com",
 	"https://sqs.us-west-2.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.us-west-2.amazonaws.com",
 	"https://elasticloadbalancing.us-west-2.amazonaws.com",
 	"https://autoscaling.us-west-2.amazonaws.com",
 	"https://rds.us-west-2.amazonaws.com",
@@ -118,6 +123,7 @@ var EUWest = Region{
 	"https://sns.eu-west-1.amazonaws.com",
 	"https://sqs.eu-west-1.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.eu-west-1.amazonaws.com",
 	"https://elasticloadbalancing.eu-west-1.amazonaws.com",
 	"https://autoscaling.eu-west-1.amazonaws.com",
 	"https://rds.eu-west-1.amazonaws.com",
@@ -135,6 +141,7 @@ var EUCentral = Region{
 	"https://sns.eu-central-1.amazonaws.com",
 	"https://sqs.eu-central-1.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.eu-central-1.amazonaws.com",
 	"https://elasticloadbalancing.eu-central-1.amazonaws.com",
 	"https://autoscaling.eu-central-1.amazonaws.com",
 	"https://rds.eu-central-1.amazonaws.com",
@@ -152,6 +159,7 @@ var APSoutheast = Region{
 	"https://sns.ap-southeast-1.amazonaws.com",
 	"https://sqs.ap-southeast-1.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.ap-southeast-1.amazonaws.com",
 	"https://elasticloadbalancing.ap-southeast-1.amazonaws.com",
 	"https://autoscaling.ap-southeast-1.amazonaws.com",
 	"https://rds.ap-southeast-1.amazonaws.com",
@@ -169,6 +177,7 @@ var APSoutheast2 = Region{
 	"https://sns.ap-southeast-2.amazonaws.com",
 	"https://sqs.ap-southeast-2.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.ap-southeast-2.amazonaws.com",
 	"https://elasticloadbalancing.ap-southeast-2.amazonaws.com",
 	"https://autoscaling.ap-southeast-2.amazonaws.com",
 	"https://rds.ap-southeast-2.amazonaws.com",
@@ -186,6 +195,7 @@ var APNortheast = Region{
 	"https://sns.ap-northeast-1.amazonaws.com",
 	"https://sqs.ap-northeast-1.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.ap-northeast-1.amazonaws.com",
 	"https://elasticloadbalancing.ap-northeast-1.amazonaws.com",
 	"https://autoscaling.ap-northeast-1.amazonaws.com",
 	"https://rds.ap-northeast-1.amazonaws.com",
@@ -203,6 +213,7 @@ var SAEast = Region{
 	"https://sns.sa-east-1.amazonaws.com",
 	"https://sqs.sa-east-1.amazonaws.com",
 	"https://iam.amazonaws.com",
+	"https://elasticbeanstalk.sa-east-1.amazonaws.com",
 	"https://elasticloadbalancing.sa-east-1.amazonaws.com",
 	"https://autoscaling.sa-east-1.amazonaws.com",
 	"https://rds.sa-east-1.amazonaws.com",
@@ -220,6 +231,7 @@ var CNNorth = Region{
 	"https://sns.cn-north-1.amazonaws.com.cn",
 	"https://sqs.cn-north-1.amazonaws.com.cn",
 	"https://iam.cn-north-1.amazonaws.com.cn",
+	"",
 	"https://elasticloadbalancing.cn-north-1.amazonaws.com.cn",
 	"https://autoscaling.cn-north-1.amazonaws.com.cn",
 	"https://rds.cn-north-1.amazonaws.com.cn",
