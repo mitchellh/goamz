@@ -290,6 +290,26 @@ func (s *S) TestCopy(c *C) {
 	c.Assert(req.Header["X-Amz-Acl"], DeepEquals, []string{"private"})
 }
 
+func (s *S) TestCopyToAnotherBucket(c *C) {
+	testServer.Response(200, nil, "")
+
+	b := s.s3.Bucket("bucket")
+	nb := s.s3.Bucket("new-bucket")
+	err := b.CopyToAnotherBucket(
+		"old/file",
+		nb,
+		"new/file",
+		s3.Private,
+	)
+	c.Assert(err, IsNil)
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Method, Equals, "PUT")
+	c.Assert(req.URL.Path, Equals, "/new-bucket/new/file")
+	c.Assert(req.Header["X-Amz-Copy-Source"], DeepEquals, []string{"/bucket/old/file"})
+	c.Assert(req.Header["X-Amz-Acl"], DeepEquals, []string{"private"})
+}
+
 func (s *S) TestPlusInURL(c *C) {
 	testServer.Response(200, nil, "")
 
