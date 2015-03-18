@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"time"
+	"math/rand"
 )
 
 type RetryableFunc func(*http.Request, *http.Response, error) bool
@@ -58,9 +59,9 @@ var retryingTransport = &ResilientTransport{
 		return time.Now().Add(5 * time.Second)
 	},
 	DialTimeout: 10 * time.Second,
-	MaxTries:    3,
+	MaxTries:    10,
 	ShouldRetry: awsRetry,
-	Wait:        ExpBackoff,
+	Wait:        RandExpBackoff,
 }
 
 // Exported default client
@@ -81,6 +82,9 @@ func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err e
 		if !t.ShouldRetry(req, res, err) {
 			break
 		}
+		if try == (t.MaxTries-1) {
+			break
+		}
 		if res != nil {
 			res.Body.Close()
 		}
@@ -90,6 +94,13 @@ func (t *ResilientTransport) tries(req *http.Request) (res *http.Response, err e
 	}
 
 	return
+}
+
+func RandExpBackoff(try int) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	time.Sleep(time.Duration(r.Intn(1000)) *
+		time.Millisecond *
+		time.Duration(math.Exp2(float64(try))))
 }
 
 func ExpBackoff(try int) {

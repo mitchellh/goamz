@@ -169,13 +169,21 @@ func multimap(p map[string]string) url.Values {
 }
 
 func buildError(r *http.Response) error {
-	errors := xmlErrors{}
-	xml.NewDecoder(r.Body).Decode(&errors)
 	var err Error
-	if len(errors.Errors) > 0 {
-		err = errors.Errors[0]
+	if r.Body!=nil {
+		errors := xmlErrors{}
+		xmlerr := xml.NewDecoder(r.Body).Decode(&errors)
+		if xmlerr!=nil {
+			return xmlerr
+		}
+		if len(errors.Errors) > 0 {
+			err = errors.Errors[0]
+		}
+		err.RequestId = errors.RequestId
+	} else {
+		err.Code = fmt.Sprintf("%v", r.StatusCode)
+		err.Message = "Response body is nil"
 	}
-	err.RequestId = errors.RequestId
 	err.StatusCode = r.StatusCode
 	if err.Message == "" {
 		err.Message = err.Code
