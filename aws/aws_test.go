@@ -167,6 +167,27 @@ func (s *S) TestEnvAuthWithToken(c *C) {
 	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
 }
 
+func (s *S) TestEnvAuthWithSessionToken(c *C) {
+	os.Clearenv()
+	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
+	os.Setenv("AWS_ACCESS_KEY_ID", "access")
+	os.Setenv("AWS_SESSION_TOKEN", "token")
+	auth, err := aws.EnvAuth()
+	c.Assert(err, IsNil)
+	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
+}
+
+func (s *S) TestEnvAuthWithBothTokens(c *C) {
+	os.Clearenv()
+	os.Setenv("AWS_SECRET_ACCESS_KEY", "secret")
+	os.Setenv("AWS_ACCESS_KEY_ID", "access")
+	os.Setenv("AWS_SECURITY_TOKEN", "security")
+	os.Setenv("AWS_SESSION_TOKEN", "session")
+	auth, err := aws.EnvAuth()
+	c.Assert(err, IsNil)
+	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "session"})
+}
+
 func (s *S) TestEnvAuthAlt(c *C) {
 	os.Clearenv()
 	os.Setenv("AWS_SECRET_KEY", "secret")

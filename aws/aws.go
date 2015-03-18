@@ -403,6 +403,9 @@ func EnvAuth() (auth Auth, err error) {
 	}
 
 	auth.Token = os.Getenv("AWS_SECURITY_TOKEN")
+	if os.Getenv("AWS_SESSION_TOKEN") != "" {
+		auth.Token = os.Getenv("AWS_SESSION_TOKEN")
+	}
 
 	if auth.AccessKey == "" {
 		err = errors.New("AWS_ACCESS_KEY_ID or AWS_ACCESS_KEY not found in environment")
