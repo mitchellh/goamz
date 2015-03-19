@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 
 	"github.com/vaughan0/go-ini"
 )
@@ -287,6 +288,83 @@ func GetMetaData(path string) (contents []byte, err error) {
 		return
 	}
 	return []byte(body), err
+}
+
+// GetRegionFromEnv retrieves the region specified by an environment variable
+// AWS_REGION or aws_region
+func EnvRegion() (region Region, err error) {
+	r := os.Getenv("AWS_REGION")
+	if r == "" {
+		r = os.Getenv("aws_region")
+	}
+
+	if r == "" {
+		err = fmt.Errorf("AWS_REGION or aws_region not found in environment")
+		return
+	}
+
+	region = Regions[r]
+
+	if region.Name == "" {
+		err = fmt.Errorf("%v region not found", r)
+	}
+
+	return
+}
+
+// GetRegionFromInstance retrieves the region from the instance metadata service
+func GetInstanceRegion() (region Region, err error) {
+
+	regionMatch := regexp.MustCompile(`^(\w+-\w+-\d+)`)
+	regionPath := "placement/availability-zone/"
+
+	// Get the instance region plus zone
+	resp, err := GetMetaData(regionPath)
+
+	if err != nil {
+		return
+	}
+
+	// extract region from availability-zone
+	extracted := regionMatch.FindStringSubmatch(string(resp))
+
+	if extracted == nil {
+		err = fmt.Errorf("invalid region from metadata service - availability-zone")
+		return
+	}
+
+	r := extracted[1]
+
+	region, ok := Regions[r]
+	if ok == false{
+		err = fmt.Errorf("cannot find region %s", r)
+	}
+
+	return
+}
+
+// GetRegion tires to get the region from either environment variables or metadata service if available
+func GetRegion(r string) (region Region, err error) {
+
+	region, ok := Regions[r]
+	if ok == true {
+			return
+	}
+
+	//if not passed in, check ENV
+	region, err = EnvRegion()
+	if err == nil {
+		return
+	}
+
+	region, err = GetInstanceRegion()
+	if err == nil {
+		return
+	}
+
+	err = errors.New("Cloud not find a valid AWS region")
+
+	return
 }
 
 func getInstanceCredentials() (cred credentials, err error) {
