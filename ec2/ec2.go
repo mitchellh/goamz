@@ -1941,7 +1941,7 @@ func SecurityGroupNames(names ...string) []SecurityGroup {
 	return g
 }
 
-// SecurityGroupNames is a convenience function that
+// SecurityGroupIds is a convenience function that
 // returns a slice of security groups with the given ids.
 func SecurityGroupIds(ids ...string) []SecurityGroup {
 	g := make([]SecurityGroup, len(ids))
