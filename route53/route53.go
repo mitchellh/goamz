@@ -328,7 +328,7 @@ type ListResourceRecordSetsResponse struct {
 type ResourceRecordSet struct {
 	Name          string       `xml:"Name"`
 	Type          string       `xml:"Type"`
-	TTL           int          `xml:"TTL"`
+	TTL           int          `xml:"TTL,omitempty"`
 	Records       []string     `xml:"ResourceRecords>ResourceRecord>Value,omitempty"`
 	SetIdentifier string       `xml:"SetIdentifier,omitempty"`
 	Weight        int          `xml:"Weight,omitempty"`
