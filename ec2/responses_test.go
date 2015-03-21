@@ -1261,3 +1261,11 @@ var DeleteCustomerGatewayResponseExample = `
    <requestId>7a62c49f-347e-4fc4-9331-6e8eEXAMPLE</requestId>
    <return>true</return>
 </DeleteCustomerGatewayResponse>`
+
+var GetPasswordDataResponseExample = `
+<GetPasswordDataResponse xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+  <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
+  <instanceId>i-2574e22a</instanceId>
+  <timestamp>2009-10-24T15:00:00.000Z</timestamp>
+  <passwordData>TGludXggdmVyc2lvbiAyLjYuMTYteGVuVSAoYnVpbGRlckBwYXRjaGJhdC5hbWF6b25zYSkgKGdj</passwordData>
+</GetPasswordDataResponse>`

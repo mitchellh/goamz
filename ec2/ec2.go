@@ -156,6 +156,7 @@ func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
 	if r.StatusCode != 200 {
 		return buildError(r)
 	}
+
 	err = xml.NewDecoder(r.Body).Decode(resp)
 	return err
 }
@@ -900,6 +901,37 @@ func (ec2 *EC2) Instances(instIds []string, filter *Filter) (resp *InstancesResp
 	filter.addParams(params)
 	resp = &InstancesResp{}
 	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
+// Response to a GetPasswordData request.
+//
+// If PasswordData is empty, then one of two conditions is likely: either the
+// instance is not running Windows, or the password is not yet available. The
+// API documentation suggests that the password should be available within 15
+// minutes of launch.
+//
+// See http://goo.gl/7Dppx0 for more details.
+type PasswordDataResponse struct {
+	RequestId    string    `xml:"requestId"`
+	InstanceId   string    `xml:"instanceId"`
+	Timestamp    time.Time `xml:"timestamp"`
+	PasswordData string    `xml:"passwordData"`
+}
+
+// GetPasswordData retrieves the encrypted administrator password for an
+// instance running Windows. The password is encrypted using the key pair,
+// so must be decrypted with the corresponding key pair file.
+//
+// See http://goo.gl/7Dppx0 for more details.
+func (ec2 *EC2) GetPasswordData(instId string) (resp *PasswordDataResponse, err error) {
+	params := makeParams("GetPasswordData")
+	addParamsList(params, "InstanceId", []string{instId})
+	resp = &PasswordDataResponse{}
+	ec2.query(params, resp)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package ec2_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/ec2"
@@ -122,6 +123,22 @@ func (s *S) TestRequestSpotInstancesErrorWithoutXML(c *C) {
 	c.Assert(ec2err.Code, Equals, "")
 	c.Assert(ec2err.Message, Equals, "")
 	c.Assert(ec2err.RequestId, Equals, "")
+}
+
+func (s *S) TestGetPasswordDataExample(c *C) {
+	testServer.Response(200, nil, GetPasswordDataResponseExample)
+
+	resp, err := s.ec2.GetPasswordData("i-2574e22a")
+
+	req := testServer.WaitRequest()
+
+	c.Assert(req.Form["InstanceId.1"], DeepEquals, []string{"i-2574e22a"})
+
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "59dbff89-35bd-4eac-99ed-be587EXAMPLE")
+	c.Assert(resp.InstanceId, Equals, "i-2574e22a")
+	c.Assert(resp.Timestamp, Equals, time.Date(2009, 10, 24, 15, 0, 0, 0, time.UTC))
+	c.Assert(resp.PasswordData, Equals, "TGludXggdmVyc2lvbiAyLjYuMTYteGVuVSAoYnVpbGRlckBwYXRjaGJhdC5hbWF6b25zYSkgKGdj")
 }
 
 func (s *S) TestRunInstancesExample(c *C) {
