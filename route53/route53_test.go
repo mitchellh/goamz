@@ -176,6 +176,38 @@ func TestListHostedZones(t *testing.T) {
 	}
 }
 
+func TestAssociateVPCWithHostedZone(t *testing.T) {
+	testServer := makeTestServer()
+	client := makeClient(testServer)
+	testServer.Response(200, nil, AssociateVPCWithHostedZoneExample)
+	req := &AssociateVPCWithHostedZoneRequest{VPC: VPC{ID: "vpc", Region: "us-west-1"}}
+	resp, err := client.AssociateVPCWithHostedZone("abc", req)
+
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	if resp.ChangeInfo.ID != "/change/abcd" {
+		t.Fatalf("bad: %v", resp)
+	}
+}
+
+func TestDisassociateVPCFromHostedZone(t *testing.T) {
+	testServer := makeTestServer()
+	client := makeClient(testServer)
+	testServer.Response(200, nil, DisassociateVPCFromHostedZoneExample)
+	req := &DisassociateVPCFromHostedZoneRequest{VPC: VPC{ID: "vpc", Region: "us-west-1"}}
+	resp, err := client.DisassociateVPCFromHostedZone("abc", req)
+
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	if resp.ChangeInfo.ID != "/change/abcd" {
+		t.Fatalf("bad: %v", resp)
+	}
+}
+
 func decode(t *testing.T, r io.Reader, out interface{}) {
 	var buf1 bytes.Buffer
 	var buf2 bytes.Buffer
