@@ -2900,7 +2900,8 @@ func (ec2 *EC2) CreateNetworkAclEntry(networkAclId string, options *NetworkAclEn
 	params["RuleAction"] = options.RuleAction
 	params["Egress"] = strconv.FormatBool(options.Egress)
 	params["CidrBlock"] = options.CidrBlock
-	if params["Protocol"] == "-1" {
+	//In case of ICMP(1) protocol we need to provide IcmpCode
+	if params["Protocol"] == "1" {
 		params["Icmp.Type"] = strconv.Itoa(options.IcmpCode.Type)
 		params["Icmp.Code"] = strconv.Itoa(options.IcmpCode.Code)
 	}
