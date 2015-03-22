@@ -600,6 +600,44 @@ func (b *Bucket) GetKey(path string) (*Key, error) {
 	panic("unreachable")
 }
 
+// Get bucket policy
+func (b *Bucket) GetPolicy() ([]byte, error) {
+	req := &request{
+		bucket: b.Name,
+		path:   "/",
+		method: "GET",
+		params: url.Values{"policy": {""}},
+	}
+	err := b.S3.prepare(req)
+	if err != nil {
+		return nil, err
+	}
+	for attempt := attempts.Start(); attempt.Next(); {
+		resp, err := b.S3.run(req, nil)
+		if shouldRetry(err) && attempt.HasNext() {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		str, err := ioutil.ReadAll(resp.Body)
+		return str, nil
+	}
+	panic("unreachable")
+}
+
+// Put bucket policy
+func (b *Bucket) PutPolicy(data []byte) error {
+	req := &request{
+		bucket:  b.Name,
+		path:    "/",
+		method:  "PUT",
+		params:  url.Values{"policy": {""}},
+		payload: bytes.NewReader(data),
+	}
+	return b.S3.query(req, nil)
+}
+
 // URL returns a non-signed URL that allows retriving the
 // object at path. It only works if the object is publicly
 // readable (see SignedURL).
