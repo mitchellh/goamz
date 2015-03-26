@@ -696,6 +696,24 @@ func (s *S) TestCopyImageExample(c *C) {
 	c.Assert(resp.RequestId, Equals, "60bc441d-fa2c-494d-b155-5d6a3EXAMPLE")
 }
 
+func (s *S) TestDescribeKeyPairsExample(c *C) {
+	testServer.Response(200, nil, DescribeKeyPairsExample)
+
+	resp, err := s.ec2.DescribeKeyPairs()
+
+	req := testServer.WaitRequest()
+	c.Assert(req.Form["Action"], DeepEquals, []string{"DescribeKeyPairs"})
+	c.Assert(err, IsNil)
+
+	k0 := resp.KeyPairs[0]
+	c.Assert(k0.Name, Equals, "my-key-pair")
+	c.Assert(k0.Fingerprint, Equals, "1f:51:ae:28:bf:89:e9:d8:1f:25:5d:37:2d:7d:b8:ca:9f:f5:f1:6f")
+
+	k1 := resp.KeyPairs[1]
+	c.Assert(k1.Name, Equals, "my-other-key-pair")
+	c.Assert(k1.Fingerprint, Equals, "some-fingerprint-value")
+}
+
 func (s *S) TestCreateKeyPairExample(c *C) {
 	testServer.Response(200, nil, CreateKeyPairExample)
 

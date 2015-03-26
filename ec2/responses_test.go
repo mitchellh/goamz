@@ -539,6 +539,22 @@ var CopyImageExample = `
 </CopyImageResponse>
 `
 
+var DescribeKeyPairsExample = `
+<DescribeKeyPairsResponse xmlns="http://ec2.amazonaws.com/doc/2014-10-01/">
+    <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId> 
+    <keySet>
+      <item>
+         <keyName>my-key-pair</keyName>
+         <keyFingerprint>1f:51:ae:28:bf:89:e9:d8:1f:25:5d:37:2d:7d:b8:ca:9f:f5:f1:6f</keyFingerprint>
+      </item>
+      <item>
+         <keyName>my-other-key-pair</keyName>
+         <keyFingerprint>some-fingerprint-value</keyFingerprint>
+      </item>
+   </keySet>
+</DescribeKeyPairsResponse>
+`
+
 var CreateKeyPairExample = `
 <CreateKeyPairResponse xmlns="http://ec2.amazonaws.com/doc/2013-02-01/">
   <requestId>59dbff89-35bd-4eac-99ed-be587EXAMPLE</requestId>
