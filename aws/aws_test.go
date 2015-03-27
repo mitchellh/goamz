@@ -104,12 +104,13 @@ func (s *S) TestSharedAuthDefaultCredentials(c *C) {
 		panic(err)
 	}
 
-	ioutil.WriteFile(d+"/.aws/credentials", []byte("[default]\naws_access_key_id = access\naws_secret_access_key = secret\n"), 0644)
+	ioutil.WriteFile(d+"/.aws/credentials",
+		[]byte("[default]\naws_access_key_id = access\naws_secret_access_key = secret\naws_session_token = token"), 0644)
 	os.Setenv("HOME", d)
 
 	auth, err := aws.SharedAuth()
 	c.Assert(err, IsNil)
-	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
+	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
 }
 
 func (s *S) TestSharedAuth(c *C) {
@@ -127,12 +128,13 @@ func (s *S) TestSharedAuth(c *C) {
 		panic(err)
 	}
 
-	ioutil.WriteFile(d+"/.aws/credentials", []byte("[bar]\naws_access_key_id = access\naws_secret_access_key = secret\n"), 0644)
+	ioutil.WriteFile(d+"/.aws/credentials",
+		[]byte("[bar]\naws_access_key_id = access\naws_secret_access_key = secret\naws_session_token = token"), 0644)
 	os.Setenv("HOME", d)
 
 	auth, err := aws.SharedAuth()
 	c.Assert(err, IsNil)
-	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
+	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
 }
 
 func (s *S) TestEnvAuthNoSecret(c *C) {
