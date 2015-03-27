@@ -989,6 +989,22 @@ var CreateSubnetExample = `
 </CreateSubnetResponse>
 `
 
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EnableVgwRoutePropagation.html
+var EnableVgwRoutePropagationExample = `
+<EnableVgwRoutePropagationResponse xmlns="http://ec2.amazonaws.com/doc/2014-06-15/">
+  <requestId>4f35a1b2-c2c3-4093-b51f-abb9d7311990EXAMPLE</requestId>
+  <return>true</return>
+</EnableVgwRoutePropagationResponse>
+`
+
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DisableVgwRoutePropagation.html
+var DisableVgwRoutePropagationExample = `
+<DisableVgwRoutePropagationResponse xmlns="http://ec2.amazonaws.com/doc/2014-06-15/">
+  <requestId>4f35a1b2-c2c3-4093-b51f-abb9d7311991EXAMPLE</requestId>
+  <return>true</return>
+</DisableVgwRoutePropagationResponse>
+`
+
 // http://goo.gl/tu2Kxm
 var ModifySubnetAttributeExample = `
 <ModifySubnetAttributeResponse xmlns="http://ec2.amazonaws.com/doc/2014-06-15/">

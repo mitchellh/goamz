@@ -1845,6 +1845,55 @@ func (ec2 *EC2) ImportKeyPair(keyname string, key string) (resp *ImportKeyPairRe
 }
 
 // ----------------------------------------------------------------------------
+// VPN management
+
+// SimpleBoolResp represents a response to an EC2 request which on success will
+// return no other information besides a request id and a boolean indicating success or failure
+type SimpleBoolResp struct {
+  RequestId string `xml:"requestId"`
+  Return    bool   `xml:"return"`
+}
+
+// EnableVgwRoutePropagation and DisableVgwRoutePropagation request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EnableVgwRoutePropagation.html
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DisableVgwRoutePropagation.html
+type VgwRoutePropagation struct {
+	RouteTableId string
+	GatewayId    string
+}
+
+// Enable Virtual Gateway Route Propagation
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EnableVgwRoutePropagation.html
+func (ec2 *EC2) EnableVgwRoutePropagation(options *VgwRoutePropagation) (resp *SimpleBoolResp, err error) {
+	params := makeParams("EnableVgwRoutePropagation")
+	params["RouteTableId"] = options.RouteTableId
+	params["GatewayId"] = options.GatewayId
+
+	resp = &SimpleBoolResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// Disable Virtual Gateway Route Propagation
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DisableVgwRoutePropagation.html
+func (ec2 *EC2) DisableVgwRoutePropagation(options *VgwRoutePropagation) (resp *SimpleBoolResp, err error) {
+	params := makeParams("DisableVgwRoutePropagation")
+	params["RouteTableId"] = options.RouteTableId
+	params["GatewayId"] = options.GatewayId
+
+	resp = &SimpleBoolResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ----------------------------------------------------------------------------
 // Security group management functions and types.
 
 // SimpleResp represents a response to an EC2 request which on success will
