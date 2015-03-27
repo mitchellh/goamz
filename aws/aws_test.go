@@ -135,6 +135,30 @@ func (s *S) TestSharedAuth(c *C) {
 	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
 }
 
+func (s *S) TestSharedAuthCredentialsWithToken(c *C) {
+        os.Clearenv()
+        os.Setenv("AWS_PROFILE", "bar")
+
+        d, err := ioutil.TempDir("", "")
+        if err != nil {
+                panic(err)
+        }
+        defer os.RemoveAll(d)
+
+        err = os.Mkdir(d+"/.aws", 0755)
+        if err != nil {
+                panic(err)
+        }
+
+        ioutil.WriteFile(d+"/.aws/credentials", []byte("[bar]\naws_access_key_id = access\naws_secret_access_key = secret\naws_session_token = token\n"), 0644)
+        os.Setenv("HOME", d)
+
+        auth, err := aws.SharedAuth()
+        c.Assert(err, IsNil)
+        c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
+}
+
+
 func (s *S) TestEnvAuthNoSecret(c *C) {
 	os.Clearenv()
 	_, err := aws.EnvAuth()
