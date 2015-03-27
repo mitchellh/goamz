@@ -56,6 +56,7 @@ func sign(auth aws.Auth, method, canonical_uri string, params map[string]string,
 
 	var access_key = auth.AccessKey
 	var secret_key = auth.SecretKey
+	var token = auth.Token
 
 	var amz_date = time.Now().UTC().Format("20060102T150405Z")
 	var datestamp = time.Now().UTC().Format("20060102")
@@ -68,6 +69,9 @@ func sign(auth aws.Auth, method, canonical_uri string, params map[string]string,
 	params["X-Amz-Algorithm"] = algorithm
 	params["X-Amz-Credential"] = access_key + "/" + credential_scope
 	params["X-Amz-Date"] = amz_date
+	if token != "" {
+		params["X-Amz-Security-Token"] = token
+	}
 	params["X-Amz-Expires"] = "30"
 	params["X-Amz-SignedHeaders"] = signed_headers
 	canonical_querystring := makeSortedRawQuery(params)
