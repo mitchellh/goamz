@@ -19,6 +19,8 @@ type IAM struct {
 	httpClient *http.Client
 }
 
+const APIVersion = "2010-05-08"
+
 // New creates a new IAM instance.
 func New(auth aws.Auth, region aws.Region) *IAM {
 	return NewWithClient(auth, region, aws.RetryingClient)
@@ -48,6 +50,27 @@ func (iam *IAM) query(params map[string]string, resp interface{}) error {
 	return xml.NewDecoder(r.Body).Decode(resp)
 }
 
+func (iam *IAM) queryV4(params map[string]string, resp interface{}) error {
+	endpoint, err := url.Parse(iam.IAMEndpoint)
+	if err != nil {
+		return err
+	}
+
+	params["Version"] = APIVersion
+	headers := map[string]string{"Host": endpoint.Host}
+	signGetV4(iam, "GET", "/", "", params, headers, time.Now().In(time.UTC))
+	endpoint.RawQuery = multimap(params).Encode()
+	r, err := iam.httpClient.Get(endpoint.String())
+	if err != nil {
+		return err
+	}
+	defer r.Body.Close()
+	if r.StatusCode > 200 {
+		return buildError(r)
+	}
+	return xml.NewDecoder(r.Body).Decode(resp)
+}
+
 func (iam *IAM) postQuery(params map[string]string, resp interface{}) error {
 	endpoint, err := url.Parse(iam.IAMEndpoint)
 	if err != nil {
@@ -65,6 +88,43 @@ func (iam *IAM) postQuery(params map[string]string, resp interface{}) error {
 	req.Header.Set("Host", endpoint.Host)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Content-Length", strconv.Itoa(len(encoded)))
+	r, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer r.Body.Close()
+	if r.StatusCode > 200 {
+		return buildError(r)
+	}
+	return xml.NewDecoder(r.Body).Decode(resp)
+}
+
+func (iam *IAM) postQueryV4(params map[string]string, resp interface{}) error {
+	endpoint, err := url.Parse(iam.IAMEndpoint)
+	if err != nil {
+		return err
+	}
+
+	headers := map[string]string{
+		"Host":         endpoint.Host,
+		"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+	}
+
+	encoded := multimap(params).Encode()
+	body := strings.NewReader(encoded)
+
+	signPostV4(iam, "POST", "/", encoded, headers, time.Now().In(time.UTC))
+	req, err := http.NewRequest("POST", endpoint.String(), body)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+
+	req.Header.Set("Content-Length", strconv.Itoa(len(encoded)))
+
 	r, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
@@ -128,7 +188,7 @@ func (iam *IAM) CreateUser(name, path string) (*CreateUserResp, error) {
 		"UserName": name,
 	}
 	resp := new(CreateUserResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -147,11 +207,15 @@ type GetUserResp struct {
 // See http://goo.gl/ZnzRN for more details.
 func (iam *IAM) GetUser(name string) (*GetUserResp, error) {
 	params := map[string]string{
-		"Action":   "GetUser",
-		"UserName": name,
+		"Action": "GetUser",
 	}
+
+	if name != "" {
+		params["UserName"] = name
+	}
+
 	resp := new(GetUserResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -166,7 +230,7 @@ func (iam *IAM) DeleteUser(name string) (*SimpleResp, error) {
 		"UserName": name,
 	}
 	resp := new(SimpleResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -207,7 +271,7 @@ func (iam *IAM) CreateGroup(name string, path string) (*CreateGroupResp, error) 
 		params["Path"] = path
 	}
 	resp := new(CreateGroupResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -235,7 +299,7 @@ func (iam *IAM) Groups(pathPrefix string) (*GroupsResp, error) {
 		params["PathPrefix"] = pathPrefix
 	}
 	resp := new(GroupsResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -250,7 +314,7 @@ func (iam *IAM) DeleteGroup(name string) (*SimpleResp, error) {
 		"GroupName": name,
 	}
 	resp := new(SimpleResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -268,10 +332,11 @@ type CreateAccessKeyResp struct {
 //
 // See http://goo.gl/LHgZR for more details.
 type AccessKey struct {
-	UserName string
-	Id       string `xml:"AccessKeyId"`
-	Secret   string `xml:"SecretAccessKey,omitempty"`
-	Status   string
+	UserName   string
+	Id         string `xml:"AccessKeyId"`
+	Secret     string `xml:"SecretAccessKey,omitempty"`
+	CreateDate string `xml:"CreateDate"`
+	Status     string
 }
 
 // CreateAccessKey creates a new access key in IAM.
@@ -283,7 +348,7 @@ func (iam *IAM) CreateAccessKey(userName string) (*CreateAccessKeyResp, error) {
 		"UserName": userName,
 	}
 	resp := new(CreateAccessKeyResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -311,7 +376,7 @@ func (iam *IAM) AccessKeys(userName string) (*AccessKeysResp, error) {
 		params["UserName"] = userName
 	}
 	resp := new(AccessKeysResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -332,7 +397,7 @@ func (iam *IAM) DeleteAccessKey(id, userName string) (*SimpleResp, error) {
 		params["UserName"] = userName
 	}
 	resp := new(SimpleResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -365,11 +430,27 @@ func (iam *IAM) GetUserPolicy(userName, policyName string) (*GetUserPolicyResp, 
 		"PolicyName": policyName,
 	}
 	resp := new(GetUserPolicyResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
 	return nil, nil
+}
+
+type AccountAliasesResp struct {
+	RequestId string   `xml:"ResponseMetadata>RequestId"`
+	Aliases   []string `xml:"ListAccountAliasesResult>AccountAliases>member"`
+}
+
+func (iam *IAM) ListAccountAliases() (*AccountAliasesResp, error) {
+	params := map[string]string{
+		"Action": "ListAccountAliases",
+	}
+	resp := new(AccountAliasesResp)
+	if err := iam.queryV4(params, resp); err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // PutUserPolicy creates a user policy in IAM.
@@ -381,9 +462,10 @@ func (iam *IAM) PutUserPolicy(userName, policyName, policyDocument string) (*Sim
 		"UserName":       userName,
 		"PolicyName":     policyName,
 		"PolicyDocument": policyDocument,
+		"Version":        APIVersion,
 	}
 	resp := new(SimpleResp)
-	if err := iam.postQuery(params, resp); err != nil {
+	if err := iam.postQueryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -399,7 +481,7 @@ func (iam *IAM) DeleteUserPolicy(userName, policyName string) (*SimpleResp, erro
 		"UserName":   userName,
 	}
 	resp := new(SimpleResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -422,7 +504,7 @@ func (iam *IAM) AddUserToGroup(name, group string) (*AddUserToGroupResp, error) 
 		"GroupName": group,
 		"UserName":  name}
 	resp := new(AddUserToGroupResp)
-	if err := iam.query(params, resp); err != nil {
+	if err := iam.queryV4(params, resp); err != nil {
 		return nil, err
 	}
 	return resp, nil
