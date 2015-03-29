@@ -30,6 +30,8 @@ import (
 
 const debug = false
 
+var b64 = base64.StdEncoding
+
 // The EC2 type encapsulates operations with a specific EC2 region.
 type EC2 struct {
 	aws.Auth
@@ -128,7 +130,6 @@ var timeNow = time.Now
 
 func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
 	params["Version"] = "2014-06-15"
-	params["Timestamp"] = timeNow().In(time.UTC).Format(time.RFC3339)
 	endpoint, err := url.Parse(ec2.Region.EC2Endpoint)
 	if err != nil {
 		return err
@@ -137,9 +138,9 @@ func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
 		endpoint.Path = "/"
 	}
 	sign(ec2.Auth, "GET", endpoint.Path, params, endpoint.Host)
-	endpoint.RawQuery = multimap(params).Encode()
+	endpoint.RawQuery = makeSortedRawQuery(params)
 	if debug {
-		log.Printf("get { %v } -> {\n", endpoint.String())
+		log.Printf("get %s", endpoint.String())
 	}
 
 	r, err := ec2.httpClient.Get(endpoint.String())
@@ -158,14 +159,6 @@ func (ec2 *EC2) query(params map[string]string, resp interface{}) error {
 	}
 	err = xml.NewDecoder(r.Body).Decode(resp)
 	return err
-}
-
-func multimap(p map[string]string) url.Values {
-	q := make(url.Values, len(p))
-	for k, v := range p {
-		q[k] = []string{v}
-	}
-	return q
 }
 
 func buildError(r *http.Response) error {
