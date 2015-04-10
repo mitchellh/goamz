@@ -16,7 +16,6 @@ import (
 	"encoding/base64"
 	"encoding/xml"
 	"fmt"
-	"github.com/mitchellh/goamz/aws"
 	"io"
 	"io/ioutil"
 	"log"
@@ -27,6 +26,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/goamz/aws"
 )
 
 const debug = false
@@ -193,17 +194,35 @@ func (b *Bucket) GetReader(path string) (rc io.ReadCloser, err error) {
 	return nil, err
 }
 
+func (b *Bucket) GetRangeReader(path string, ranges ...string) (rc io.ReadCloser, err error) {
+	resp, err := b.getResponse(&request{
+		path: path,
+		headers: http.Header{
+			"Range": ranges,
+		},
+	})
+	if resp != nil {
+		return resp.Body, err
+	}
+	return nil, err
+}
+
 // GetResponse retrieves an object from an S3 bucket returning the http response
 // It is the caller's responsibility to call Close on rc when
 // finished reading.
 func (b *Bucket) GetResponse(path string) (*http.Response, error) {
-	return b.getResponseParams(path, nil)
+	return b.getResponse(&request{
+		path: path,
+	})
 }
 
 // GetTorrent retrieves an Torrent object from an S3 bucket an io.ReadCloser.
 // It is the caller's responsibility to call Close on rc when finished reading.
 func (b *Bucket) GetTorrentReader(path string) (io.ReadCloser, error) {
-	resp, err := b.getResponseParams(path, url.Values{"torrent": {""}})
+	resp, err := b.getResponse(&request{
+		path:   path,
+		params: url.Values{"torrent": {""}},
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -222,12 +241,8 @@ func (b *Bucket) GetTorrent(path string) ([]byte, error) {
 	return ioutil.ReadAll(body)
 }
 
-func (b *Bucket) getResponseParams(path string, params url.Values) (*http.Response, error) {
-	req := &request{
-		bucket: b.Name,
-		path:   path,
-		params: params,
-	}
+func (b *Bucket) getResponse(req *request) (*http.Response, error) {
+	req.bucket = b.Name
 	err := b.S3.prepare(req)
 	if err != nil {
 		return nil, err
@@ -811,7 +826,9 @@ func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
 		dump, _ := httputil.DumpResponse(hresp, true)
 		log.Printf("} -> %s\n", dump)
 	}
-	if hresp.StatusCode != 200 && hresp.StatusCode != 204 {
+	switch hresp.StatusCode {
+	case 200, 204, 206:
+	default:
 		defer hresp.Body.Close()
 		return nil, buildError(hresp)
 	}
