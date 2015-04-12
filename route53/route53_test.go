@@ -26,7 +26,10 @@ func makeTestServer() *testutil.HTTPServer {
 }
 
 func makeClient(server *testutil.HTTPServer) *Route53 {
-	auth := aws.Auth{"abc", "123", ""}
+	auth := aws.Auth{
+		AccessKey: "abc",
+		SecretKey: "123",
+	}
 	return NewWithClient(auth, aws.Region{Route53Endpoint: server.URL}, testutil.DefaultClient)
 }
 

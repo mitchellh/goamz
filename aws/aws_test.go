@@ -1,12 +1,18 @@
 package aws_test
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/mitchellh/goamz/aws"
 	. "github.com/motain/gocheck"
 	"io/ioutil"
+	"net"
+	"net/http"
 	"os"
 	"strings"
+	"sync/atomic"
 	"testing"
+	"time"
 )
 
 func Test(t *testing.T) {
@@ -154,7 +160,8 @@ func (s *S) TestEnvAuth(c *C) {
 	os.Setenv("AWS_ACCESS_KEY_ID", "access")
 	auth, err := aws.EnvAuth()
 	c.Assert(err, IsNil)
-	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
+	c.Assert(auth.AccessKey, Equals, "access")
+	c.Assert(auth.SecretKey, Equals, "secret")
 }
 
 func (s *S) TestEnvAuthWithToken(c *C) {
@@ -164,7 +171,9 @@ func (s *S) TestEnvAuthWithToken(c *C) {
 	os.Setenv("AWS_SECURITY_TOKEN", "token")
 	auth, err := aws.EnvAuth()
 	c.Assert(err, IsNil)
-	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access", Token: "token"})
+	c.Assert(auth.AccessKey, Equals, "access")
+	c.Assert(auth.SecretKey, Equals, "secret")
+	c.Assert(auth.Token(), Equals, "token")
 }
 
 func (s *S) TestEnvAuthAlt(c *C) {
@@ -173,13 +182,15 @@ func (s *S) TestEnvAuthAlt(c *C) {
 	os.Setenv("AWS_ACCESS_KEY", "access")
 	auth, err := aws.EnvAuth()
 	c.Assert(err, IsNil)
-	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
+	c.Assert(auth.AccessKey, Equals, "access")
+	c.Assert(auth.SecretKey, Equals, "secret")
 }
 
 func (s *S) TestGetAuthStatic(c *C) {
 	auth, err := aws.GetAuth("access", "secret")
 	c.Assert(err, IsNil)
-	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
+	c.Assert(auth.AccessKey, Equals, "access")
+	c.Assert(auth.SecretKey, Equals, "secret")
 }
 
 func (s *S) TestGetAuthEnv(c *C) {
@@ -188,7 +199,98 @@ func (s *S) TestGetAuthEnv(c *C) {
 	os.Setenv("AWS_ACCESS_KEY_ID", "access")
 	auth, err := aws.GetAuth("", "")
 	c.Assert(err, IsNil)
-	c.Assert(auth, Equals, aws.Auth{SecretKey: "secret", AccessKey: "access"})
+	c.Assert(auth.AccessKey, Equals, "access")
+	c.Assert(auth.SecretKey, Equals, "secret")
+}
+
+type fakeIamServer struct {
+	listener  net.Listener
+	nRequests uint32
+}
+
+func (s *S) newFakeIamServer(c *C, expirationDelay time.Duration) *fakeIamServer {
+	listenAddr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
+	c.Assert(err, IsNil)
+
+	listener, err := net.ListenTCP("tcp", listenAddr)
+	c.Assert(err, IsNil)
+
+	iamServer := &fakeIamServer{
+		listener: listener,
+	}
+
+	handler := http.NewServeMux()
+	handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		creds := struct {
+			AccessKeyId     string
+			SecretAccessKey string
+			Token           string
+			Expiration      string
+		}{
+			"access",
+			"secret",
+			"token",
+			time.Now().UTC().Add(expirationDelay).Format("2006-01-02T15:04:05Z"),
+		}
+
+		atomic.AddUint32(&iamServer.nRequests, 1)
+
+		json.NewEncoder(w).Encode(creds)
+	})
+
+	server := &http.Server{
+		Handler: handler,
+	}
+
+	go server.Serve(listener)
+
+	return iamServer
+}
+
+func (r *fakeIamServer) Stop() {
+	r.listener.Close()
+}
+
+func (r *fakeIamServer) NRequests() uint32 {
+	return atomic.LoadUint32(&r.nRequests)
+}
+
+func (s *S) TestRoleAuth(c *C) {
+	server := s.newFakeIamServer(c, 5*time.Hour)
+	defer server.Stop()
+
+	os.Setenv("GOAWS_INSTANCE_METADATA_URL", fmt.Sprintf("http://%s/", server.listener.Addr().String()))
+
+	auth, err := aws.RoleAuth()
+	c.Assert(err, IsNil)
+	c.Assert(auth.AccessKey, Equals, "access")
+	c.Assert(auth.SecretKey, Equals, "secret")
+	c.Assert(auth.Token(), Equals, "token")
+	// 2 since one request for fetching the role, one for the token
+	c.Assert(server.NRequests(), Equals, uint32(2))
+
+	for i := 0; i < 10; i++ {
+		auth.Token()
+	}
+
+	// Many calls to Token should not hit IAM if the token is not expired
+	c.Assert(server.NRequests(), Equals, uint32(2))
+}
+
+func (s *S) TestRoleAuthExpiration(c *C) {
+	server := s.newFakeIamServer(c, 0*time.Hour)
+	defer server.Stop()
+
+	os.Setenv("GOAWS_INSTANCE_METADATA_URL", fmt.Sprintf("http://%s/", server.listener.Addr().String()))
+
+	auth, err := aws.RoleAuth()
+	c.Assert(err, IsNil)
+
+	for i := 0; i < 10; i++ {
+		auth.Token()
+	}
+
+	c.Assert(server.NRequests(), Equals, uint32(22)) // (Initial + 10 expiries) x 2 requests
 }
 
 func (s *S) TestEncode(c *C) {

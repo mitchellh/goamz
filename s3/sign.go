@@ -45,8 +45,8 @@ func sign(auth aws.Auth, method, canonicalPath string, params, headers map[strin
 	var sarray []string
 
 	// add security token
-	if auth.Token != "" {
-		headers["x-amz-security-token"] = []string{auth.Token}
+	if token := auth.Token(); token != "" {
+		headers["x-amz-security-token"] = []string{token}
 	}
 
 	if auth.SecretKey == "" {

@@ -8,7 +8,10 @@ import (
 
 // SimpleDB ReST authentication docs: http://goo.gl/CaY81
 
-var testAuth = aws.Auth{"access-key-id-s8eBOWuU", "secret-access-key-UkQjTLd9", ""}
+var testAuth = aws.Auth{
+	AccessKey: "access-key-id-s8eBOWuU",
+	SecretKey: "secret-access-key-UkQjTLd9",
+}
 
 func (s *S) TestSignExampleDomainCreate(c *C) {
 	method := "GET"
