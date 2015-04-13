@@ -1,6 +1,6 @@
 # goamz - An Amazon Library for Go 
 
-Current API documentation: [![GoDoc](https://godoc.org/github.com/mitchellh/goamz?status.svg)](https://godoc.org/github.com/mitchellh/goamz)
+Current API documentation: [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/mitchellh/goamz)
 
 This is a fork of [https://launchpad.net/goamz](https://launchpad.net/goamz)
 that adds some missing API calls to certain packages.
