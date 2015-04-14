@@ -262,7 +262,7 @@ func (r *Route53) ListHostedZonesByName(dnsName string, hostedZoneId string, max
 	}
 
 	if hostedZoneId != "" {
-		values.Add("Hostedzoneid", hostedZoneId)
+		values.Add("hostedzoneid", hostedZoneId)
 	}
 
 	if maxItems != 0 {
