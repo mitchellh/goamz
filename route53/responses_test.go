@@ -120,3 +120,33 @@ var ListHostedZonesExample = `<?xml version="1.0" encoding="utf-8"?>
     <IsTruncated>false</IsTruncated>
     <MaxItems>100</MaxItems>
 </ListHostedZonesResponse>`
+
+var ListHostedZonesByNameExample = `<?xml version="1.0" encoding="UTF-8"?>
+<ListHostedZonesByNameResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+   <HostedZones>
+      <HostedZone>
+         <Id>/hostedzone/Z222222VVVVVVV</Id>
+         <Name>example2.com.</Name>
+         <CallerReference>MyUniqueIdentifier2</CallerReference>
+         <Config>
+            <Comment>This is my second hosted zone.</Comment>
+            <PrivateZone>false</PrivateZone>
+         </Config>
+         <ResourceRecordSetCount>17</ResourceRecordSetCount>
+      </HostedZone>
+      <HostedZone>
+         <Id>/hostedzone/Z2682N5HXP0BZ4</Id>
+         <Name>example3.com.</Name>
+         <CallerReference>MyUniqueIdentifier3</CallerReference>
+         <Config>
+            <Comment>This is my third hosted zone.</Comment>
+            <PrivateZone>false</PrivateZone>
+         </Config>
+         <ResourceRecordSetCount>117</ResourceRecordSetCount>
+      </HostedZone>
+   </HostedZones>
+   <DNSName>example2.com</DNSName>
+   <HostedZoneId>Z222222VVVVVVV</HostedZoneId>
+   <IsTruncated>false</IsTruncated>
+   <MaxItems>2</MaxItems>
+</ListHostedZonesByNameResponse>`
