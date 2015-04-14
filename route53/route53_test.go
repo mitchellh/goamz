@@ -176,6 +176,25 @@ func TestListHostedZones(t *testing.T) {
 	}
 }
 
+func TestListHostedZonesByName(t *testing.T) {
+	testServer := makeTestServer()
+	client := makeClient(testServer)
+	testServer.Response(200, nil, ListHostedZonesByNameExample)
+
+	resp, err := client.ListHostedZonesByName("example2.com", "Z2682N5HXP0BZ4", 0)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	if resp.HostedZones[0].Name != "example2.com." {
+		t.Fatalf("bad: %v", resp)
+	}
+
+	if resp.HostedZones[1].Name != "example3.com." {
+		t.Fatalf("bad: %v", resp)
+	}
+}
+
 func decode(t *testing.T, r io.Reader, out interface{}) {
 	var buf1 bytes.Buffer
 	var buf2 bytes.Buffer
