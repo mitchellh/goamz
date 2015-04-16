@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
-	"github.com/mitchellh/goamz/s3"
 	"io"
 	"io/ioutil"
 	"log"
@@ -19,6 +18,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/mitchellh/goamz/s3"
 )
 
 const debug = false
@@ -212,7 +213,6 @@ var unimplementedBucketResourceNames = map[string]bool{
 	"requestPayment": true,
 	"versioning":     true,
 	"website":        true,
-	"uploads":        true,
 }
 
 var unimplementedObjectResourceNames = map[string]bool{
@@ -226,7 +226,6 @@ var pathRegexp = regexp.MustCompile("/(([^/]+)(/(.*))?)?")
 
 // resourceForURL returns a resource object for the given URL.
 func (srv *Server) resourceForURL(u *url.URL) (r resource) {
-
 	if u.Path == "/" {
 		return serviceResource{
 			buckets: srv.buckets,
@@ -259,6 +258,14 @@ func (srv *Server) resourceForURL(u *url.URL) (r resource) {
 	if b.bucket == nil {
 		fatalf(404, "NoSuchBucket", "The specified bucket does not exist")
 	}
+
+	if q["uploads"] != nil || q["uploadId"] != nil {
+		return multiResource{
+			name:   objectName,
+			bucket: b.bucket,
+		}
+	}
+
 	objr := objectResource{
 		name:    objectName,
 		version: q.Get("versionId"),
@@ -663,4 +670,61 @@ func locationConstraint(a *action) string {
 		fatalf(400, "InvalidRequest", err.Error())
 	}
 	return loc.LocationConstraint
+}
+
+type multiResource struct {
+	name   string
+	bucket *bucket
+	object *object
+}
+
+// Save the object into the bucket assuming that we get the whole object in a
+// single multi part request
+func (objr multiResource) put(a *action) interface{} {
+	obj := objr.object
+	if obj == nil {
+		obj = &object{}
+	}
+
+	sum := md5.New()
+	obj.data, _ = ioutil.ReadAll(io.TeeReader(a.req.Body, sum))
+	obj.checksum = sum.Sum(nil)
+	objr.bucket.objects[objr.name] = obj
+
+	h := a.w.Header()
+	h.Set("ETag", hex.EncodeToString(obj.checksum))
+
+	return nil
+}
+
+// The only time this is invoked is for the ListMulti, which we assume the consumer
+// is starting a new Multi Request every time i.e We don't support resuming a
+// Multi part request
+func (multiResource) get(a *action) interface{} {
+	return &s3Error{
+		statusCode: 404,
+		Code:       "NoSuchUpload",
+		Message:    "The specified multipart upload does not exist. The upload ID might be invalid, or the multipart upload might have been aborted or completed.",
+	}
+}
+
+func (multiResource) post(a *action) interface{} {
+	if isInitMultiRequest(a) {
+		s := `<?xml version="1.0" encoding="UTF-8"?>
+	<InitiateMultipartUploadResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+	  <UploadId>VXBsb2FkIElEIGZvciA2aWWpbmcncyBteS1tb3ZpZS5tMnRzIHVwbG9hZA</UploadId>
+	</InitiateMultipartUploadResult>`
+
+		a.w.Write([]byte(s))
+	}
+	return nil
+}
+
+func isInitMultiRequest(a *action) bool {
+	_, isPresent := a.req.URL.Query()["uploads"]
+	return isPresent
+}
+
+func (multiResource) delete(a *action) interface{} {
+	return notAllowed()
 }
