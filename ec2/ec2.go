@@ -515,6 +515,7 @@ type InstanceStatusSet struct {
 }
 
 type DescribeInstanceStatusResp struct {
+	NextToken      string              `xml:"nextToken"`
 	RequestId      string              `xml:"requestId"`
 	InstanceStatus []InstanceStatusSet `xml:"instanceStatusSet>item"`
 }
