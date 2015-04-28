@@ -377,6 +377,7 @@ func SharedAuth() (auth Auth, err error) {
 
 	auth.AccessKey = profile["aws_access_key_id"]
 	auth.SecretKey = profile["aws_secret_access_key"]
+	auth.Token = profile["aws_security_token"]
 
 	if auth.AccessKey == "" {
 		err = errors.New("AWS_ACCESS_KEY_ID not found in environment in credentials file")
