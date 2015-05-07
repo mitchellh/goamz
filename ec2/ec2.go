@@ -204,30 +204,33 @@ func addBlockDeviceParams(prename string, params map[string]string, blockdevices
 			params[prefix+"DeviceName"] = k.DeviceName
 		}
 		if k.VirtualName != "" {
+			// ephemeral disk
 			params[prefix+"VirtualName"] = k.VirtualName
-		}
-		if k.SnapshotId != "" {
-			params[prefix+"Ebs.SnapshotId"] = k.SnapshotId
-		}
-		if k.VolumeType != "" {
-			params[prefix+"Ebs.VolumeType"] = k.VolumeType
-		}
-		if k.IOPS != 0 {
-			params[prefix+"Ebs.Iops"] = strconv.FormatInt(k.IOPS, 10)
-		}
-		if k.VolumeSize != 0 {
-			params[prefix+"Ebs.VolumeSize"] = strconv.FormatInt(k.VolumeSize, 10)
-		}
-		if k.DeleteOnTermination {
-			params[prefix+"Ebs.DeleteOnTermination"] = "true"
-		} else {
-			params[prefix+"Ebs.DeleteOnTermination"] = "false"
-		}
-		if k.Encrypted {
-			params[prefix+"Ebs.Encrypted"] = "true"
-		}
-		if k.NoDevice {
+		} else if k.NoDevice {
+			// no device
 			params[prefix+"NoDevice"] = ""
+		} else {
+			// default to an ebs volume
+			if k.SnapshotId != "" {
+				params[prefix+"Ebs.SnapshotId"] = k.SnapshotId
+			}
+			if k.VolumeType != "" {
+				params[prefix+"Ebs.VolumeType"] = k.VolumeType
+			}
+			if k.IOPS != 0 {
+				params[prefix+"Ebs.Iops"] = strconv.FormatInt(k.IOPS, 10)
+			}
+			if k.VolumeSize != 0 {
+				params[prefix+"Ebs.VolumeSize"] = strconv.FormatInt(k.VolumeSize, 10)
+			}
+			if k.DeleteOnTermination {
+				params[prefix+"Ebs.DeleteOnTermination"] = "true"
+			} else {
+				params[prefix+"Ebs.DeleteOnTermination"] = "false"
+			}
+			if k.Encrypted {
+				params[prefix+"Ebs.Encrypted"] = "true"
+			}
 		}
 	}
 }
