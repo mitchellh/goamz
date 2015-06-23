@@ -192,3 +192,14 @@ func (s *S) Test_UpdateAutoScalingGroup(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(resp.RequestId, Equals, "adafead0-ab8a-11e2-ba13-ab0ccEXAMPLE")
 }
+
+func (s *S) Test_TerminateInstanceInAutoScalingGroup(c *C) {
+  testServer.Response(200, nil, TerminateInstanceInAutoScalingGroup)
+
+  resp, err := s.autoscaling.TerminateInstanceInAutoScalingGroup("i-123456", true)
+  req := testServer.WaitRequest()
+
+  c.Assert(req.Form["Action"], DeepEquals, []string{"TerminateInstanceInAutoScalingGroup"})
+	c.Assert(err, IsNil)
+	c.Assert(resp.RequestId, Equals, "adafead0-ab8a-11e2-ba13-ab0ccEXAMPLE")
+}

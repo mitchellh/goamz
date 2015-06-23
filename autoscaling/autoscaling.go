@@ -558,6 +558,28 @@ func (autoscaling *AutoScaling) UpdateAutoScalingGroup(options *UpdateAutoScalin
 	return
 }
 
+func (autoscaling *AutoScaling) TerminateInstanceInAutoScalingGroup(instance string, decrementCapacity bool) (resp *SimpleResp, err error) {
+  resp = &SimpleResp{}
+  err = nil
+
+	params := makeParams("TerminateInstanceInAutoScalingGroup")
+
+  params["InstanceId"] = instance
+
+  if decrementCapacity {
+    params["ShouldDecrementDesiredCapacity"] = "true"
+  } else {
+    params["ShouldDecrementDesiredCapacity"] = "false"
+  }
+
+  err = autoscaling.query(params, resp)
+  if err != nil {
+    resp = nil
+  }
+
+  return
+}
+
 // Responses
 
 type SimpleResp struct {

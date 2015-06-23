@@ -115,3 +115,12 @@ var UpdateAutoScalingGroupExample = `
   </ResponseMetadata>
 </UpdateAutoScalingGroupResponse>
 `
+
+var TerminateInstanceInAutoScalingGroup = `
+<TerminateInstanceInAutoScalingGroupResponse xmlns="http://autoscaling.amazonaws.com/doc/2011-01-01/">
+  <ResponseMetadata>
+    <RequestId>adafead0-ab8a-11e2-ba13-ab0ccEXAMPLE</RequestId>
+  </ResponseMetadata>
+</TerminateInstanceInAutoScalingGroupResponse>
+
+`
