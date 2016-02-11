@@ -426,6 +426,7 @@ func (s *S) TestGetKey(c *C) {
 	c.Assert(key.LastModified, Equals, GetKeyHeaderDump["Last-Modified"])
 	c.Assert(key.Size, Equals, int64(434234))
 	c.Assert(key.ETag, Equals, GetKeyHeaderDump["ETag"])
+	c.Assert(key.StorageClass, Equals, GetKeyHeaderDump["x-amz-storage-class"])
 }
 
 func (s *S) TestUnescapedColon(c *C) {
