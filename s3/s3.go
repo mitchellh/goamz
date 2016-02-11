@@ -595,6 +595,7 @@ func (b *Bucket) GetKey(path string) (*Key, error) {
 				contentLength, err)
 		}
 		key.Size = size
+		key.StorageClass = resp.Header.Get("X-Amz-Storage-Class")
 		return key, nil
 	}
 	panic("unreachable")
