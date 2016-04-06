@@ -601,30 +601,6 @@ func (b *Bucket) GetKey(path string) (*Key, error) {
 	panic("unreachable")
 }
 
-type RestoreRequestBody struct {
-	XMLName xml.Name `xml:"RestoreRequest"`
-	Days    int64
-}
-
-// Restore a temporary copy of an archived object
-func (b *Bucket) Restore(path string, days int64) error {
-	// create XML payload
-	payload := RestoreRequestBody{Days: days}
-	data, _ := xml.Marshal(payload)
-
-	// Content-MD5 is required
-	md5hash := base64md5(data)
-	req := &request{
-		method:  "POST",
-		bucket:  b.Name,
-		path:    path,
-		params:  url.Values{"restore": {""}},
-		headers: http.Header{"Content-MD5": {md5hash}},
-		payload: bytes.NewReader(data),
-	}
-	return b.S3.query(req, nil)
-}
-
 // URL returns a non-signed URL that allows retriving the
 // object at path. It only works if the object is publicly
 // readable (see SignedURL).
