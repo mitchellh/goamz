@@ -353,6 +353,9 @@ func (m *Multi) Complete(parts []Part) error {
 	}
 	sort.Sort(c.Parts)
 	data, err := xml.Marshal(&c)
+	headers := map[string][]string{
+		"Content-Length": {strconv.Itoa(len(data))},
+	}
 	if err != nil {
 		return err
 	}
@@ -361,6 +364,7 @@ func (m *Multi) Complete(parts []Part) error {
 			method:  "POST",
 			bucket:  m.Bucket.Name,
 			path:    m.Key,
+			headers: headers,
 			params:  params,
 			payload: bytes.NewReader(data),
 		}
