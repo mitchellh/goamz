@@ -120,7 +120,7 @@ func TestChangeResourceRecordSets(t *testing.T) {
 	req := &ChangeResourceRecordSetsRequest{
 		Comment: "Test",
 		Changes: []Change{
-			Change{
+			{
 				Action: "CREATE",
 				Record: ResourceRecordSet{
 					Name:    "foo.hashicorp.com",

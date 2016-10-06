@@ -383,27 +383,27 @@ func (s *S) Test_ModifyDBParameterGroup(c *C) {
 	options := rds.ModifyDBParameterGroup{
 		DBParameterGroupName: "mydbparamgroup3",
 		Parameters: []rds.Parameter{
-			rds.Parameter{
+			{
 				ApplyMethod:    "immediate",
 				ParameterName:  "character_set_server",
 				ParameterValue: "utf8",
 			},
-			rds.Parameter{
+			{
 				ApplyMethod:    "immediate",
 				ParameterName:  "character_set_client",
 				ParameterValue: "utf8",
 			},
-			rds.Parameter{
+			{
 				ApplyMethod:    "immediate",
 				ParameterName:  "character_set_results",
 				ParameterValue: "utf8",
 			},
-			rds.Parameter{
+			{
 				ApplyMethod:    "immediate",
 				ParameterName:  "collation_server",
 				ParameterValue: "utf8_unicode_ci",
 			},
-			rds.Parameter{
+			{
 				ApplyMethod:    "immediate",
 				ParameterName:  "collation_connection",
 				ParameterValue: "utf8_unicode_ci",

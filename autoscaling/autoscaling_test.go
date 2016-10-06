@@ -48,7 +48,7 @@ func (s *S) Test_CreateAutoScalingGroup(c *C) {
 		TerminationPolicies:     []string{"ClosestToNextInstanceHour", "OldestInstance"},
 		Name:                    "foobar",
 		Tags: []autoscaling.Tag{
-			autoscaling.Tag{
+			{
 				Key:   "foo",
 				Value: "bar",
 			},
@@ -79,7 +79,7 @@ func (s *S) Test_CreateLaunchConfiguration(c *C) {
 		KeyName:        "foobar",
 		Name:           "i-141421",
 		UserData:       "#!/bin/bash\necho Hello\n",
-		BlockDevices:   []autoscaling.BlockDeviceMapping{
+		BlockDevices: []autoscaling.BlockDeviceMapping{
 			{DeviceName: "/dev/sdb", VirtualName: "ephemeral0"},
 			{DeviceName: "/dev/sdc", SnapshotId: "snap-a08912c9", DeleteOnTermination: true},
 		},

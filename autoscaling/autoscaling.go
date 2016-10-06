@@ -136,16 +136,16 @@ type Tag struct {
 }
 
 type LaunchConfiguration struct {
-	AssociatePublicIpAddress bool     `xml:"AssociatePublicIpAddress"`
-	IamInstanceProfile       string   `xml:"IamInstanceProfile"`
-	ImageId                  string   `xml:"ImageId"`
-	InstanceType             string   `xml:"InstanceType"`
-	KernelId                 string   `xml:"KernelId"`
-	KeyName                  string   `xml:"KeyName"`
-	SpotPrice                string   `xml:"SpotPrice"`
-	Name                     string   `xml:"LaunchConfigurationName"`
-	SecurityGroups           []string `xml:"SecurityGroups>member"`
-	UserData                 []byte   `xml:"UserData"`
+	AssociatePublicIpAddress bool                 `xml:"AssociatePublicIpAddress"`
+	IamInstanceProfile       string               `xml:"IamInstanceProfile"`
+	ImageId                  string               `xml:"ImageId"`
+	InstanceType             string               `xml:"InstanceType"`
+	KernelId                 string               `xml:"KernelId"`
+	KeyName                  string               `xml:"KeyName"`
+	SpotPrice                string               `xml:"SpotPrice"`
+	Name                     string               `xml:"LaunchConfigurationName"`
+	SecurityGroups           []string             `xml:"SecurityGroups>member"`
+	UserData                 []byte               `xml:"UserData"`
 	BlockDevices             []BlockDeviceMapping `xml:"BlockDeviceMappings>member"`
 }
 
