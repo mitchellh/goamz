@@ -188,7 +188,7 @@ func (s *ClientTests) TestRegions(c *C) {
 			errs <- err
 		}(region)
 	}
-	for _ = range allRegions {
+	for range allRegions {
 		err := <-errs
 		if err != nil {
 			ec2_err, ok := err.(*ec2.Error)

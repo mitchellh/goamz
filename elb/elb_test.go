@@ -77,7 +77,7 @@ func (s *S) TestCreateLoadBalancer(c *C) {
 
 	options := elb.CreateLoadBalancer{
 		AvailZone: []string{"us-east-1a"},
-		Listeners: []elb.Listener{elb.Listener{
+		Listeners: []elb.Listener{{
 			InstancePort:     80,
 			InstanceProtocol: "http",
 			SSLCertificateId: "needToAddASSLCertToYourAWSAccount",
