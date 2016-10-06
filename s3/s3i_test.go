@@ -8,13 +8,14 @@ import (
 	"net/http"
 	"strings"
 
+	"net"
+	"sort"
+	"time"
+
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 	"github.com/mitchellh/goamz/testutil"
 	. "github.com/motain/gocheck"
-	"net"
-	"sort"
-	"time"
 )
 
 // AmazonServer represents an Amazon S3 server.
@@ -153,7 +154,7 @@ func get(url string) ([]byte, error) {
 			return nil, err
 		}
 		data, err := ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
+		defer resp.Body.Close()
 		if err != nil {
 			if attempt.HasNext() {
 				continue
@@ -172,7 +173,10 @@ func (s *ClientTests) TestBasicFunctionality(c *C) {
 
 	err = b.Put("name", []byte("yo!"), "text/plain", s3.PublicRead)
 	c.Assert(err, IsNil)
-	defer b.Del("name")
+	defer func() {
+		err = b.Del("name")
+		c.Assert(err, IsNil)
+	}()
 
 	data, err := b.Get("name")
 	c.Assert(err, IsNil)
@@ -225,6 +229,7 @@ func (s *ClientTests) TestBasicFunctionality(c *C) {
 func (s *ClientTests) TestCopy(c *C) {
 	b := testBucket(s.s3)
 	err := b.PutBucket(s3.PublicRead)
+	c.Assert(err, IsNil)
 
 	err = b.Put("name+1", []byte("yo!"), "text/plain", s3.PublicRead)
 	c.Assert(err, IsNil)
@@ -486,7 +491,10 @@ func (s *ClientTests) TestMultiComplete(c *C) {
 	multi, err := b.InitMulti("multi", "text/plain", s3.Private)
 	c.Assert(err, IsNil)
 	c.Assert(multi.UploadId, Matches, ".+")
-	defer multi.Abort()
+	defer func() {
+		err = multi.Abort()
+		c.Assert(err, IsNil)
+	}()
 
 	// Minimum size S3 accepts for all but the last part is 5MB.
 	data1 := make([]byte, 5*1024*1024)
@@ -526,8 +534,10 @@ func (s *ClientTests) TestListMulti(c *C) {
 
 	// Ensure an empty state before testing its behavior.
 	multis, _, err := b.ListMulti("", "")
+	c.Assert(err, IsNil)
+
 	for _, m := range multis {
-		err := m.Abort()
+		err = m.Abort()
 		c.Assert(err, IsNil)
 	}
 
@@ -579,7 +589,7 @@ func (s *ClientTests) TestListMulti(c *C) {
 	c.Assert(multis[0].UploadId, Matches, ".+")
 
 	for attempt := attempts.Start(); attempt.Next() && len(multis) < 2; {
-		multis, prefixes, err = b.ListMulti("", "")
+		multis, _, err = b.ListMulti("", "")
 		c.Assert(err, IsNil)
 	}
 	multis, prefixes, err = b.ListMulti("a/", "/")

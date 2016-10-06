@@ -16,7 +16,6 @@ import (
 	"encoding/base64"
 	"encoding/xml"
 	"fmt"
-	"github.com/mitchellh/goamz/aws"
 	"io"
 	"io/ioutil"
 	"log"
@@ -27,6 +26,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/goamz/aws"
 )
 
 const debug = false
@@ -532,7 +533,7 @@ func (b *Bucket) List(prefix, delim, marker string, max int) (result *ListResp, 
 	return result, nil
 }
 
-// Returns a mapping of all key names in this bucket to Key objects
+// GetBucketContents returns a mapping of all key names in this bucket to Key objects
 func (b *Bucket) GetBucketContents() (*map[string]Key, error) {
 	bucket_contents := map[string]Key{}
 	prefix := ""
