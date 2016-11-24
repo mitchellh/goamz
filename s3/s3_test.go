@@ -195,7 +195,12 @@ func (s *S) TestPutObject(c *C) {
 	testServer.Response(200, nil, "")
 
 	b := s.s3.Bucket("bucket")
-	err := b.Put("name", []byte("content"), "content-type", s3.Private)
+	err := b.Put(
+		"name",
+		[]byte("content"),
+		map[string][]string{"Content-Type": {"content-type"}},
+		s3.Private,
+	)
 	c.Assert(err, IsNil)
 
 	req := testServer.WaitRequest()
@@ -235,7 +240,13 @@ func (s *S) TestPutReader(c *C) {
 
 	b := s.s3.Bucket("bucket")
 	buf := bytes.NewBufferString("content")
-	err := b.PutReader("name", buf, int64(buf.Len()), "content-type", s3.Private)
+	err := b.PutReader(
+		"name",
+		buf,
+		int64(buf.Len()),
+		map[string][]string{"Content-Type": {"content-type"}},
+		s3.Private,
+	)
 	c.Assert(err, IsNil)
 
 	req := testServer.WaitRequest()
