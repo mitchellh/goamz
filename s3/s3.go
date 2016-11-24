@@ -37,6 +37,7 @@ type S3 struct {
 	aws.Region
 	HTTPClient func() *http.Client
 
+	signer  *V4Signer
 	private byte // Reserve the right of using private data.
 }
 
@@ -60,13 +61,16 @@ var attempts = aws.AttemptStrategy{
 
 // New creates a new S3.
 func New(auth aws.Auth, region aws.Region) *S3 {
-	return &S3{
+	s3 := &S3{
 		Auth:   auth,
 		Region: region,
 		HTTPClient: func() *http.Client {
 			return http.DefaultClient
 		},
+		signer:  NewV4Signer(auth, "s3", region),
 		private: 0}
+	s3.signer.IncludeXAmzContentSha256 = true
+	return s3
 }
 
 // Bucket returns a Bucket with the given name.
@@ -269,6 +273,7 @@ func (b *Bucket) Head(path string) (*http.Response, error) {
 }
 
 // Put inserts an object into the S3 bucket.
+// contType and perm can be left blank to use the defaults
 //
 // See http://goo.gl/FEBPD for details.
 func (b *Bucket) Put(path string, data []byte, contType string, perm ACL) error {
@@ -278,6 +283,7 @@ func (b *Bucket) Put(path string, data []byte, contType string, perm ACL) error 
 
 /*
 PutHeader - like Put, inserts an object into the S3 bucket.
+perm can be left blank to use the default
 Instead of Content-Type string, pass in custom headers to override defaults.
 */
 func (b *Bucket) PutHeader(path string, data []byte, customHeaders map[string][]string, perm ACL) error {
@@ -287,11 +293,19 @@ func (b *Bucket) PutHeader(path string, data []byte, customHeaders map[string][]
 
 // PutReader inserts an object into the S3 bucket by consuming data
 // from r until EOF.
+// contType and perm can be left blank to use the defaults
 func (b *Bucket) PutReader(path string, r io.Reader, length int64, contType string, perm ACL) error {
+
 	headers := map[string][]string{
 		"Content-Length": {strconv.FormatInt(length, 10)},
-		"Content-Type":   {contType},
-		"x-amz-acl":      {string(perm)},
+	}
+
+	// Content-Type and x-amz-acl are optional
+	if contType != "" {
+		headers["Content-Type"] = []string{contType}
+	}
+	if perm != "" {
+		headers["x-amz-acl"] = []string{string(perm)}
 	}
 	req := &request{
 		method:  "PUT",
@@ -312,7 +326,10 @@ func (b *Bucket) PutReaderHeader(path string, r io.Reader, length int64, customH
 	headers := map[string][]string{
 		"Content-Length": {strconv.FormatInt(length, 10)},
 		"Content-Type":   {"application/text"},
-		"x-amz-acl":      {string(perm)},
+	}
+	// x-amz-acl is optional
+	if perm != "" {
+		headers["x-amz-acl"] = []string{string(perm)}
 	}
 
 	// Override with custom headers
@@ -769,7 +786,8 @@ func (s3 *S3) prepare(req *request) error {
 	}
 	req.headers["Host"] = []string{u.Host}
 	req.headers["Date"] = []string{time.Now().In(time.UTC).Format(time.RFC1123)}
-	sign(s3.Auth, req.method, amazonEscape(req.signpath), req.params, req.headers)
+	// old signer; sign in run()
+	//sign(s3.Auth, req.method, amazonEscape(req.signpath), req.params, req.headers)
 	return nil
 }
 
@@ -803,6 +821,8 @@ func (s3 *S3) run(req *request, resp interface{}) (*http.Response, error) {
 		hreq.Body = ioutil.NopCloser(req.payload)
 	}
 
+	hreq.Host = s3.Region.S3Endpoint[len("https://"):]
+	s3.signer.Sign(&hreq)
 	hresp, err := s3.HTTPClient().Do(&hreq)
 	if err != nil {
 		return nil, err

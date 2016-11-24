@@ -15,7 +15,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/vaughan0/go-ini"
 )
 
@@ -355,12 +357,14 @@ func SharedAuth() (auth Auth, err error) {
 
 	var credentialsFile = os.Getenv("AWS_CREDENTIAL_FILE")
 	if credentialsFile == "" {
-		var homeDir = os.Getenv("HOME")
-		if homeDir == "" {
-			err = errors.New("Could not get HOME")
+		// Don't hard-code HOME env var, on Windows it's USERPROFILE, HOME may not be defined
+		// Use os/user instead for platform consistency
+		home, herr := homedir.Dir()
+		if herr != nil {
+			err = errors.New("Could not get user home directory")
 			return
 		}
-		credentialsFile = homeDir + "/.aws/credentials"
+		credentialsFile = filepath.Join(home, ".aws", "credentials")
 	}
 
 	file, err := ini.LoadFile(credentialsFile)
