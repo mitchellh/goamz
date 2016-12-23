@@ -49,6 +49,7 @@ func (s *S) Test_CreateDBInstance(c *C) {
 		MasterUserPassword:         "bazbarbaz",
 		DBInstanceClass:            "db.m1.small",
 		DBSecurityGroupNames:       []string{"foo", "bar"},
+		StorageType:                "gp2",
 		DBParameterGroupName:       "default.mysql5.6",
 
 		SetBackupRetentionPeriod: true,

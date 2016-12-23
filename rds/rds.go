@@ -108,6 +108,7 @@ type DBInstance struct {
 	Port                       int           `xml:"Endpoint>Port"`
 	PreferredBackupWindow      string        `xml:"PreferredBackupWindow"`
 	PreferredMaintenanceWindow string        `xml:"PreferredMaintenanceWindow"`
+	StorageType                string        `xml:"StorageType"`
 	VpcSecurityGroupIds        []string      `xml:"VpcSecurityGroups>VpcSecurityGroupMembership>VpcSecurityGroupId"`
 	DBSecurityGroupNames       []string      `xml:"DBSecurityGroups>DBSecurityGroup>DBSecurityGroupName"`
 	DBSubnetGroup              DBSubnetGroup `xml:"DBSubnetGroup"`
@@ -190,6 +191,7 @@ type CreateDBInstance struct {
 	PreferredBackupWindow      string // hh24:mi-hh24:mi
 	PreferredMaintenanceWindow string // ddd:hh24:mi-ddd:hh24:mi
 	PubliclyAccessible         bool
+	StorageType                string
 	VpcSecurityGroupIds        []string
 	DBSecurityGroupNames       []string
 	DBParameterGroupName       string
@@ -277,6 +279,10 @@ func (rds *Rds) CreateDBInstance(options *CreateDBInstance) (resp *SimpleResp, e
 
 	if options.PubliclyAccessible {
 		params["PubliclyAccessible"] = "true"
+	}
+
+	if options.StorageType != "" {
+		params["StorageType"] = options.StorageType
 	}
 
 	for j, group := range options.VpcSecurityGroupIds {
@@ -703,6 +709,7 @@ type RestoreDBInstanceFromDBSnapshot struct {
 	OptionGroupName         string
 	Port                    int
 	PubliclyAccessible      bool
+	StorageType             string
 
 	SetIops bool
 	SetPort bool
@@ -760,6 +767,10 @@ func (rds *Rds) RestoreDBInstanceFromDBSnapshot(options *RestoreDBInstanceFromDB
 
 	if options.PubliclyAccessible {
 		params["PubliclyAccessible"] = "true"
+	}
+
+	if options.StorageType != "" {
+		params["StorageType"] = options.StorageType
 	}
 
 	resp = &SimpleResp{}
