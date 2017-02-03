@@ -1119,6 +1119,22 @@ type AllocateAddressResp struct {
 	AllocationId string `xml:"allocationId"`
 }
 
+// The AssignPrivateIpAddresses request parameters
+//
+// http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_AssignPrivateIpAddresses.html
+type AssignPrivateIpAddresses struct {
+	AllowReassignment              bool
+	NetworkInterfaceId             string
+	PrivateIpAddresses             []string
+	SecondaryPrivateIpAddressCount int64
+}
+
+// Response to an AssignPrivateIpAddresses request
+type AssignPrivateIpAddressesResp struct {
+	RequestId string `xml:"requestId"`
+	Return    bool   `xml:"return"`
+}
+
 // The AssociateAddress request parameters
 //
 // http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-AssociateAddress.html
@@ -1127,6 +1143,7 @@ type AssociateAddress struct {
 	PublicIp           string
 	AllocationId       string
 	AllowReassociation bool
+	PrivateIpAddress   string
 }
 
 // Response to an AssociateAddress request
@@ -1196,6 +1213,29 @@ func (ec2 *EC2) ReleasePublicAddress(publicIp string) (resp *SimpleResp, err err
 	return
 }
 
+// Assigns private IP addresses with a VPC instance.
+func (ec2 *EC2) AssignPrivateIpAddresses(options *AssignPrivateIpAddresses) (resp *AssignPrivateIpAddressesResp, err error) {
+	params := makeParams("AssignPrivateIpAddresses")
+	if options.AllowReassignment {
+		params["AllowReassignment"] = "true"
+	}
+	params["NetworkInterfaceId"] = options.NetworkInterfaceId
+	if len(options.PrivateIpAddresses) > 0 {
+		addParamsList(params, "PrivateIpAddress", options.PrivateIpAddresses)
+	}
+	if options.SecondaryPrivateIpAddressCount > 0 {
+		params["SecondaryPrivateIpAddressCount"] = strconv.FormatInt(options.SecondaryPrivateIpAddressCount, 10)
+	}
+
+	resp = &AssignPrivateIpAddressesResp{}
+	err = ec2.query(params, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
 // Associate an address with a VPC instance.
 func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddressResp, err error) {
 	params := makeParams("AssociateAddress")
@@ -1208,6 +1248,9 @@ func (ec2 *EC2) AssociateAddress(options *AssociateAddress) (resp *AssociateAddr
 	}
 	if options.AllowReassociation {
 		params["AllowReassociation"] = "true"
+	}
+	if options.PrivateIpAddress != "" {
+		params["PrivateIpAddress"] = options.PrivateIpAddress
 	}
 
 	resp = &AssociateAddressResp{}
