@@ -2139,6 +2139,26 @@ func (ec2 *EC2) Tags(filter *Filter) (*TagsResp, error) {
 	return resp, nil
 }
 
+func (ec2 *EC2) DeleteTags(resourceIds []string, tags []Tag) (resp *SimpleResp, err error) {
+	params := makeParams("DeleteTags")
+	addParamsList(params, "ResourceId", resourceIds)
+
+	for j, tag := range tags {
+		params["Tag."+strconv.Itoa(j+1)+".Key"] = tag.Key
+
+		if tag.Value != "" {
+			params["Tag."+strconv.Itoa(j+1)+".Value"] = tag.Value
+		}
+	}
+
+	resp = &SimpleResp{}
+	if err = ec2.query(params, resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 // Response to a StartInstances request.
 //
 // See http://goo.gl/awKeF for more details.
